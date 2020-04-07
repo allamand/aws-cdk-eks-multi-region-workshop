@@ -1,12 +1,11 @@
-title = "Hugo 템플릿 활용하기"
-googleAnalytics = "UA-161422664-1"
+title = "CDK로 멀티 리전 EKS 클러스터 풀스택 배포"
+# googleAnalytics = "UA-161422664-1"
 anguageCode = "ko-KR"
 defaultContentLanguage = "ko"
 theme = "hugo-theme-learn"
 showHeaderLanguageChooser=true
 defaultContentLanguageInSubdir= true
-#metaDataFormat = "yaml"
-#baseURL = ""
+
 
 [outputs]
 home = [ "HTML", "RSS", "JSON"]
@@ -17,27 +16,28 @@ home = [ "HTML", "RSS", "JSON"]
   disableNextPrev = false
   themeVariant = "aws"
   disableInlineCopyToClipBoard = false
-  author = "Hyounsoo Kim"
+  author = "Jiwon Yeom"
 
 [[menu.shortcuts]] 
-  name = "<i class='fab fa-aws'></i> AWS Homepage"
-  url = "https://aws.amazon.com/"
+  name = "<i class='fab fa-aws'></i> CDK workshop"
+  url = "https://cdkworkshop.com/"
   weight = 1000
+[[menu.shortcuts]] 
+  name = "<i class='fab fa-aws'></i> CDK Roadmap"
+  url = "https://github.com/orgs/aws/projects/7"
+  weight = 1010
 
 [[menu.shortcuts]]
-  name = "<i class='fas fa-blog'></i> AWS Blog"
-  url = "https://aws.amazon.com/blogs/aws/"
+  name = "<i class='fab fa-github'></i> Github for entire code"
+  url = "https://github.com/yjw113080/aws-cdk-eks-multi-region"
   weight = 1020
 
 [[menu.shortcuts]]
-  name = "<i class='fab fa-facebook-square'></i> Facebook"
-  url = "https://www.facebook.com/groups/awskrug/"
+  name = "<i class='far fa-envelope'></i> feedback"
+  url = "mailto:jiwony@amazon.com"
   weight = 1030
 
-[[menu.shortcuts]]
-  name = "<i class='fab fa-github'></i> Github"
-  url = "https://github.com/studydev/hugo-workshop"
-  weight = 1040
+
 
 [Languages]
   [Languages.ko]
@@ -47,6 +47,7 @@ home = [ "HTML", "RSS", "JSON"]
   [Languages.en]
     weight = 2
     languageName = "English"
+    title = "Full-stack deployment of Multi-Region EKS cluster with CDK"
 
 [deployment]
   [[deployment.targets]]
