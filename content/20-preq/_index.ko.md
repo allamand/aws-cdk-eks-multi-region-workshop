@@ -1,11 +1,10 @@
 ---
-title: Prerequisites
+title: 워크샵 사전 준비 사항
 # chapter: true
 weight: 20
 pre: "<b>2. </b>"
 ---
 
-# 워크샵 사전 준비사항
 
 
 이 워크샵을 수행하기 위해서는 아래와 같은 사전 준비가 필요합니다:

@@ -1,15 +1,18 @@
 ---
-title: 멀티 리전 EKS 클러스터 생성하기
+title: 실습 1, 멀티 리전 EKS 클러스터 생성
 weight: 40
 pre: "<b>4. </b>"
 ---
 
-**실습에 대한 설명을 적습니다.** <br/><br/>
+CDK로 반복 재사용 가능한 Construct를 작성해서 두 개 리전에 걸쳐 EKS 클러스터를 배포하고,
+그 위에 컨테이너 자원을 배포해봅니다. <br/><br/>
 
-### 큰제목 
-1. 순서를 가이드합니다.
+### 실습 진행 단계
 
 ![](/images/20-deploy-clusters/intro.svg)
+
+{{% children showhidden="false" %}}
+
 
 ---
 <p align="center">
