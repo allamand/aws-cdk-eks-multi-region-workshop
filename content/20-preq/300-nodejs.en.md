@@ -1,6 +1,8 @@
 ---
 title: Node.js
 weight: 300
+pre: "<b>2-3. </b>"
+
 ---
 
 The AWS CDK uses Node.js (>= 10.3.0).

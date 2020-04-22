@@ -1,6 +1,8 @@
 ---
 title: AWS CDK Toolkit
 weight: 500
+pre: "<b>2-5. </b>"
+
 ---
 
 다음으로는 AWS CDK Toolkit를 생성해야 합니다. 이 툴킷은 CDK 앱을 조작하는 데에 필요한 명령줄 기반 툴입니다.

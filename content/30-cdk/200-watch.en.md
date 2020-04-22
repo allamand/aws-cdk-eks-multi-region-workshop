@@ -1,7 +1,8 @@
-+++
-title = "npm run watch"
-weight = 200
-+++
+---
+title: "cdk init"
+weight: 200
+pre: "<b>3-2. </b>"
+---
 
 ## Compiling your TypeScript code
 

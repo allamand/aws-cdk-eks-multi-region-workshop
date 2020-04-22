@@ -1,7 +1,8 @@
-+++
-title = "cdk init"
-weight = 100
-+++
+---
+title: "cdk init"
+weight: 100
+pre: "<b>3-1. </b>"
+---
 
 ## 프로젝트 폴더 생성
 

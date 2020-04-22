@@ -195,5 +195,5 @@ Do you wish to deploy these changes (y/n)?
 이를 통해 우리가 방금 생성한 EKS 클러스터에 `kubectl`을 이용하여 자원을 조회/생성/수정/삭제할 수 있습니다.
 
 ```
-ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region us-east-1 --role-arn <<YOUR_ROLE_ARN>>
+ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
 ```

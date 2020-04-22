@@ -1,6 +1,8 @@
 ---
 title: ClusterStack 작성하기
 weight: 200
+pre: "<b>4-2. </b>"
+
 ---
 
 클론한 프로젝트에 EKS 클러스터와 관련 설정을 해보겠습니다.  

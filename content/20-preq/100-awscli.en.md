@@ -1,6 +1,7 @@
 ---
 title: AWS CLI
 weight: 100
+pre: "<b>2-1. </b>"
 ---
 
 

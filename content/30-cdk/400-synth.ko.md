@@ -1,7 +1,9 @@
-+++
-title = "cdk synth"
-weight = 400
-+++
+---
+title: "cdk synth"
+weight: 400
+pre: "<b>3-4. </b>"
+---
+
 
 ## CDK 앱에서 CloudFormation 템플릿 산출하기
 

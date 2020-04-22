@@ -100,7 +100,7 @@ export class ContainerStack extends cdk.Stack {
 아까 생성한 CluterStack 아래에 아래 코드를 붙여넣습니다.
 
 ```typescript
-let primaryContainer = new ContainerStack(app, `ContainerStack-${primaryRegion.region}`, {env: primaryRegion, cluster: primaryCluster.cluster });
+new ContainerStack(app, `ContainerStack-${primaryRegion.region}`, {env: primaryRegion, cluster: primaryCluster.cluster });
 
 ```
 최초로 ClusterStack을 생성했을 때와는 다르게, 환경 설정(계정, 리전) 값 외에 위에서 생성한 `cluster`를 넘겨받는 것을 알 수 있습니다.

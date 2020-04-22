@@ -1,6 +1,8 @@
 ---
 title: AWS CDK Toolkit
 weight: 500
+pre: "<b>2-5. </b>"
+
 ---
 
 Next, we'll install the AWS CDK Toolkit. The toolkit is a command-line utility

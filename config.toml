@@ -52,4 +52,4 @@ home = [ "HTML", "RSS", "JSON"]
 [deployment]
   [[deployment.targets]]
     name = "s3"
-    URL = "s3://hugo.awsdemo.kr?region=ap-northeast-2"
+    URL = "s3://demogo-multiregion-eks?region=ap-northeast-2"

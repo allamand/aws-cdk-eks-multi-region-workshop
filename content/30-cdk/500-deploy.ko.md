@@ -1,7 +1,9 @@
-+++
-title = "cdk deploy"
-weight = 500
-+++
+---
+title: "cdk deploy"
+weight: 500
+pre: "<b>3-5. </b>"
+---
+
 
 
 CloudFormation을 보았으니 이제 **계정에 실제로 배포**를 해볼까요?

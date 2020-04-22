@@ -2,7 +2,7 @@
 title: Create a new CDK Project
 chapter: true
 weight: 20
-pre: "<b>2. </b>"
+pre: "<b>3. </b>"
 ---
 
 # Creating your first CDK project

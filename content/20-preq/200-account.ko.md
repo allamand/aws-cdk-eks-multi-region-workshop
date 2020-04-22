@@ -1,6 +1,8 @@
 ---
 title: AWS Account and User
 weight: 200
+pre: "<b>2-2. </b>"
+
 ---
 
 ## AWS Account 생성

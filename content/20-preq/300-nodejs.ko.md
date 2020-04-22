@@ -1,6 +1,8 @@
 ---
 title: Node.js
 weight: 300
+pre: "<b>2-3. </b>"
+
 ---
 
 AWS CDK는 Node.js (>= 10.3.0)를 이용합니다.

@@ -1,6 +1,7 @@
 ---
 title: 실습 2, 두 리전의 EKS 클러스터에 앱 배포
 weight: 500
+pre: "<b>1-5. </b>"
 ---
 
 ![](/images/40-deploy-app/intro.svg)

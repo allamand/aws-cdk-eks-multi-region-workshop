@@ -1,7 +1,8 @@
-+++
-title = "Project structure"
-weight = 300
-+++
+---
+title: "프로젝트 구조"
+weight: 300
+pre: "<b>3-3. </b>"
+---
 
 ## IDE 열기
 

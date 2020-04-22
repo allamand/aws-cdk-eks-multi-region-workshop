@@ -1,7 +1,9 @@
-+++
-title = "cdk deploy"
-weight = 500
-+++
+---
+title: "cdk deploy"
+weight: 500
+pre: "<b>3-5. </b>"
+---
+
 
 Okay, we've got a CloudFormation template. What's next? __Let's deploy it into our account!__
 

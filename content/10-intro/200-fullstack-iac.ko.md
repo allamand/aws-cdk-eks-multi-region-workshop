@@ -1,6 +1,7 @@
 ---
 title: 쿠버네티스 클러스터를 풀스택으로 IaC 한다는 것
 weight: 200
+pre: "<b>1-2. </b>"
 ---
 
 클라우드에서 인프라를 코드로 정의하는 것(Infrastructure as Code, 이하 IaC)은 선택이 아닌 필수입니다.  
