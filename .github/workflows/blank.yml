@@ -27,10 +27,6 @@ jobs:
     - name: Hugo build
       run: hugo
 
-    # Runs a single command using the runners shell
-    - name: Hugo deploy
-      run: hugo deploy --target=s3
-
     # Runs a set of commands using the runners shell
     - name: Deploy
       env:
@@ -40,4 +36,4 @@ jobs:
         aws s3 cp \
           --recursive \
           --region ap-northeast-2 \
-          build s3://demogo-multiregion-eks # 자신의 레포지토리로 변경해주세요.
+          build s3://demogo-multiregion-eks
