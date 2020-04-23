@@ -1,7 +1,7 @@
 ---
-title: 실습 1, 멀티 리전 EKS 클러스터 생성
-weight: 400
-pre: "<b>1-4. </b>"
+title: 실습 2, 두번째 리전에 자원 배포
+weight: 500
+pre: "<b>1-5. </b>"
 ---
 
 ![](/images/20-deploy-clusters/intro.svg)
