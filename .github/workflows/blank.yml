@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: [ master ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
   # This workflow contains a single job called "build"
   build:
@@ -26,7 +26,7 @@ jobs:
       uses: srt32/git-actions@v0.0.3
       with:
         args: git submodule update --init --recursive
-        
+
     - name: Hugo setup
       uses: peaceiris/actions-hugo@v2.4.10
 
