@@ -189,6 +189,10 @@ Do you wish to deploy these changes (y/n)?
 약 15분 정도의 시간 뒤에 정상적으로 자원이 생성될 것입니다.  
 그동안 콘솔에서 생성 중인 자원의 상황을 확인할 수 있습니다.
 
+아래와 같이 [콘솔](console.aws.amazon.com/cloudformation/)에서 CloudFormation 스택이 생성된 것을 확인할 수 있습니다.
+<<캡처>>
+
+
 ## kubeconfig 업데이트하기
 자원 생성이 완료되고 나면, 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
 이 명령어를 복사하여 콘솔에서 실행하십시오.  

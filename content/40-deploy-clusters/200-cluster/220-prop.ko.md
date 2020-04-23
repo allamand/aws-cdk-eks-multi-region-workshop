@@ -21,6 +21,14 @@ export interface CommonProps extends cdk.StackProps {
   public readonly cluster: eks.Cluster;
 ```
 
+그리고 Props로 export될 클러스터를 지정해줍니다.  
+`const cluster = ...` 선언 다음에 아래 코드를 붙여넣어주세요.
+
+```
+      this.cluster = cluster;
+
+```
+
 완성된 코드는 아래와 같을 것입니다.
 ```typescript
 export class ClusterStack extends cdk.Stack {
@@ -37,6 +45,7 @@ export class ClusterStack extends cdk.Stack {
         mastersRole: clusterAdmin,
         defaultCapacity: 2
       });
+      this.cluster = cluster;
 
 
   }

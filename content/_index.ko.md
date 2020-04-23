@@ -6,7 +6,6 @@ chapter: true
 
 # 멀티 리전 EKS 클러스터, CDK로 풀스택 관리하기
 
----
 
 촉망 받는 회사 A의 DevOps 엔지니어인 당신, EKS 클러스터 하나도 제대로 관리하기 힘든데  
 사업이 너무 잘되는 바람에 다른 지역으로 서비스를 확장한다고 합니다.  
@@ -28,8 +27,3 @@ chapter: true
 **오른쪽의 화살표를 클릭하거나, 키보드의 오른쪽 화살표 버튼을 눌러  
 오늘 진행할 워크샵을 살펴봅시다.**
 
-
----
-<p align="center">
-© 2020 Amazon Web Services, Inc. 또는 자회사, All rights reserved.
-</p>
