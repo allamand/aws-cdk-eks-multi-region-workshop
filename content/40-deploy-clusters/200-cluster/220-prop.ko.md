@@ -14,6 +14,7 @@ weight: 220
 export interface CommonProps extends cdk.StackProps {
   cluster: eks.Cluster
 }
+
 ```
 
 다시 위로 올라와 `constructor` 위에 readonly 값을 퍼블릭으로 정의합니다.
