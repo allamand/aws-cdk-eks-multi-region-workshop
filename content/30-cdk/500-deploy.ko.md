@@ -110,4 +110,4 @@ console](https://console.aws.amazon.com/cloudformation/home)을 확인해봅시�
 
 ![](/images/15-cdk/cfn2.png)
 
-# 그럼 이제 실제 CDK 코딩을 해볼까요?!
+# 그럼 이제 실제 CDK 코드를 작성 해볼까요?!

@@ -36,11 +36,10 @@ npm run watch
 ```
 Starting compilation in watch mode...
 Found 0 errors. Watching for file changes.
-...
+# 중략
 ```
 
 이 스크립트는 TypeScript Compiler (`tsc`)를 "watch" 모드로 시작해서, 프로젝트 디렉토리를 모니터링 하여 `.ts` 파일의 변경 분을 `.js` 파일로 자동 컴파일해줍니다.
-----
 
 ‼️ 이 워크샵이 진행되는 동안 `watch` 스크립트 수행 터미널 윈도우가 꺼지지 않도록 해주십시오.
-----
+
