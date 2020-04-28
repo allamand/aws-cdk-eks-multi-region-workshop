@@ -26,7 +26,8 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { CommonProps } from './cluster-stack';
 import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
 import * as iam from '@aws-cdk/aws-iam';
-import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
+import { codeToECRspec, deployToEKSspec, deployTo2ndClusterspec } from '../utils/buildspecs';
+
 
 export class CicdForPrimaryRegionStack extends cdk.Stack {
 
@@ -128,6 +129,8 @@ new codepipeline.Pipeline(this, 'repo-to-ecr-hello-py', {
 ```
 
 * `sourceOutput`은 커밋된 코드를 아티팩트로 Pipeline에 전달해주기 위해 정의합니다.
+
+{{% notice info %}} 이 워크샵에서는 워크샵 효율을 위해 빌드 이미지를 직접 업로드하여 사용합니다. 프로덕션에서는 별도로 ECR을 통해 빌드 이미지 관리를 하시기를 권고드립니다. {{% /notice %}}
 
 ### 6. CI/CD 파이프라인 배포하기
 `cdk diff` 명령어를 통해 생성될 자원을 확인합니다.
