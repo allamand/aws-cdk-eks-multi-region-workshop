@@ -9,7 +9,7 @@ pre: "<b>6. </b>"
 이 작업을 가능하게 해주는, 두 리전에 걸친 파이프라인을 만들어보겠습니다.** <br/><br/>
 
 ### 실습 진행 단계 
-![](/images/40-deploy-app/intro.svg)
+![](/images/40-deploy-app/intro2.svg)
 {{% children showhidden="false" %}}
 
 

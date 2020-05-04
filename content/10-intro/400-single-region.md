@@ -1,7 +1,7 @@
 ---
 title: 실습 1, CDK로 EKS 클러스터 생성하기
 weight: 400
-pre: "<b>1-4. </b>"
+pre: "<b>1-3. </b>"
 ---
 
 ![](/images/20-single-region/intro.svg)

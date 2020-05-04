@@ -32,5 +32,5 @@ EKS클러스터와 IaC를 통한 Operational Excellence 프랙티스를 보여�
 위 다섯 가지 고려사항 중 다른 부분에 대해 더 궁금하신 분들은 아래 링크를 참조해주십시오.
 
 
-## See Also
+## 참고
 * [AWS re:Invent 2019: [REPEAT 2] Architecture patterns for multi-region active-active (ARC213-R2)](https://youtu.be/3K9AzSrCmiQ)

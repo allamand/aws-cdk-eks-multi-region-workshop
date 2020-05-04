@@ -8,7 +8,7 @@ pre: "<b>6-2. </b>"
 먼저 위에서 클론 받은 코드를 한 리전의 클러스터에만 배포해보겠습니다.  
 다음과 같은 흐름을 갖는 CodePipeline을 작성합니다.
 
-![](/static/images/40-deploy-app/single-region-pipeline.svg)
+![](/images/40-deploy-app/single-region-pipeline.svg)
 
 
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.

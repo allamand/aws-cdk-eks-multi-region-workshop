@@ -9,7 +9,7 @@ pre: "<b>5. </b>"
 
 ### 실습 진행 단계
 
-![](/images/20-deploy-clusters/intro.svg)
+![](/images/20-deploy-clusters/intro2.svg)
 
 {{% children showhidden="false" %}}
 
