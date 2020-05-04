@@ -1,5 +1,5 @@
 title = "CDK로 멀티 리전 EKS 클러스터 풀스택 배포"
-# googleAnalytics = "UA-161422664-1"
+googleAnalytics = "UA-165390845-2"
 anguageCode = "ko-KR"
 defaultContentLanguage = "ko"
 theme = "hugo-theme-learn"
@@ -34,7 +34,7 @@ home = [ "HTML", "RSS", "JSON"]
 
 [[menu.shortcuts]]
   name = "<i class='far fa-envelope'></i> feedback"
-  url = "mailto:jiwony@amazon.com"
+  url = "https://github.com/yjw113080/aws-cdk-eks-multi-region-workshop/issues/new"
   weight = 1030
 
 

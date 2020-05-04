@@ -1,7 +1,7 @@
 ---
 title: K8S Manifest 수정하기
 weight: 300
-pre: "<b>5-3. </b>"
+pre: "<b>5-4. </b>"
 
 ---
 
