@@ -46,8 +46,15 @@ export class CicdForPrimaryRegionStack extends cdk.Stack {
 const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
     repositoryName: `hello-py-${cdk.Stack.of(this).region}`
 });
+
+new cdk.CfnOutput(this, `codecommit-uri`, {
+    exportName: 'CodeCommitURL',
+    value: helloPyRepo.repositoryCloneUrlHttp
+});
 ```
 
+* CodeCommit 레파지토리를 생성하고
+* 이 레파지토리를 clone할 때 사용할 수 있는 URI를 스택 아웃풋으로 생성합니다.
 
 
 ### 2. ECR Repository 생성하기
@@ -149,25 +156,70 @@ new CicdForPrimaryRegionStack(app, `CicdForPrimaryStack`, {env: primaryRegion, c
 
 
 ### 7. CI/CD 파이프라인 배포하기
-`cdk diff` 명령어를 통해 생성될 자원을 확인합니다.
+`cdk diff` 명령어를 통해 생성될 자원을 확인한 뒤, `cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.  
+이때 `CicdForPrimaryRegionStack`과 별개로, 이 스택의 자원에 권한 부여를 위해 `ClusterStack`에서도 변경이 발생합니다.
 
-<<생성될 자원 입력>>
+터미널에 완료가 뜨고 나서 콘솔에 들어가면, 현재 codecommit에 master 브랜치가 없어서 실패 상태로 되어 있는 파이프라인이 생성되어 있음을 확인할 수 있습니다.
 
-`cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
+![](/images/40-deploy-app/result-pipeline-single-region.png)
 
-<<결과값 보여주기>>
-
-<<스크린샷>>
 
 ### 8. 배포 테스트하기
 그러면 생성된 파이프라인을 이용해서 애플리케이션을 배포해볼까요?  
 아까 [클론한 샘플 어플리케이션](https://github.com/yjw113080/aws-cdk-multi-region-sample-app) IDE를 열어주십시오.  
 
-1. 다음 명령어를 통해 codecommit 레포지토리를 등록하십시오.
+1. `CicdForPrimaryStack`에서 Output으로 출력된 codecommit URI 값을 복사하십시오.
+```
+CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
+```
+
+2. 다음 명령어를 통해 어플리케이션 프로젝트에 codecommit 레포지토리를 등록하십시오.
+```
+git remote add codecommit <<1번에서 카피한 codecommit URI>>
+```
+
+3. [IAM User](https://console.aws.amazon.com/iam/home?region=us-east-1) 콘솔에서, 현재 터미널이 사용 중인 User의 HTTPS Git credentials for AWS CodeCommit 를 생성하십시오.
+
+도움이 필요하신 분들은 [이 링크](https://aws.amazon.com/ko/blogs/korea/introducing-git-credentials-a-simple-way-to-connect-to-aws-codecommit-repositories-using-a-static-user-name-and-password/)를 참조하십시오.
 
 
-2. 다음 명령어를 통해 디렉토리 내의 코드를 codecommit으로 푸시하십시오.
+4. 다음 명령어를 통해 디렉토리 내의 코드를 codecommit으로 푸시하십시오.
+```
+git add .
+git commit -am "initial commit"
+git push codecommit master
+```
+
+5. CodePipeline 콘솔에서 다음과 같이 파이프라인이 트리거됨을 확인할 수 있습니다.
+![](/images/40-deploy-app/result-pipeline-single-region-working.png)
 
 
-3. CodePipeline 콘솔에서 다음과 같이 파이프라인이 트리거됨을 확인할 수 있습니다.
-4. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
+6. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
+{{% notice warning %}}
+`kubectl config current-context` 명령어를 통해 ap-northeast-1 리전의 클러스터에서 작업 중임을 확인하십시오.
+{{% /notice %}}
+
+```
+NAME                                READY   STATUS    RESTARTS   AGE
+hello-py-9b9bffb64-2f5bl            1/1     Running   0          3m7s << 어플리케이션 Pod
+hello-py-9b9bffb64-btvts            1/1     Running   0          3m7s << 어플리케이션 Pod
+hello-py-9b9bffb64-xttnw            1/1     Running   0          3m7s << 어플리케이션 Pod
+metrics-server-6b6bbf4668-hlgmd     1/1     Running   0          24m
+nginx-deployment-5754944d6c-whrmn   1/1     Running   0          24m
+nginx-deployment-5754944d6c-wkkkn   1/1     Running   0          24m
+```
+
+7. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.
+```
+kubectl describe service hello-py | grep Ingress
+
+# 결과값
+LoadBalancer Ingress:     aed0099fad25846a3a469d6abd64926d-847916387.ap-northeast-1.elb.amazonaws.com
+```
+
+```
+curl <LoadBalancer Ingress>
+
+# 결과값
+Hello World from ap-northeast-1
+```

@@ -32,24 +32,15 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 import * as ec2 from '@aws-cdk/aws-ec2';
 ```
 
-2. 클래스 선언 내부에 `primaryRegion` 정보를 주입합니다.
-
-1) `bin/multi-cluster-ts.ts`로 이동하여 코드 가장 하단에 아래 코드를 붙여넣습니다.
+2. 클래스 선언 내부에 `primaryRegion` 정보를 선언합니다.
 ```typescript
-export { primaryRegion }
-```
-
-2) `lib/cluster-stack.ts`로 돌아와 아래 코드를 최상단에 붙여 넣어 이 값을 import 합니다.
-
-```typescript
-import { primaryRegion } from '../bin/multi-cluster-ts'
-
+const primaryRegion = 'ap-northeast-1';
 ```
 
 3. `eks.Cluster` 생성 부분에 다음 코드를 붙여넣습니다.
 
 ```typescript
-        defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion.region? 
+        defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
                                  new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.large')
 ```
 

@@ -24,13 +24,15 @@ https://github.com/yjw113080/aws-cdk-multi-region-sample-app
 IDE를 열면 아래와 같이 세 가지 파일이 들어 있음을 확인할 수 있습니다.
 1. app.py: 실제 로직 부분. 
 2. Dockerfile: 이 파이썬 코드를 컨테이너 이미지로 빌드하기 위한 Dockerfile
-3. app-deployment.yaml: 쿠버네티스 클러스터에 배포할 내용을 정의하는 명세
+3. app-deployment.yaml: 쿠버네티스 클러스터에 배포할 내용을 정의하는 명세.
 
 app.py 파일을 열어 보면, 아래와 같이 컨테이너가 실행되고 있는 환경의 리전 정보를 보여주는 간단한 파이썬 어플리케이션을 볼 수 있습니다.
 
 ```python
 @app.route('/')
 def hello():
-  region = ec2_metadata.region
+  res = requests.get('http://169.254.169.254/latest/dynamic/instance-identity/document')
+  data = json.loads(res.text)
+  region = data['region']
   return ("Hello World from "+region)
 ```

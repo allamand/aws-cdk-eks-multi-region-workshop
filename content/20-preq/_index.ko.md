@@ -12,7 +12,7 @@ pre: "<b>2. </b>"
 {{% children showhidden="false" %}}
 
 이 툴들을 이미 설치하셨다면 이 챕터는 건너뛰셔도 좋습니다.
-첫번째 단계로 넘어가려면 오른쪽 화살표를 클릭하십시오.
+첫 번째 단계로 넘어가려면 오른쪽 화살표를 클릭하십시오.
 
 
 참고: CDK는 현재 Typescript (Javascript), Java, Python, C# 언어를 지원하나, 이 워크샵은 Typescript로만 진행될 예정입니다.
