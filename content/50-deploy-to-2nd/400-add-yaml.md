@@ -1,6 +1,6 @@
 ---
 title: K8S Manifest 수정하기
-weight: 300
+weight: 400
 pre: "<b>5-4. </b>"
 
 ---
@@ -43,7 +43,7 @@ spec:
 cdk diff
 ```
 
-그러면 아래와 같이 두 리전에 변경이 발생할 것임을 알 수 있습니다.
+그러면 아래와 같이 두 리전에 대해, 새롭게 추가된 yaml 분만이 변경분으로 반영될 것임을 알 수 있습니다.
 ```
 Stack ClusterStack-us-east-1
 Resources

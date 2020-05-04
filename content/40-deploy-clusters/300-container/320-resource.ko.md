@@ -7,14 +7,17 @@ weight: 320
 앞서 ClusterStack에서 정의한 Interface를 이용하여, 이 `ContainerStack` 클래스가 생성되는 시점에 이미 생성된 EKS 클러스터를 전달 받을 수 있도록 다음과 같이 `lib/container-stack.ts`를 수정합니다.
 
 ```typescript
-import { ClusterProps } from './cluster-stack';
+import { EksProps } from './cluster-stack';
 ...
 export class ContainerStack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+    constructor(scope: cdk.Construct, id: string, props: EksProps) {
         ...
 ```
 1. ClusterStack에서 생성한 Props를 import 했습니다.
-2. 그리고 constructor가 주입 받는 props를 ClusterProps로 변경했습니다.
+2. 그리고 constructor가 주입 받는 props를 EksProps로 변경했습니다.
+
+
+
 
 
 ## K8S Manifest 확인하기
@@ -66,7 +69,7 @@ export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
 
 ## Manifest 를 이용한 자원 생성
 `lib/container-stack.ts`을 여십시오.  
-아래 코드를 `super(xxx)` 구문 아래에 붙여넣습니다.
+아래 코드를 `super(scope, id, props)` 구문 아래에 붙여넣습니다.
 
 ```typescript
     const cluster = props.cluster;
@@ -76,6 +79,13 @@ export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
     readYamlFromDir(commonFolder, cluster);
     readYamlFromDir(regionFolder, cluster);
 ```
+
+* `./yaml-common/`: 멀티 리전으로 확장할 때, 두 리전 모두에 배포될 자원 manifest가 들어 있는 폴더입니다.
+* `./yaml-${cdk.Stack.of(this).region}/`: 스택이 실행되는 리전값을 확인하여, 그 리전에만 특수하게 배포해야 하는 자원 manifest를 담은 폴더입니다.
+* 이 두 폴더의 yaml 파일을 읽어서 json으로 변형한 뒤 CDK를 통해 자원을 생성합니다. 이를 통해 운영자가 직접 `kubectl` 명령어를 통해 자원을 컨트롤 하는 것이 아니라, 코드를 통해 배포 관리를 할 수 있게 됩니다.
+
+
+
 
 완성된 코드는 아래와 같을 것입니다.
 ```typescript
@@ -93,6 +103,10 @@ export class ContainerStack extends cdk.Stack {
 }
 ```
 이때, `cluster` 부분을 주의 깊게 봐주세요. [앞서 export 한 클러스터](content/40-deploy-clusters/200-cluster/220-prop.ko.md)를 전달 받아서 이용하겠다는 의미입니다.
+
+
+
+
 
 
 ## 엔트리포인트에 스택 로드하기
@@ -113,20 +127,34 @@ cdk diff
 ```
 
 아래 결과와 같이 KubernetesResource 들이 생성될 것임을 확인할 수 있습니다.
-<<컨테이너 생성할 목록>>
+```
+Stack ClusterStack-ap-northeast-1
+Resources
+[+] Custom::AWSCDK-EKS-KubernetesResource demogo-cluster/manifest-00_ap_nginx0/Resource demogoclustermanifest00apnginx0EE9A04C1
+[+] Custom::AWSCDK-EKS-KubernetesResource demogo-cluster/manifest-00_namespaces0/Resource demogoclustermanifest00namespaces0DB969C34
+
+Stack ContainerStack-ap-northeast-1
+There were no differences
+```
+{{% notice info %}}
+콘솔에 출력되는 결과를 잘 보면, ContainerStack이 아니라 ClusterStack에서 컨테이너 생성이 진행되는 것을 볼 수 있습니다.
+왜 그럴까요? 더 자세히 알고 싶으신 분들은 [여기](/ko/80-appendix/how-cfn-addResource/)를 눌러주십시오.
+{{% /notice %}}
+
+
+
 
 
 ## 배포하기
 아래 명령어로 컨테이너를 배포해봅시다.
 ```
-cdk deploy ContainerStack
+cdk deploy ClusterStack-ap-northeast-1
 ```
-{{% notice info %}}
-콘솔에 출력되는 결과를 잘 보면, ContainerStack이 아니라 ClusterStack에서 컨테이너 생성이 진행되는 것을 볼 수 있습니다.
-왜 그럴까요? 더 자세히 알고 싶으신 분들은 여기를 눌러주십시오.
-{{% /notice %}}
 
+`ClusterStack`을 생성했을 때처럼 터미널에 자원 생성 진행상황이 출력될 것입니다.  
 스택 실행이 완료되면 다음 명령어를 이용해 생성된 자원을 확인하십시오.
+
+
 1. Namespace
 ```
 kubectl get ns
@@ -134,21 +162,20 @@ kubectl get ns
 management 라는 이름의 네임스페이스가 생성되었을 것입니다.
 ```
 NAME              STATUS   AGE
-default           Active   8d
-kube-node-lease   Active   8d
-kube-public       Active   8d
-kube-system       Active   8d
-management        Active   8d << 우리가 생성한 네임스페이스
+default           Active   21m
+kube-node-lease   Active   21m
+kube-public       Active   21m
+kube-system       Active   21m
+management        Active   7m47s << 우리가 생성한 네임스페이스
 ```
 
 2. Pods
 ```
 kubectl get pod
 ```
-이름에 nginx를 포함하는 pod가 3개 생성된 것을 확인할 수 있습니다.
+이름에 nginx를 포함하는 pod가 2개 생성된 것을 확인할 수 있습니다.
 ```
-NAME                                                              READY   STATUS    RESTARTS   AGE
-nginx-deployment-5754944d6c-mrx4s                                 1/1     Running   0          8d
-nginx-deployment-5754944d6c-qkqpj                                 1/1     Running   0          8d
-nginx-deployment-5754944d6c-wtdct                                 1/1     Running   0          8d
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-5754944d6c-cnxzn   1/1     Running   0          7m51s
+nginx-deployment-5754944d6c-vrrd2   1/1     Running   0          7m51s
 ```

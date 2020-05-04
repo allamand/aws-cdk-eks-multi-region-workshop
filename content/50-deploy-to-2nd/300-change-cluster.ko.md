@@ -1,12 +1,12 @@
 ---
 title: 리전 별로 인프라 설정 변경하기
-weight: 200
+weight: 300
 pre: "<b>5-3. </b>"
 ---
 
 그런데, 이런 경우가 있을 수 있죠.  
 A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테이너를 두고.  
-혹은 클러스터 자체 설정을 달리하고 싶을 수 있습니다. 예를 들어 A 리전 워크노드로는 M5.xlarge 인스턴스를 쓰는데, B 리전은 M5.2xlarge를 써야 할 때.  
+혹은 클러스터 자체 설정을 달리하고 싶을 수 있습니다. 예를 들어 A 리전 워크노드로는 R5.xlarge 인스턴스를 쓰는데, B 리전은 M5.xlarge를 써야 할 때.  
 이렇게 리전에 따라 다른 설정을 주고 싶다면 어떻게 해야 할까요?  
 다음 예시를 통해 살펴봅시다.
 
@@ -26,15 +26,43 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 ```
 
 이 부분을 아래와 같이, 스택이 실행되는 리전 값을 참조하여 다른 인스턴스 타입으로 배포되도록 해보죠.
+
+1. EC2 타입 정의에 필요한 패키지를 import 합니다.
 ```typescript
-      const primaryRegion = 'ap-northest-1';
+import * as ec2 from '@aws-cdk/aws-ec2';
+```
+
+2. 클래스 선언 내부에 `primaryRegion` 정보를 주입합니다.
+
+1) `bin/multi-cluster-ts.ts`로 이동하여 코드 가장 하단에 아래 코드를 붙여넣습니다.
+```typescript
+export { primaryRegion }
+```
+
+2) `lib/cluster-stack.ts`로 돌아와 아래 코드를 최상단에 붙여 넣어 이 값을 import 합니다.
+
+```typescript
+import { primaryRegion } from '../bin/multi-cluster-ts'
+
+```
+
+3. `eks.Cluster` 생성 부분에 다음 코드를 붙여넣습니다.
+
+```typescript
+        defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion.region? 
+                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.large')
+```
+
+완성된 코드는 다음과 같을 것입니다.
+```typescript
+      const primaryRegion = 'ap-northeast-1';
 
       const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
         defaultCapacity: 2,
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.large')
+                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.xlarge')
       });
 ```
 
@@ -79,3 +107,6 @@ Resources
 
 ```
 
+작업이 완료되면 아래 스크린샷과 같이 인스턴스 타입이 각 리전에 맞추어 변경된 것을 확인할 수 있습니다.
+
+![](/images/20-deploy-clusters/ap-infra-change.png)

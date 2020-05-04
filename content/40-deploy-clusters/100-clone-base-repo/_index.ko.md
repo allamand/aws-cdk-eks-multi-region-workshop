@@ -59,3 +59,10 @@ git clone https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton
 ```
 npm i
 ```
+
+## 터미널 창에서 `npm run watch` 확인
+앞서 설명한 것처럼 typescript 에서는 javascript로 트랜스컴파일 과정을 거쳐야 합니다.  
+변경분을 자동으로 컴파일하기 위해 `npm run watch`를 실행하는 터미널이 백그라운드에 켜져있는지 확인합니다.
+아래 스크린샷은 VScode IDE에서 터미널을 실행하는 예시입니다.
+
+![](/images/20-single-region/npm-run-watch.png)

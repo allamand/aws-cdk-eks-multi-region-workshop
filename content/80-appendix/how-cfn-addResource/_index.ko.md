@@ -13,6 +13,7 @@ weight: 52
 
 이 말인 즉슨, 여러분이 명시적으로 정의한 자원이나 그 자원이 필요로 하는 자원들(VPC, Security Group...)이 아닌 다른 것들이 배포됨을 확인할 수 있다는 것입니다. 여기에는 AWS Lambda 함수, 여기에 필요한 IAM Role과 정책이 포함됩니다. 
 
+이는 우리가 워크샵에서 생성한 `ClusterStack`과 `ContainerStack`의 동작 양상에 대한 답이 됩니다. 이렇게 EKS 클러스터를 생성하는 CloudFormation 스택의 CustomResource에 의해 실제 컨테이너 배포가 일어나게 되므로, `ContainerStack`을 별도로 생성해서 컨테이너 자원을 정의해도 실제 변경은 `ClusterStack` 부분에서만 발생하게 되는 것입니다.
 
 ---
 <p align="center">

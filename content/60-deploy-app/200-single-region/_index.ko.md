@@ -14,8 +14,7 @@ pre: "<b>6-2. </b>"
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.
 
 ### CicdForPrimaryRegion 스택 뼈대 만들기
-`lib` 디렉토리 아래에 `cicd-for-primary-region.ts` 파일을 생성합니다.  
-아래 코드를 붙여 넣어 스택 클래스를 생성합니다.
+`lib` 디렉토리 아래에 `cicd-for-primary-region.ts` 파일이 아래와 같이 생성되어 있을 것입니다.
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
@@ -23,17 +22,18 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import ecr = require('@aws-cdk/aws-ecr');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { CommonProps } from './cluster-stack';
 import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
 import * as iam from '@aws-cdk/aws-iam';
 import { codeToECRspec, deployToEKSspec, deployTo2ndClusterspec } from '../utils/buildspecs';
 
-
 export class CicdForPrimaryRegionStack extends cdk.Stack {
 
-    constructor(scope: cdk.Construct, id: string, props: CommonProps) {
+    constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
+        super(scope, id, props);
+
     }
 }
+
 ```
 
 ### 1. CodeCommit 생성하기
@@ -43,10 +43,12 @@ export class CicdForPrimaryRegionStack extends cdk.Stack {
 아래 코드를 위에서 생성한 클래스 `construct` 부 안에 붙여넣습니다.
 
 ```typescript
-        const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
-            repositoryName: `hello-py-${cdk.Stack.of(this).region}`
-        });
+const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
+    repositoryName: `hello-py-${cdk.Stack.of(this).region}`
+});
 ```
+
+
 
 ### 2. ECR Repository 생성하기
 이 코드를 기반으로 생성된 컨테이너 이미지는 별도의 Image Registry에 저장되어야 합니다.  
@@ -56,10 +58,10 @@ export class CicdForPrimaryRegionStack extends cdk.Stack {
 
 ```typescript
 const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
-ecrForMainRegion.grantPull(props.asg.role);
+
 ```
 * ECR 레지스트리를 생성합니다.
-* 그리고 우리가 생성한 EKS 클러스터가 이 ECR로부터 컨테이너 이미지를 pull 할 수 있도록 권한을 부여합니다.
+
 
 ### 3. 도커 이미지를 빌드하는 CodeBuild 프로젝트 생성하기
 개발자가 소스를 커밋했을 때 이 내용을 기반으로 새로운 이미지를 자동으로 빌드하게 해주어야 합니다.  
@@ -70,7 +72,8 @@ buildspec 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 
 2) CodeBuild 프로젝트를 정의할 때 지정할 수도 있습니다.  
 이 워크샵에서는 리전 간 공통으로 사용되는 buildspec을 중앙에서 관리하기 위해 2)의 방법을 통해 CodeBuild 프로젝트에 직접 정의해줍니다.
 
-**2. ECR Repository 생성하기**아래 코드를 붙여 넣으십시오.
+
+**2. ECR Repository 생성하기** 까지 작성한 뒷 부분에, 아래 코드를 붙여 넣으십시오.
 ```typescript
 const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
 ecrForMainRegion.grantPullPush(buildForECR.role!);
@@ -80,8 +83,11 @@ ecrForMainRegion.grantPullPush(buildForECR.role!);
 * /utils 폴더에 이 워크샵에서 사용할 빌드 스펙을 미리 정의해두었습니다. 자세한 빌드 스펙이 궁금하신 분은 /utils/buildspec.ts 파일을 참조해주십시오. 
 * 생성될 빌드 프로젝트에서 ECR에 이미지를 푸시할 수 있는 권한을 추가합니다.
 
+
+
 ### 4. EKS 클러스터에 배포하는 CodeBuild 프로젝트 생성하기
 현 시점에는 AWS CodeDeploy (관리형 배포 서비스)가 아직 EKS 클러스터를 지원하지 않기 때문에 CodeBuild를 이용하여 자원을 배포해보겠습니다.
+
 
 아래 코드를 위에 작성한 코드 뒤에 붙여넣으십시오.
 
@@ -132,7 +138,17 @@ new codepipeline.Pipeline(this, 'repo-to-ecr-hello-py', {
 
 {{% notice info %}} 이 워크샵에서는 워크샵 효율을 위해 빌드 이미지를 직접 업로드하여 사용합니다. 프로덕션에서는 별도로 ECR을 통해 빌드 이미지 관리를 하시기를 권고드립니다. {{% /notice %}}
 
-### 6. CI/CD 파이프라인 배포하기
+### 6. 스택 로드하기
+
+아래 코드를 `bin/multi-cluster-ts.ts` 파일에 붙여넣습니다.
+
+```typescript
+new CicdForPrimaryRegionStack(app, `CicdForPrimaryStack`, {env: primaryRegion, cluster: primaryCluster.cluster});
+
+```
+
+
+### 7. CI/CD 파이프라인 배포하기
 `cdk diff` 명령어를 통해 생성될 자원을 확인합니다.
 
 <<생성될 자원 입력>>
@@ -143,7 +159,7 @@ new codepipeline.Pipeline(this, 'repo-to-ecr-hello-py', {
 
 <<스크린샷>>
 
-### 7. 배포 테스트하기
+### 8. 배포 테스트하기
 그러면 생성된 파이프라인을 이용해서 애플리케이션을 배포해볼까요?  
 아까 [클론한 샘플 어플리케이션](https://github.com/yjw113080/aws-cdk-multi-region-sample-app) IDE를 열어주십시오.  
 

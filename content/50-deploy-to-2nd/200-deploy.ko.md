@@ -1,6 +1,6 @@
 ---
 title: 두 번째 리전에 배포하기
-weight: 100
+weight: 200
 pre: "<b>5-2. </b>"
 ---
 
@@ -48,14 +48,20 @@ cdk deploy
 
 ## kubeconfig 업데이트
 자원 생성이 완료되고 나면, 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
-이 명령어를 복사하여 콘솔에서 실행하십시오.  
-이를 통해 우리가 방금 생성한 EKS 클러스터에 `kubectl`을 이용하여 자원을 조회/생성/수정/삭제할 수 있습니다.
+아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
-ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region us-east-1 --role-arn <<YOUR_ROLE_ARN>>
+ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
 ```
 
-위 명령어를 실행하고 나면 아래 명령어를 통해 두 개 리전의 EKS 클러스터에 접근할 수 있음을 확인합니다.
+정상적으로 수행되면 아래와 같은 결과가 출력될 것입니다.
+
+```
+Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /Users/jiwony/.kube/config
+```
+
+
+아래 명령어를 통해 두 개 리전의 EKS 클러스터에 접근할 수 있음을 확인합니다.
 ```
 kubectl config get-contexts
 
@@ -65,7 +71,23 @@ CURRENT   NAME                                                     CLUSTER      
 *         arn:aws:eks:us-east-1:ACCOUNT_ID:cluster/demogo        arn:aws:eks:us-east-1:ACCOUNT_ID:cluster/demogo        arn:aws:eks:us-east-1:ACCOUNT_ID:cluster/demogo
 ```
 
-아래 명령어를 통해 명령어를 내릴 클러스터를 변경할 수 있습니다.
+
+## 클러스터 내 자원 확인
+현재 등록된 컨텍스트에서 `kubectl get pod` 명령어를 통해 현재 배포된 pod를 확인합니다.  
+`us-east-1` 리전이기 때문에, [도쿄 리전에 배포한 결과](/ko/40-deploy-clusters/300-container/320-resource/#배포하기)와 다르게 `yaml-us-east-1/00_us_nginx.yaml` 파일의 내용처럼 nginx Pod가 5개 배포된 것을 볼 수 있습니다.  
+
+```
+NAME                                READY   STATUS    RESTARTS   AGE
+metrics-server-6b6bbf4668-xhvtd     1/1     Running   0          12m
+nginx-deployment-5754944d6c-6lqmg   1/1     Running   0          12m
+nginx-deployment-5754944d6c-6qn8f   1/1     Running   0          12m
+nginx-deployment-5754944d6c-d25s6   1/1     Running   0          12m
+nginx-deployment-5754944d6c-dnl9l   1/1     Running   0          12m
+nginx-deployment-5754944d6c-q2p9c   1/1     Running   0          12m
+```
+
+
+필요한 경우, 아래 명령어를 통해 `kubectl` 조작을 할 대상 클러스터를 변경할 수 있습니다.
 
 ```
 kubectl config use-context <<cluster-name>>

@@ -52,10 +52,10 @@ export class ClusterStack extends cdk.Stack {
   }
 }
 
-export interface ClusterProps extends cdk.StackProps {
+export interface EksProps extends cdk.StackProps {
   cluster: eks.Cluster
 }
 ```
 
-이제 이 모듈에서 `CommonProps`를 export 하여 외부에서도 이용할 수 있게 되었습니다.  
+이제 이 모듈에서 `EksProps`를 export 하여 외부에서도 이용할 수 있게 되었습니다.  
 이를 활용해서 컨테이너 스택을 작성해보겠습니다.

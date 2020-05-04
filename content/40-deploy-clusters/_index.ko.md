@@ -1,5 +1,5 @@
 ---
-title: CDK로 EKS 클러스터 생성
+title: 실습 1, CDK로 EKS 클러스터 생성
 weight: 40
 pre: "<b>4. </b>"
 ---

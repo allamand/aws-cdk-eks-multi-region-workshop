@@ -6,23 +6,12 @@ weight: 210
 ## 패키지 import
 
 이전 단계에서 해당 코드에 필요한 패키지는 모두 설치했습니다.  
-아래와 같이 패키지를 코드에 import 하십시오.  
+다음 코드를 복사하여 `class` 선언 윗 부분에 붙여넣어 import 하십시오.  
 
 ``` typescript
 import * as iam from '@aws-cdk/aws-iam';
 import * as eks from '@aws-cdk/aws-eks';
-
-export class ClusterStack extends cdk.Stack {
-//...
-}
 ```
-
-
-* `clusterAdmin`은 여러분의 클러스터에 `kubectl` 등의 명령어를 수행할 때 assume 할 IAM Role 입니다.
-* `cluster`가 우리가 생성할 EKS 클러스터입니다. [이 가이드](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html)에 따라 여러가지 클러스터 값 설정을 할 수 있는데요, 이 워크샵에서 우리는 다음과 같은 설정을 할 것입니다.
-    * `clusterName`: 두 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
-    * `masterRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:master`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
-    * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다.
 
 
 
@@ -42,6 +31,14 @@ export class ClusterStack extends cdk.Stack {
     });
 
 ```
+
+
+* `clusterAdmin`은 여러분의 클러스터에 `kubectl` 등의 명령어를 수행할 때 assume 할 IAM Role 입니다.
+* `cluster`가 우리가 생성할 EKS 클러스터입니다. [이 가이드](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html)에 따라 여러가지 클러스터 값 설정을 할 수 있는데요, 이 워크샵에서 우리는 다음과 같은 설정을 할 것입니다.
+    * `clusterName`: 두 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
+    * `masterRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:master`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
+    * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다.
+
 
 
 완성된 코드는 다음과 같을 것입니다.
@@ -187,17 +184,33 @@ Do you wish to deploy these changes (y/n)?
 ```
 
 약 15분 정도의 시간 뒤에 정상적으로 자원이 생성될 것입니다.  
-그동안 콘솔에서 생성 중인 자원의 상황을 확인할 수 있습니다.
+그동안 아래와 같이 콘솔 결과물을 통해, 생성 중인 자원의 상황을 확인할 수 있습니다.
 
-아래와 같이 [콘솔](console.aws.amazon.com/cloudformation/)에서 CloudFormation 스택이 생성된 것을 확인할 수 있습니다.
-<<캡처>>
+![](/images/20-single-region/creation-inprg.png)
+
+
+생성이 모두 완료 되면 아래와 같이 [콘솔](console.aws.amazon.com/cloudformation/)에서 CloudFormation 스택이 생성된 것을 확인할 수 있습니다.
+
+![](/images/70-appendix/stacks.png)
+
+
+{{% notice info %}} 우리는 분명 한 스택만 만들었는데, 왜 이렇게 많은 스택이 생성됐을까요?! 자세한 내용이 궁금하신 분들은 [여기](/ko/80-appendix/how-cfn-addResource/)를 참조하십시오. {{% /notice %}}
+
 
 
 ## kubeconfig 업데이트하기
 자원 생성이 완료되고 나면, 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
-이 명령어를 복사하여 콘솔에서 실행하십시오.  
-이를 통해 우리가 방금 생성한 EKS 클러스터에 `kubectl`을 이용하여 자원을 조회/생성/수정/삭제할 수 있습니다.
+아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
 ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
 ```
+
+정상적으로 수행되면 아래와 같은 결과가 출력될 것입니다.
+
+```
+Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /Users/jiwony/.kube/config
+```
+
+이를 통해 우리가 방금 생성한 EKS 클러스터에 `kubectl`을 이용하여 자원을 조회/생성/수정/삭제할 수 있습니다.
+
