@@ -1,85 +1,12 @@
-# hugo-workshop 템플릿 설명
+# Manage your EKS Cluster with CDK
+This repository holds the workshop contents of *[Manage your EKS Cluster with CDK](http://demogo-multiregion-eks.s3-website.ap-northeast-2.amazonaws.com/ko/)* Hands-on Lab.
 
-## 사전 설치
-1. HUGO 환경 [설치 방법](https://gohugo.io/getting-started/quick-start/)  
-    - HUGO 설치
-    ```sh
-    brew install hugo
-    ```
-    - git 설치
-    ```sh
-    brew install git
-    ```
+Please follow [this link](http://demogo-multiregion-eks.s3-website.ap-northeast-2.amazonaws.com/ko/) to play with the lab. :)
 
-1. 템플릿 다운로드 및 설정(하단의 `workshop-name`은 수정해 주세요.) - 테마 업데이트까지 진행
-    ```sh
-    git clone https://github.com/studydev/hugo-workshop.git workshop-name
-    cd workshop-name
-    git submodule init 
-    git submodule update
-    ```
+You can also provide your feedback by [opening an issue](https://github.com/yjw113080/aws-cdk-eks-multi-region-workshop/issues/new)!
 
-1. 한글 환경 추가 `/themes/hugo-theme-learn/i18n/` 폴더에 `ko.toml` 설정 파일 추가  
-    ```toml
-    [Search-placeholder]
-    other = "검색..."
-
-    [Clear-History]
-    other = "기록삭제"
-
-    [Attachments-label]
-    other = "첨부"
-
-    [title-404]
-    other = "에러"
-
-    [message-404]
-    other = "죄송합니다. 페이지가 존재하지 않습니다. ㅜ_ㅜ."
-
-    [Go-to-homepage]
-    other = "홈으로"
-
-    [Edit-this-page]
-    other = "이 페이지를 편집"
-
-    [Shortcuts-Title]
-    other = "More"
-
-    [Expand-title]
-    other = "펼치기..."
-    ```
-
-1. HUGO Template 설정
-    - config.toml 파일 열어서 아래 내용 수정, Google Analytics, 저자, 제목, 배포 옵션(배포 옵션은 HUGO 대신 AWS CLI나 CICD 배포 파이프라인을 만들면 됩니다.
-    ```toml
-        author = "Hyounsoo Kim"
-
-    title = "HUGO 템플릿 활용하기"
-    googleAnalytics = "UA-160433107-1"
-
-    # 배포 옵션 정의, public 폴더에 컴파일 된 정적 컨테츠를 S3에 업로드 가능
-    [deployment]
-    [[deployment.targets]]
-        name = "s3"
-        URL = "s3://hugo.awsdemo.kr?region=ap-northeast-2"
-    ```
-
-## HUGO 로컬 테스트
-1. HUGO 서버 올리기 (port는 1313이며 -p 옵션으로 변경 가능)
-```sh
-hugo server -D
-```
-1. HUGO 테스트
-```sh
-http://localhost:1313/
-```
-1. HUGO 서버 컴파일 하기
-```sh
-hugo -d public
-```
-
-## HUGO 배포
-public 폴더를 S3에 배포한다. (사전에 AWS CLI가 설치되어 있고 설정이 되어 있어야 합니다.)
-```sh
-hugo deploy --target=s3
-```
+## Related Repository
+* [Skeleton Repository](https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton): You would clone this repository and build up the code as going through the steps in the lab.
+* [Full-code Repository](https://github.com/yjw113080/aws-cdk-eks-multi-region): Once you complete the workshop, the code would look like this repository! You can also use this repository as a sample code to actually build CDK project for your own infrastructure and containers.
+* [CI/CD for CDK](https://github.com/yjw113080/aws-cdk-multi-region-cicd): Fabulous CDK team is working on providing CI/CD natively, in the meantime, you can check out simple way to do it with AWS CodePipeline and CodeBuild.
+* [Sample App for Multi-region Application Deployment](https://github.com/yjw113080/aws-cdk-multi-region-sample-app): In third lab of [this workshop](http://demogo-multiregion-eks.s3-website.ap-northeast-2.amazonaws.com/ko/), you will deploy your application in your developer's shoes. This repository holds the sample app to deploy. The sample simply says 'Hello World' with the information where it is hosted.
