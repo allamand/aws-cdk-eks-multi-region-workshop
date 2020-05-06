@@ -1,5 +1,5 @@
 ---
-title: "cdk init"
+title: "npm run watch"
 weight: 200
 pre: "<b>3-2. </b>"
 ---
