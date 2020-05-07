@@ -13,13 +13,16 @@ pre: "<b>7. </b>"
 ![](/images/70-cleanup/elb-delete.png)
 
 
-2. 아래 명령어를 통해 이번 워크샵을 통해 생성한 CDK 스택을 삭제하십시오.
+2. 다음과 같은 방법으로 스택을 삭제하십시오.
+2-1. 아래 명령어를 통해 이번 워크샵을 통해 생성한 CDK 스택을 삭제하십시오.
 
 ```
 cdk destroy "*"
 ```
 
-두 개 리전의 [CloudFormation 콘솔](console.aws.amazon.com/cloudformation/)에 접근하여 모든 스택이 사라진 것을 확인하십시오.
+두 개 리전의 [CloudFormation 콘솔](console.aws.amazon.com/cloudformation/)에 접근하여 모든 스택이 사라진 것을 확인하십시오.  
+
+2-2. [CloudFormation 콘솔](console.aws.amazon.com/cloudformation/)에 접근하여 두 리전 모두의 스택을 직접 삭제하십시오.
 
 ---
 <p align="center">

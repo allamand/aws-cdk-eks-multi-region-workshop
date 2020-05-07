@@ -13,27 +13,26 @@ pre: "<b>6-2. </b>"
 
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.
 
-### CicdForPrimaryRegion 스택 뼈대 만들기
-`lib` 디렉토리 아래에 `cicd-for-primary-region.ts` 파일이 아래와 같이 생성되어 있을 것입니다.
+### CicdStack 스택 뼈대 만들기
+`lib` 디렉토리 아래에 `cicd-stack.ts` 파일이 아래와 같이 생성되어 있을 것입니다.
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
 import codecommit = require('@aws-cdk/aws-codecommit');
 import ecr = require('@aws-cdk/aws-ecr');
-import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
-import * as iam from '@aws-cdk/aws-iam';
-import { codeToECRspec, deployToEKSspec, deployTo2ndClusterspec } from '../utils/buildspecs';
+import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
+import { CicdProps } from './cluster-stack';
 
-export class CicdForPrimaryRegionStack extends cdk.Stack {
 
-    constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
+export class CicdStack extends cdk.Stack {
+
+    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
         super(scope, id, props);
 
     }
 }
-
 ```
 
 ### 1. CodeCommit 생성하기
@@ -99,7 +98,8 @@ ecrForMainRegion.grantPullPush(buildForECR.role!);
 아래 코드를 위에 작성한 코드 뒤에 붙여넣으십시오.
 
 ```typescript
-const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.cluster, ecrForMainRegion);
+const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+
 ```
 
 * /utils 폴더에 이 워크샵에서 사용할 빌드 스펙을 미리 정의해두었습니다. 자세한 빌드 스펙이 궁금하신 분은 /utils/buildspec.ts 파일을 참조해주십시오. 
@@ -112,7 +112,7 @@ const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.cluster, 
 ```typescript
 const sourceOutput = new codepipeline.Artifact();
 
-new codepipeline.Pipeline(this, 'repo-to-ecr-hello-py', {
+new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
             stages: [ {
                     stageName: 'Source',
                     actions: [ new pipelineAction.CodeCommitSourceAction({
@@ -150,14 +150,14 @@ new codepipeline.Pipeline(this, 'repo-to-ecr-hello-py', {
 아래 코드를 `bin/multi-cluster-ts.ts` 파일에 붙여넣습니다.
 
 ```typescript
-new CicdForPrimaryRegionStack(app, `CicdForPrimaryStack`, {env: primaryRegion, cluster: primaryCluster.cluster});
+new CicdStack(app, `CicdForPrimaryStack`, {env: primaryRegion, cluster: primaryCluster.cluster});
 
 ```
 
 
 ### 7. CI/CD 파이프라인 배포하기
 `cdk diff` 명령어를 통해 생성될 자원을 확인한 뒤, `cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.  
-이때 `CicdForPrimaryRegionStack`과 별개로, 이 스택의 자원에 권한 부여를 위해 `ClusterStack`에서도 변경이 발생합니다.
+이때 `CicdStack`과 별개로, 이 스택의 자원에 권한 부여를 위해 `ClusterStack`에서도 변경이 발생합니다.
 
 터미널에 완료가 뜨고 나서 콘솔에 들어가면, 현재 codecommit에 master 브랜치가 없어서 실패 상태로 되어 있는 파이프라인이 생성되어 있음을 확인할 수 있습니다.
 

@@ -23,125 +23,36 @@ pre: "<b>6-3. </b>"
 그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다.  
 이 Role을 생성해봅시다.
 
-`lib/cluster-stack.ts` 파일로 이동하여 아래 코드를 붙여넣으십시오.  
+`lib/cluster-stack.ts` 파일로 이동하여 `construct` 내부에 아래 코드를 붙여넣으십시오.  
 
-1. `class` 내부
 ```typescript
-public readonly roleFor2ndRegionDeployment: iam.Role;
-```
-
-2. `construct` 내부
-```typescript
-const roleForCodebuild = new iam.Role(this, 'for-2nd-region', {
-  roleName: PhysicalName.GENERATE_IF_NEEDED,
-  assumedBy: new iam.AccountRootPrincipal()
-});
-
-if (cdk.Stack.of(this).region!=primaryRegion) 
-  this.cluster.awsAuth.addMastersRole(roleForCodebuild)
-
-this.roleFor2ndRegionDeployment = roleForCodebuild;
-```
-
-* 리전, 계정 간 공유되는 자원은 `PhysicalName.GENERATE_IF_NEEDED`을 명시적으로 선언해주어야 합니다. 클래스 윗 부분에 `import { PhysicalName } from '@aws-cdk/core';` 를 추가해주세요.
-* secondaryRegion(us-east-1)의 스택에서, 이 롤이 EKS 클러스터의 master 그룹에 들어가도록 권한을 부여합니다. 프로덕션에서는 최소한의 권한을 갖는 그룹에 별도 할당되도록 해주십시오.
-
-
-3. `class` 외부, 최하단
-```typescript
-export interface PropForCicd extends cdk.StackProps {
-  cluster: eks.Cluster,
-  roleFor2ndRegionDeployment: iam.Role
+if (cdk.Stack.of(this).region==primaryRegion) {
+  this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
 }
-```
-이 클래스에서 선언한 `cluster`와 `role`을 내보냅니다.
-
-
-완성된 `cluster-stack.ts`의 코드는 아래와 같을 것입니다.
-
-```typescript
-export class ClusterStack extends cdk.Stack {
-  public readonly cluster: eks.Cluster;
-  public readonly roleFor2ndRegionDeployment: iam.Role;
-
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-    const primaryRegion = 'ap-northeast-1';
-
-    const clusterAdmin = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal()
-      });
-
-    const cluster = new eks.Cluster(this, 'demogo-cluster', {
-        clusterName: `demogo`,
-        mastersRole: clusterAdmin,
-        defaultCapacity: 2,
-        defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion ? new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.xlarge')
-    });
-
-    this.cluster = cluster;
-
-    const roleForCodebuild = new iam.Role(this, 'for-2nd-region', {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.AccountRootPrincipal()
-    });
-    
-    if (cdk.Stack.of(this).region!=primaryRegion) 
-      this.cluster.awsAuth.addMastersRole(roleForCodebuild)
-    
-    this.roleFor2ndRegionDeployment = roleForCodebuild;
-    
-  }
+else {
+  this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
 }
 
-export interface EksProps extends cdk.StackProps {
-  cluster: eks.Cluster
-}
-
-export interface PropForCicd extends cdk.StackProps {
-  cluster: eks.Cluster,
-  roleFor2ndRegionDeployment: iam.Role
-}
 ```
 
-### 2. ClusterStack의 Props 주입
-
-Construct 부분을 아래와 같이 수정해주십시오.
-```typescript
-    constructor(scope: cdk.Construct, id: string, props: PropForCicd) {
-```
-
-* `props: ` 부분을 EksProps에서 PropsForCicd로 수정합니다.
+* skeleton 상태에서 클래스 외부에 정의된 함수가 무엇인지 궁금하셨죠? `cicd-stack`에서 배포를 수행하는 CodeBuild가 assume할 IAM 롤을 생성하되, 실행되는 스택의 리전값을 읽어 그 리전 영역의 클러스터에만 접근할 수 있는 정책을 할당하는 함수였습니다.
+* 이 롤이 EKS 클러스터의 master 그룹에 들어가도록 권한을 부여합니다. 프로덕션에서는 최소한의 권한을 갖는 그룹에 별도 할당되도록 해주십시오.
 
 
-`bin/multi-cluster-ts.ts`로 이동하여 `CicdForPrimaryRegionStack` 부분을 수정합니다.  
-입력 받아야 하는 값들이 넘어오지 않아 오류가 발생하고 있는 것을 볼 수 있습니다.  
-아래와 같이 코드를 대체하여 1에서 생성한, 파이프라인에서 assume할 롤을 주입합니다.
 
-```typescript
-new CicdForPrimaryRegionStack(app, `CicdForPrimaryStack`, {env: primaryRegion, cluster: primaryCluster.cluster, roleFor2ndRegionDeployment: primaryCluster.roleFor2ndRegionDeployment});
-```
+### 2. 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
 
-
-### 3. 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
-
-`lib/cicd-for-primary-region.ts` 파일로 이동합니다.  
+`lib/cicd-stack.ts` 파일로 이동합니다.  
 지금까지 작성된 코드에 아래 코드를 붙여넣습니다. 단, CodePipeline 정의 부분보다 위에 정의해야 합니다. 
 
 ```typescript
-const deployTo2ndCluster = deployTo2ndClusterspec(this, secondaryRegion, ecrForMainRegion, props.roleFor2ndRegionDeployment);
-
-deployTo2ndCluster.addToRolePolicy(new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            resources: [props.roleFor2ndRegionDeployment.roleArn]
-        }));
-
+const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
 ```
 * `/utils/buildspec.ts`에 정의된 빌드 스펙을 가지고 CodeBuild 프로젝트를 생성했습니다. 자세한 내용이 궁금하시면 해당 파일을 열어 확인하십시오.
-* 이 빌드 프로젝트에서 사용할 롤이, 위의 `cluster-stack.ts`에서 정의한 롤을 assume할 권한을 부여합니다.
 
 
-### 4. CodePipeline 수정
+
+### 3. CodePipeline 수정
 선언된 CodePipeline construct에 아래 스테이지를 추가합니다.
 ```typescript
 ,{
@@ -164,62 +75,64 @@ deployTo2ndCluster.addToRolePolicy(new iam.PolicyStatement({
  
 완성된 코드는 아래와 같을 것입니다.
 ```typescript
-//...중략
-const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.cluster, ecrForMainRegion);
-const deployTo2ndCluster = deployTo2ndClusterspec(this, secondaryRegion, ecrForMainRegion, props.roleFor2ndRegionDeployment);
+...
+const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
 
-        new codepipeline.Pipeline(this, 'repo-to-ecr-hello-py', {
-            stages: [ {
-                    stageName: 'Source',
-                    actions: [ new pipelineAction.CodeCommitSourceAction({
-                            actionName: 'CatchSourcefromCode',
-                            repository: helloPyRepo,
-                            output: sourceOutput,
-                        })]
-                },{
-                    stageName: 'Build',
-                    actions: [ new pipelineAction.CodeBuildAction({
-                        actionName: 'BuildAndPushtoECR',
-                        input: sourceOutput,
-                        project: buildForECR
-                    })]
-                },
-                {
-                    stageName: 'DeployToMainEKScluster',
-                    actions: [ new pipelineAction.CodeBuildAction({
-                        actionName: 'DeployToMainEKScluster',
-                        input: sourceOutput,
-                        project: deployToMainCluster
-                    })]
-                },
-                {
-                    stageName: 'ApproveToDeployTo2ndRegion',
-                    actions: [ new pipelineAction.ManualApprovalAction({
-                            actionName: 'ApproveToDeployTo2ndRegion'
-                    })]
-                },
-                {
-                    stageName: 'DeployTo2ndRegionCluster',
-                    actions: [ new pipelineAction.CodeBuildAction({
-                        actionName: 'DeployTo2ndRegionCluster',
-                        input: sourceOutput,
-                        project: deployTo2ndCluster
-                    })]
-                }
-                
-            ]
-        });
+
+const sourceOutput = new codepipeline.Artifact();
+new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
+    stages: [ {
+            stageName: 'Source',
+            actions: [ new pipelineAction.CodeCommitSourceAction({
+                    actionName: 'CatchSourcefromCode',
+                    repository: helloPyRepo,
+                    output: sourceOutput,
+                })]
+        },{
+            stageName: 'Build',
+            actions: [ new pipelineAction.CodeBuildAction({
+                actionName: 'BuildAndPushtoECR',
+                input: sourceOutput,
+                project: buildForECR
+            })]
+        },
+        {
+            stageName: 'DeployToMainEKScluster',
+            actions: [ new pipelineAction.CodeBuildAction({
+                actionName: 'DeployToMainEKScluster',
+                input: sourceOutput,
+                project: deployToMainCluster
+            })]
+        },
+        {
+            stageName: 'ApproveToDeployTo2ndRegion',
+            actions: [ new pipelineAction.ManualApprovalAction({
+                    actionName: 'ApproveToDeployTo2ndRegion'
+            })]
+        },
+        {
+            stageName: 'DeployTo2ndRegionCluster',
+            actions: [ new pipelineAction.CodeBuildAction({
+                actionName: 'DeployTo2ndRegionCluster',
+                input: sourceOutput,
+                project: deployTo2ndCluster
+            })]
+        }
+        
+    ]
+});
+        
 ```
 
-
-### 5. CI/CD 파이프라인 배포하기
+### 4. CI/CD 파이프라인 배포하기
 `cdk diff` 명령어로 생성될 자원을 확인한 뒤 `cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
 터미널에서 진행상황을 확인할 수 있습니다.
 
 ```
   ...
-  8/19 | 오후 10:28:52 | UPDATE_IN_PROGRESS   | AWS::CodePipeline::Pipeline | repo-to-ecr-hello-py (repotoecrhellopy560FED9C)
-  9/19 | 오후 10:28:53 | UPDATE_COMPLETE      | AWS::CodePipeline::Pipeline | repo-to-ecr-hello-py (repotoecrhellopy560FED9C)
+  8/19 | 오후 10:28:52 | UPDATE_IN_PROGRESS   | AWS::CodePipeline::Pipeline | multi-region-eks-dep (repotoecrhellopy560FED9C)
+  9/19 | 오후 10:28:53 | UPDATE_COMPLETE      | AWS::CodePipeline::Pipeline | multi-region-eks-dep (repotoecrhellopy560FED9C)
   9/19 | 오후 10:29:00 | UPDATE_COMPLETE_CLEA | AWS::CloudFormation::Stack  | CicdForPrimaryStack
  10/19 | 오후 10:29:01 | UPDATE_COMPLETE      | AWS::CloudFormation::Stack  | CicdForPrimaryStack
 
@@ -231,14 +144,14 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
 ```
 
 
-### 6. 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
+### 5. 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
 
 ![](/images/40-deploy-app/release-change.png)
 
 CodePipeline 콘솔에서 새롭게 배포된 두 단계를 확인할 수 있습니다.  
 위 스크린샷의 `변경 사항 릴리스`를 클릭하여 현재 시점 최신 코드를 반영하도록 합니다.  
 
-### 7. 릴리즈 승인하기
+### 6. 릴리즈 승인하기
 3단계로 첫 번째 리전의 EKS 클러스터에 정상적으로 어플리케이션이 배포된 뒤에, 아래 스크린샷과 같이 승인을 대기 중인 상태가 됨을 확인할 수 있습니다.  
 **<검토>** 버튼을 누른 뒤, **<승인>** 버튼을 누릅니다.
 
