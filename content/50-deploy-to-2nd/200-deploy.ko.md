@@ -42,9 +42,11 @@ cdk diff
 
 아래 명령어를 이용해 자원을 두 번째 리전에 배포하십시오.
 ```
-cdk deploy
+cdk deploy "*" --require-approval never
 ```
-약 15-20분 정도의 시간이 소요됩니다.
+약 15-20분 정도의 시간이 소요됩니다.  
+위 명령어는 워크샵 단계 간소화를 위해 IAM 등 보안 관련 자원 수정에 대한 동의를 생략하도록 했음을 유의하십시오.
+
 
 ## kubeconfig 업데이트
 자원 생성이 완료되고 나면, 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.

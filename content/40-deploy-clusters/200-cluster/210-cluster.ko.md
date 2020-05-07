@@ -6,7 +6,7 @@ weight: 210
 ## 패키지 import
 
 이전 단계에서 해당 코드에 필요한 패키지는 모두 설치했습니다.  
-다음 코드를 복사하여 `class` 선언 윗 부분에 붙여넣어 import 하십시오.  
+아래와 같이 필요한 패키지가 미리 skeleton 코드 내에 정의된 것을 볼 수 있습니다.
 
 ``` typescript
 import * as iam from '@aws-cdk/aws-iam';
@@ -94,7 +94,7 @@ cdk diff
 {{% notice warning %}}
 만약 아래와 같이 결과가 출력되지 않는다면, [이 단계](/content/30-cdk/200-watch.ko.md)를 참고하여 `npm run watch`가 백그라운드에서 수행 중인지 확인하십시오.
 {{% /notice %}}
-
+v
 아래와 같은 결과가 출력될 것입니다.
 ```
 Stack ClusterStack-ap-southeast-2
@@ -175,6 +175,14 @@ CDK를 사용하면 CloudFormation이나 Terraform 을 이용하는 것처럼 �
 cdk deploy
 ```
 
+{{% notice warning %}}
+이 명령어를 수행했을 때 다음과 같은 오류가 출력되는 경우, `cdk bootstrap` 명령어를 수행하십시오.  
+```
+❌  ClusterStack-ap-southeast-2 failed: Error: This stack uses assets, so the toolkit stack must be deployed to the environment
+```
+{{% /notice %}}
+
+
 이 명령어를 수행하고 나면 아래와 같이 여러분의 승인을 요구할 것입니다.  
 IAM 등 보안 관련 자원이 생성될 텐데, 이에 대해 동의하느냐는 말입니다.
 콘솔에 출력된 결과물을 살펴보신 뒤 `y`를 입력하십시오.
@@ -194,7 +202,7 @@ Do you wish to deploy these changes (y/n)?
 ![](/images/70-appendix/stacks.png)
 
 
-{{% notice info %}} 우리는 분명 한 스택만 만들었는데, 왜 이렇게 많은 스택이 생성됐을까요?! 자세한 내용이 궁금하신 분들은 [여기](/ko/80-appendix/how-cfn-addResource/)를 참조하십시오. {{% /notice %}}
+{{% notice info %}} 우리는 분명 한 스택만 만들었는데, 왜 이렇게 많은 스택이 생성됐을까요?! 자세한 내용이 궁금하신 분들은 [여기](/ko/80-appendix/how-cfn-addresource/)를 참조하십시오. {{% /notice %}}
 
 
 

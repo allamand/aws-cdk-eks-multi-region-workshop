@@ -86,11 +86,14 @@ export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
 
 
 
-
 완성된 코드는 아래와 같을 것입니다.
 ```typescript
+import * as cdk from '@aws-cdk/core';
+import { readYamlFromDir } from '../utils/read-file';
+import { EksProps } from './cluster-stack';
+
 export class ContainerStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props: EksProps) {
     super(scope, id, props);
 
     const cluster = props.cluster;
@@ -99,10 +102,11 @@ export class ContainerStack extends cdk.Stack {
 
     readYamlFromDir(commonFolder, cluster);
     readYamlFromDir(regionFolder, cluster);
+
   }
 }
 ```
-이때, `cluster` 부분을 주의 깊게 봐주세요. [앞서 export 한 클러스터](content/40-deploy-clusters/200-cluster/220-prop.ko.md)를 전달 받아서 이용하겠다는 의미입니다.
+이때, `cluster` 부분을 주의 깊게 봐주세요. [앞서 export 한 클러스터](/ko/40-deploy-clusters/200-cluster/220-prop.ko.md)를 전달 받아서 이용하겠다는 의미입니다.
 
 
 

@@ -60,7 +60,7 @@ There were no differences
 ## 배포하기
 아래 명령어로 컨테이너를 배포해봅시다.
 ```
-cdk deploy ContainerStack
+cdk deploy ContainerStack-ap-northeast-1
 ```
 
 진행과정이 터미널에 출력됩니다.  

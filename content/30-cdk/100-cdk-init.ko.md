@@ -29,6 +29,7 @@ Executing npm install...
 npm notice created a lockfile as package-lock.json. You should commit this file.
 npm WARN tst@0.1.0 No repository field.
 npm WARN tst@0.1.0 No license field.
+```
 
 # CDK Typescript 프로젝트 살펴보기
 

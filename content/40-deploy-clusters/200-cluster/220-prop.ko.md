@@ -11,7 +11,7 @@ weight: 220
 해당 파일 하단에 아래 코드를 붙여넣어 주십시오.
 
 ```typescript
-export interface CommonProps extends cdk.StackProps {
+export interface EksProps extends cdk.StackProps {
   cluster: eks.Cluster
 }
 

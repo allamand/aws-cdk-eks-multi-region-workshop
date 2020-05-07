@@ -21,18 +21,18 @@ AWS 계정이 존재하지 않는 경우 [무료로 계정 생성하기](https:/
 3. AWS IAM 콘솔로 이동하여 [새로운 User 생성](https://console.aws.amazon.com/iam/home?#/users$new) 메뉴 클릭.
 4. User 이름을 지정하고 (예: `cdk-workshop`), "Programmatic access"를 선택하십시오.
 
-    ![](/images/prerequisite/new-user-1.png)
+    ![](/images/10-preq/new-user-1.png)
 
 5. **Next: Permissions** 을 선택하여 다음 단계로 이동하십시오.
 6. **Attach existing policies directly** 를 클릭한 뒤 **AdministratorAccess**를 선택하십시오.
 
-    ![](/images/prerequisite/new-user-2.png)
+    ![](/images/10-preq/new-user-2.png)
 
 7. **Next: Review** 를 클릭하십시오.
 8. **Create User** 를 클릭하십시오.
 9. 다음 화면에서 **Access key ID** 를 확인할 수 있습니다. **Show** 버튼을 클릭하면 **Secret access key** 역시 확인할 수 있습니다. 이 정보가 AWS CLI 설정에 필요하오니 윈도우를 열어두십시오. 
 
-    ![](/images/prerequisite/new-user-3.png)
+    ![](/images/10-preq/new-user-3.png)
 
 ## Credential 설정
 

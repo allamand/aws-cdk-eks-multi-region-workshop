@@ -10,10 +10,11 @@ pre: "<b>5-4. </b>"
 
 
 ## 두 리전 모두에 새 manifest 추가하기
-`yaml-common` 폴더에 아래와 같이 새 파일을 생성합니다. 파일 이름은 자유롭게 주셔도 좋습니다.
+`/yaml-common/00-namespaces.yaml` 파일 가장 아래에 아래 코드를 붙여넣습니다.  
 이 manifest를 통해 앞서 생성한 네임스페이스에 ResourceQuota를 부여합니다.
 
 ```
+---
 apiVersion: v1
 kind: ResourceQuota
 metadata:
