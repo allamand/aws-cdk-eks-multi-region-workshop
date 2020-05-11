@@ -46,6 +46,12 @@ export class ClusterStack extends cdk.Stack {
         mastersRole: clusterAdmin,
         defaultCapacity: 2
       });
+
+      cluster.addCapacity('spot-group', {
+        instanceType: new ec2.InstanceType('m5.xlarge'),
+        spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+      });
+      
       this.cluster = cluster;
 
 

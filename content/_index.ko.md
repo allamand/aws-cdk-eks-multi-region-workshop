@@ -1,10 +1,10 @@
 ---
-title: CDK로 EKS 클러스터 관리하기
+title: CDK로 EKS 클러스터 풀스택 관리하기
 weight: 50
 chapter: true
 ---
 
-# CDK로 EKS 클러스터 관리하기
+# CDK로 EKS 클러스터 풀스택 관리하기
 
 
 촉망 받는 회사 A의 DevOps 엔지니어인 당신, EKS 클러스터 하나도 제대로 관리하기 힘든데  

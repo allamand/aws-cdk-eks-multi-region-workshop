@@ -1,5 +1,5 @@
 ---
-title: CDK 프로젝트 생성하기
+title: CDK 맛보기
 chapter: true
 weight: 30
 pre: "<b>3. </b>"

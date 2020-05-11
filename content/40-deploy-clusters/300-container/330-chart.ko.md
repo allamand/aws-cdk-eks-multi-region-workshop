@@ -60,8 +60,12 @@ There were no differences
 ## 배포하기
 아래 명령어로 컨테이너를 배포해봅시다.
 ```
-cdk deploy ContainerStack-ap-northeast-1
+cdk deploy ClusterStack-ap-northeast-1
 ```
+{{% notice info %}}
+* 혹시 다른 리전에 스택을 생성하셨다면 `ClusterStack` 뒤에 정확한 리전 이름이 오도록 해주세요.
+* 왜 `ContainerStack`이 아니라 `ClusterStack`을 실행시킬까요? 궁금하신 분은 [여기](/ko/80-appendix/how-cfn-addresource/)를 확인해주세요.
+{{% /notice %}}
 
 진행과정이 터미널에 출력됩니다.  
 다음 명령어를 이용해 아래와 같이 새로운 pod가 Helm Chart를 통해 배포되었음을 확인하세요.

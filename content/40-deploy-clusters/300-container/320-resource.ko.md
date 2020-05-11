@@ -156,8 +156,10 @@ There were no differences
 cdk deploy ClusterStack-ap-northeast-1
 ```
 {{% notice info %}}
-혹시 다른 리전에 스택을 생성하셨다면 `ClusterStack` 뒤에 정확한 리전 이름이 오도록 해주세요.
+* 혹시 다른 리전에 스택을 생성하셨다면 `ClusterStack` 뒤에 정확한 리전 이름이 오도록 해주세요.
+* 왜 `ContainerStack`이 아니라 `ClusterStack`을 실행시킬까요? 궁금하신 분은 [여기](/ko/80-appendix/how-cfn-addresource/)를 확인해주세요.
 {{% /notice %}}
+
 `ClusterStack`을 생성했을 때처럼 터미널에 자원 생성 진행상황이 출력될 것입니다.  
 스택 실행이 완료되면 다음 명령어를 이용해 생성된 자원을 확인하십시오.
 
