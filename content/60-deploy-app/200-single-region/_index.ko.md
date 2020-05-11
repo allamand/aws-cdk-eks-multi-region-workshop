@@ -125,26 +125,24 @@ export class CicdStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
         super(scope, id, props);
 
+        const primaryRegion = 'ap-northeast-1';
+        const secondaryRegion = 'us-east-1';
+
     }
 }
 ```
 
-1. 1번에서 생성한 props를 주입받도록 수정하겠습니다.
 
-* 코드 최상단에 export한 props import
+1번에서 생성한 props를 주입받도록 수정하겠습니다.
+
+1. 코드 최상단에 export한 props import
     ```typescript
     import { CicdProps } from './cluster-stack';
     ```
 
-* `constructor` 부분에서 주입 받는 `props`를 `CicdProps`로 변경합니다.
+2. `constructor` 부분에서 주입 받는 `props`를 `CicdProps`로 변경합니다.
     ```typescript
         constructor(scope: cdk.Construct, id: string, props: CicdProps) {
-    ```
-
-2. primaryRegion과 secondaryRegion 을 지정합니다.
-    ```typescript
-    const primaryRegion = 'ap-northeast-1';
-    const secondaryRegion = 'us-east-1';
     ```
 
 
@@ -432,7 +430,8 @@ nginx-deployment-5754944d6c-whrmn   1/1     Running   0          24m
 nginx-deployment-5754944d6c-wkkkn   1/1     Running   0          24m
 ```
 
-8. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.
+8. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.  
+ELB 생성에 2-3분 정도의 시간이 소요될 수 있으니 참고바랍니다.
 ```
 kubectl describe service hello-py | grep Ingress
 

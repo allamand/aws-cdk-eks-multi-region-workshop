@@ -9,7 +9,11 @@ pre: "<b>4-2. </b>"
 
 cdk bootstrap 은 CDK가 특정 환경(계정, 리전)에 자원 배포를 수행하기 위해 필요한 설정을 하도록 도와주는 AWS CDK cli 입니다. cdk bootstrap 을 수행하면 CDK toolkit을 위한 스택이 AWS 환경에 배포됨을 확인할 수 있습니다. 이를 통해 CloudFormation 템플릿과 기타 asset을 저장하는 S3 bucket이 생성됩니다.
 
-다음 명령어를 순서대로 반드시 수행하십시오.
+다음 단계 진행 전에 아래 명령어를 반드시 수행하십시오.  
 
-1. `cdk bootstrap ap-northeast-1`
-2. `cdk bootstrap us-east-1`
+1. `cdk bootstrap aws://<<ACCOUNT_ID>>/ap-northeast-1`
+2. `cdk bootstrap aws://<<ACCOUNT_ID>>/us-east-1`
+
+{{% notice info %}}
+자신의 어카운트 ID는 `aws sts get-caller-identity` 명령어를 실행하면 알 수 있습니다.
+{{% /notice %}}

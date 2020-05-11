@@ -22,7 +22,6 @@ weight: 210
     cluster.addCapacity('spot-group', {
       instanceType: new ec2.InstanceType('m5.xlarge'),
       spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
-    })
     });
 
 ```
@@ -61,7 +60,6 @@ export class ClusterStack extends cdk.Stack {
     cluster.addCapacity('spot-group', {
       instanceType: new ec2.InstanceType('m5.xlarge'),
       spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
-    })
     });
     //...
 ```
@@ -181,9 +179,9 @@ cdk deploy
 ```
 
 {{% notice warning %}}
-이 명령어를 수행했을 때 다음과 같은 오류가 출력되는 경우, `cdk bootstrap` 명령어를 수행하십시오.  
+이 명령어를 수행했을 때 다음과 같은 오류가 출력되는 경우, [이 단계](/ko/40-deploy-clusters/200-bootstrap)로 돌아가 `cdk bootstrap` 명령어를 수행하십시오.  
 ```
-❌  ClusterStack-ap-southeast-2 failed: Error: This stack uses assets, so the toolkit stack must be deployed to the environment
+❌  ClusterStack-ap-northeast-1 failed: Error: This stack uses assets, so the toolkit stack must be deployed to the environment
 ```
 {{% /notice %}}
 

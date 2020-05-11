@@ -17,7 +17,7 @@ git clone https://github.com/yjw113080/aws-cdk-multi-region-sample-app
 
 ### IDE에서 열기
 선호하시는 IDE에서 위 프로젝트 폴더를 열어 주십시오.
-> VSCode를 이용하시는 경우, 프로젝트 디렉토리에서 `code .`를 입력하면 IDE를 열 수 있습니다.
+
 
 ### 어플리케이션 내용 확인
 IDE를 열면 아래와 같이 세 가지 파일이 들어 있음을 확인할 수 있습니다.

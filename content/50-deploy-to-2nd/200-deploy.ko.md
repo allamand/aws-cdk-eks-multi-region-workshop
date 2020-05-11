@@ -44,8 +44,12 @@ cdk diff
 ```
 cdk deploy "*" --require-approval never
 ```
-약 15-20분 정도의 시간이 소요됩니다.  
+[앞 단계](/ko/40-deploy-clusters/200-cluster)에서 생성한 것처럼 약 15-20분 정도의 시간이 소요됩니다.  
+
+{{% notice warning %}}
 위 명령어는 워크샵 단계 간소화를 위해 IAM 등 보안 관련 자원 수정에 대한 동의를 생략하도록 했음을 유의하십시오.
+{{% /notice %}}
+
 
 
 ## kubeconfig 업데이트

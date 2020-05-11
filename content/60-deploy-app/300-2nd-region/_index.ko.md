@@ -249,7 +249,12 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 * `secondRegionRole: secondaryCluster.secondRegionRole`을 추가했습니다.
 
 ### 5. CI/CD 파이프라인 배포하기
-`cdk diff` 명령어로 생성될 자원을 확인한 뒤 `cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
+`cdk diff` 명령어로 생성될 자원을 확인한 뒤 `cdk deploy "*" --require-approval never` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
+
+{{% notice warning %}}
+위 명령어는 워크샵 단계 간소화를 위해 IAM 등 보안 관련 자원 수정에 대한 동의를 생략하도록 했음을 유의하십시오.
+{{% /notice %}}
+
 터미널에서 진행상황을 확인할 수 있습니다.
 
 ```
@@ -302,7 +307,9 @@ CodePipeline 콘솔에서 새롭게 배포된 두 단계를 확인할 수 있습
     nginx-deployment-5754944d6c-xlxxh   1/1     Running   0          3h58m
     ```
 
-2. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.
+2. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.  
+ELB 생성에 2-3분 정도의 시간이 소요될 수 있으니 참고바랍니다.
+
     ```
     kubectl describe service hello-py | grep Ingress
 
