@@ -234,8 +234,18 @@ export class CicdStack extends cdk.Stack {
     }
 }
 ```
+### 4. 엔트리포인트 수정하기
+두 번째 리전의 배포를 수행할 Role을, 스택 생성시 주입 받을 수 있도록 아래와 같이 `bin/multi-cluster-ts.ts` 파일을 수정합니다.
 
-### 4. CI/CD 파이프라인 배포하기
+```typescript
+new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
+                                    firstRegionRole: primaryCluster.firstRegionRole,
+                                    secondRegionRole: secondaryCluster.secondRegionRole});
+```
+
+* `secondRegionRole: secondaryCluster.secondRegionRole`을 추가했습니다.
+
+### 5. CI/CD 파이프라인 배포하기
 `cdk diff` 명령어로 생성될 자원을 확인한 뒤 `cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
 터미널에서 진행상황을 확인할 수 있습니다.
 
@@ -254,14 +264,14 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
 ```
 
 
-### 5. 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
+### 6. 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
 
 ![](/images/40-deploy-app/release-change.png)
 
 CodePipeline 콘솔에서 새롭게 배포된 두 단계를 확인할 수 있습니다.  
 위 스크린샷의 `변경 사항 릴리스`를 클릭하여 현재 시점 최신 코드를 반영하도록 합니다.  
 
-### 6. 릴리즈 승인하기
+### 7. 릴리즈 승인하기
 3단계로 첫 번째 리전의 EKS 클러스터에 정상적으로 어플리케이션이 배포된 뒤에, 아래 스크린샷과 같이 승인을 대기 중인 상태가 됨을 확인할 수 있습니다.  
 **<검토>** 버튼을 누른 뒤, **<승인>** 버튼을 누릅니다.
 

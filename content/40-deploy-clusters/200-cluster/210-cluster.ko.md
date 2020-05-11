@@ -3,17 +3,6 @@ title: 기본 클러스터 스택 정의
 weight: 210
 ---
 
-## 패키지 import
-
-이전 단계에서 해당 코드에 필요한 패키지는 모두 설치했습니다.  
-아래와 같이 필요한 패키지가 미리 skeleton 코드 내에 정의된 것을 볼 수 있습니다.
-
-``` typescript
-import * as iam from '@aws-cdk/aws-iam';
-import * as eks from '@aws-cdk/aws-eks';
-```
-
-
 
 ## EKS 클러스터 생성하기
 

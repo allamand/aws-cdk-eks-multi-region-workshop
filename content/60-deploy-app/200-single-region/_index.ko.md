@@ -385,9 +385,14 @@ CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazon
 git remote add codecommit <<1번에서 카피한 codecommit URI>>
 ```
 
-3. [IAM User](https://console.aws.amazon.com/iam/home?region=us-east-1) 콘솔에서, 현재 터미널이 사용 중인 User의 HTTPS Git credentials for AWS CodeCommit 를 생성하십시오.
+3. [IAM User](https://console.aws.amazon.com/iam/home?region=us-east-1) 콘솔에서, 현재 터미널이 사용 중인 User의 HTTPS Git credentials for AWS CodeCommit 를 생성하십시오. 도움이 필요하신 분들은 [이 링크](https://aws.amazon.com/ko/blogs/korea/introducing-git-credentials-a-simple-way-to-connect-to-aws-codecommit-repositories-using-a-static-user-name-and-password/)를 참조하십시오.
 
-도움이 필요하신 분들은 [이 링크](https://aws.amazon.com/ko/blogs/korea/introducing-git-credentials-a-simple-way-to-connect-to-aws-codecommit-repositories-using-a-static-user-name-and-password/)를 참조하십시오.
+![](/images/40-deploy-app/iam-git-credential.png)
+
+위에서 박스 친 자격 증명 생성을 클릭하면, 아래와 같이 자격증명 내용을 다운로드 받을 수 있습니다. 5에서 활용하기 위해 이 자격 증명을 다운로드하십시오.
+
+![](/images/40-deploy-app/credential-detail.png)
+
 
 
 4. 다음 명령어를 통해 디렉토리 내의 코드를 codecommit으로 푸시하십시오.
@@ -397,11 +402,14 @@ git commit -am "initial commit"
 git push codecommit master
 ```
 
-5. CodePipeline 콘솔에서 다음과 같이 파이프라인이 트리거됨을 확인할 수 있습니다.
+
+5. 이때 ID와 PW를 물어보면 3에서 생성한 자격 증명 내용에 따라 ID/PW를 입력하십시오.
+
+6. 푸시가 완료되고 나면, CodePipeline 콘솔에서 다음과 같이 파이프라인이 트리거됨을 확인할 수 있습니다.
 ![](/images/40-deploy-app/result-pipeline-single-region-working.png)
 
 
-6. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
+7. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
 {{% notice warning %}}
 `kubectl config current-context` 명령어를 통해 ap-northeast-1 리전의 클러스터에서 작업 중임을 확인하십시오.
 {{% /notice %}}
@@ -416,7 +424,7 @@ nginx-deployment-5754944d6c-whrmn   1/1     Running   0          24m
 nginx-deployment-5754944d6c-wkkkn   1/1     Running   0          24m
 ```
 
-7. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.
+8. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.
 ```
 kubectl describe service hello-py | grep Ingress
 
