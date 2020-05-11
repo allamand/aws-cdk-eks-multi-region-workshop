@@ -1,25 +1,33 @@
 ---
 title: ClusterStack 작성하기
-weight: 200
-pre: "<b>4-2. </b>"
+weight: 300
+pre: "<b>4-3. </b>"
 
 ---
 
 클론한 프로젝트에 EKS 클러스터와 관련 설정을 해보겠습니다.  
-`lib/cluster-stack.ts` 파일을 IDE에서 여십시오.
+**lib/cluster-stack.ts** 파일을 IDE에서 여십시오.
 다음과 같은 코드가 들어있을 것입니다.
 
 
 ```typescript
-// imports...
+import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as eks from '@aws-cdk/aws-eks';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { PhysicalName } from '@aws-cdk/core';
 
 export class ClusterStack extends cdk.Stack {
+
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    
+
+    const primaryRegion = 'ap-northeast-1';
+
   }
 }
-
+}
+...
 ```
 
 `constructor` 안에 이제 우리가 생성하고자 하는 모듈들을 집어 넣게 됩니다.

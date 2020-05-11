@@ -16,7 +16,7 @@ CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 
 ### 1. CI/CD Pipeline에서 사용할 IAM Role 내보내기
 EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild는,  
 그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다. 이 Role을 생성해봅시다.
-`lib/cluster-stack.ts`을 열어 아래 코드를 순서대로 추가합니다.
+**lib/cluster-stack.ts**을 열어 아래 코드를 순서대로 추가합니다.
 
 
 1. `constructor` 위
@@ -45,7 +45,7 @@ export interface CicdProps extends cdk.StackProps {
 
 
 
-완성된 `lib/cluster-stack.ts`는 아래와 같을 것입니다.
+완성된 **lib/cluster-stack.ts**는 아래와 같을 것입니다.
 ```typescript
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
@@ -174,7 +174,7 @@ export class CicdStack extends cdk.Stack {
 여러분들이 프로덕션 어플리케이션을 실제로 운영할 때에는 프라이빗하게 소스를 관리해야 할 것입니다.  
 이 때 AWS CodeCommit 서비스를 이용할 수 있습니다. AWS CodeCommit은 뛰어난 확장성의 프라이빗 Git 리포지토리를 안전하게 호스팅하는 서비스로, 마치 git을 이용하는 것처럼 여러분들은 리포지토리 호스팅 서버, 스토리지 등을 관리하실 필요 없이 프라이빗하게 리포지토리를 이용할 수 있습니다.
 
-아래 코드를 위에서 생성한 클래스 `construct` 부 안에 붙여넣습니다.
+아래 코드를 위에서 생성한 클래스 `construct` 선언부 안에 붙여넣습니다.
 
 ```typescript
 const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
@@ -278,10 +278,13 @@ new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
 
 * `sourceOutput`은 커밋된 코드를 아티팩트로 Pipeline에 전달해주기 위해 정의합니다.
 
-{{% notice info %}} 이 워크샵에서는 워크샵 효율을 위해 빌드 이미지를 직접 업로드하여 사용합니다. 프로덕션에서는 별도로 ECR을 통해 빌드 이미지 관리를 하시기를 권고드립니다. {{% /notice %}}
+
+{{% notice info %}}
+이 워크샵에서는 워크샵 효율을 위해 빌드 이미지를 직접 업로드하여 사용합니다. 프로덕션에서는 별도로 ECR을 통해 빌드 이미지 관리를 하시기를 권고드립니다.
+{{% /notice %}}
 
 
-`lib/cicd-stack.ts`의 완성된 코드는 아래와 같을 것입니다.
+**lib/cicd-stack.ts**의 완성된 코드는 아래와 같을 것입니다.
 ```typescript
 import * as cdk from '@aws-cdk/core';
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -352,7 +355,7 @@ export class CicdStack extends cdk.Stack {
 
 ### 6. 스택 로드하기
 
-아래 코드를 `bin/multi-cluster-ts.ts` 파일에 붙여넣습니다.
+아래 코드를 **bin/multi-cluster-ts.ts** 파일에 붙여넣습니다.
 
 ```typescript
 new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
@@ -363,7 +366,7 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 
 
 ### 7. CI/CD 파이프라인 배포하기
-`cdk diff` 명령어를 통해 생성될 자원을 확인한 뒤, `cdk deploy` 명령어를 통해 CI/CD 파이프라인을 배포합니다.  
+`cdk diff` 명령어를 통해 생성될 자원을 확인한 뒤, `cdk deploy "*"` 명령어를 통해 CI/CD 파이프라인을 배포합니다.  
 이때 `CicdStack`과 별개로, 이 스택의 자원에 권한 부여를 위해 `ClusterStack`에서도 변경이 발생합니다.
 
 터미널에 완료가 뜨고 나서 콘솔에 들어가면, 현재 codecommit에 master 브랜치가 없어서 실패 상태로 되어 있는 파이프라인이 생성되어 있음을 확인할 수 있습니다.
@@ -411,7 +414,9 @@ git push codecommit master
 
 7. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
 {{% notice warning %}}
-`kubectl config current-context` 명령어를 통해 ap-northeast-1 리전의 클러스터에서 작업 중임을 확인하십시오.
+`kubectl config current-context` 명령어를 통해 ap-northeast-1 리전의 클러스터에서 작업 중임을 확인하십시오.  
+변경이 필요하다면 `kubectl config use-context <<ap-northeast-1 클러스터>>` 명령어를 수행하십시오.  
+context 이름은 `kubectl config get-contexts`를 통해 확인할 수 있습니다.
 {{% /notice %}}
 
 ```

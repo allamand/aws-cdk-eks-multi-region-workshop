@@ -12,7 +12,7 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 
 
 ## 리전에 따라 다른 인스턴스 타입을 갖도록 변경하기
-`lib/cluster-stack.ts`에서 클러스터를 정의했던 부분을 살펴봅시다.  
+**lib/cluster-stack.ts**에서 클러스터를 정의했던 부분을 살펴봅시다.  
 지금 우리가 배포한 EKS 클러스터는 아래와 같이 정의되어 있을 것입니다.  
 
 ```typescript
@@ -25,19 +25,8 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 
 ```
 
-이 부분을 아래와 같이, 스택이 실행되는 리전 값을 참조하여 다른 인스턴스 타입으로 배포되도록 해보죠.
-
-1. EC2 타입 정의에 필요한 패키지를 import 합니다.
-```typescript
-import * as ec2 from '@aws-cdk/aws-ec2';
-```
-
-2. 클래스 선언 내부에 `primaryRegion` 정보를 선언합니다.
-```typescript
-const primaryRegion = 'ap-northeast-1';
-```
-
-3. `eks.Cluster` 생성 부분에 다음 코드를 붙여넣습니다.
+이 부분을 아래와 같이, 스택이 실행되는 리전 값을 참조하여 다른 인스턴스 타입으로 배포되도록 해보죠.  
+`eks.Cluster` 생성 부분에 다음 코드를 붙여넣습니다.
 
 ```typescript
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 

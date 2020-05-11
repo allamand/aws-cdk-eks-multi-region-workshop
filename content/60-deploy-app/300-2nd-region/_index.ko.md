@@ -20,8 +20,8 @@ pre: "<b>6-3. </b>"
 ![](/images/40-deploy-app/2nd-region-pipeline.svg)
 
 앞 단계에서 배포를 수행한 것처럼, 두번째 리전에 배포할 때에도 그 리전 EKS 클러스터에 권한이 있는 Role을 assume 해서 실제 배포를 수행합니다.   
-이 Role을 생성해봅시다.
-`lib/cluster-stack.ts`을 열어 아래 코드를 순서대로 추가/수정합니다.
+앞에서 생성한 `for-1st-region`을 사용하지 않는 이유는, 각 롤이 해당 리전의 클러스터에만 권한을 갖도록 하기 위함입니다. 그럼 두 번째 리전의 EKS 클러스터에 kubectl 명령을 보낼 수 있는 Role을 생성해봅시다.
+**lib/cluster-stack.ts**을 열어 아래 코드를 순서대로 추가/수정합니다.
 
 
 1. `constructor` 위
@@ -50,7 +50,7 @@ pre: "<b>6-3. </b>"
 
     ```
 
-완성된 `lib/cluster-stack.ts`는 다음과 같을 것입니다.
+완성된 **lib/cluster-stack.ts**는 다음과 같을 것입니다.
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
@@ -120,7 +120,7 @@ export interface CicdProps extends cdk.StackProps {
 
 ### 2. 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
 
-`lib/cicd-stack.ts` 파일로 이동합니다.  
+**lib/cicd-stack.ts** 파일로 이동합니다.  
 지금까지 작성된 코드에 아래 코드를 붙여넣습니다. 단, CodePipeline 정의 부분보다 위에 정의해야 합니다. 
 
 ```typescript
@@ -235,7 +235,7 @@ export class CicdStack extends cdk.Stack {
 }
 ```
 ### 4. 엔트리포인트 수정하기
-두 번째 리전의 배포를 수행할 Role을, 스택 생성시 주입 받을 수 있도록 아래와 같이 `bin/multi-cluster-ts.ts` 파일을 수정합니다.
+두 번째 리전의 배포를 수행할 Role을, 스택 생성시 주입 받을 수 있도록 아래와 같이 **bin/multi-cluster-ts.ts** 파일을 수정합니다.
 
 ```typescript
 new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
@@ -286,30 +286,30 @@ CodePipeline 콘솔에서 새롭게 배포된 두 단계를 확인할 수 있습
 `kubectl config current-context` 명령어를 통해 us-east-1 리전의 클러스터에서 작업 중임을 확인하십시오.
 {{% /notice %}}
 
-```
-NAME                                READY   STATUS    RESTARTS   AGE
-hello-py-576f77b98b-kj7bf           0/1     Pending   0          85s  << 어플리케이션 Pod
-hello-py-576f77b98b-lkqwb           0/1     Pending   0          85s  << 어플리케이션 Pod
-hello-py-576f77b98b-wln9l           0/1     Pending   0          85s  << 어플리케이션 Pod
-metrics-server-6b6bbf4668-vqhjl     1/1     Running   0          3h58m
-nginx-deployment-5754944d6c-5jdkg   1/1     Running   0          3h58m
-nginx-deployment-5754944d6c-hns6v   1/1     Running   0          3h58m
-nginx-deployment-5754944d6c-kzk8l   1/1     Running   0          3h58m
-nginx-deployment-5754944d6c-r7wf7   1/1     Running   0          3h58m
-nginx-deployment-5754944d6c-xlxxh   1/1     Running   0          3h58m
-```
+    ```
+    NAME                                READY   STATUS    RESTARTS   AGE
+    hello-py-576f77b98b-kj7bf           0/1     Pending   0          85s  << 어플리케이션 Pod
+    hello-py-576f77b98b-lkqwb           0/1     Pending   0          85s  << 어플리케이션 Pod
+    hello-py-576f77b98b-wln9l           0/1     Pending   0          85s  << 어플리케이션 Pod
+    metrics-server-6b6bbf4668-vqhjl     1/1     Running   0          3h58m
+    nginx-deployment-5754944d6c-5jdkg   1/1     Running   0          3h58m
+    nginx-deployment-5754944d6c-hns6v   1/1     Running   0          3h58m
+    nginx-deployment-5754944d6c-kzk8l   1/1     Running   0          3h58m
+    nginx-deployment-5754944d6c-r7wf7   1/1     Running   0          3h58m
+    nginx-deployment-5754944d6c-xlxxh   1/1     Running   0          3h58m
+    ```
 
 2. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.
-```
-kubectl describe service hello-py | grep Ingress
+    ```
+    kubectl describe service hello-py | grep Ingress
 
-# 결과값
-LoadBalancer Ingress:     aed0099fad25846a3a469d6abd64926d-847916387.ap-northeast-1.elb.amazonaws.com
-```
+    # 결과값
+    LoadBalancer Ingress:     aed0099fad25846a3a469d6abd64926d-847916387.ap-northeast-1.elb.amazonaws.com
+    ```
 
-```
-curl <LoadBalancer Ingress>
+    ```
+    curl <LoadBalancer Ingress>
 
-# 결과값
-Hello World from us-east-1
-```
+    # 결과값
+    Hello World from us-east-1
+    ```

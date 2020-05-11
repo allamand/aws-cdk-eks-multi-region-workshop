@@ -9,8 +9,7 @@ pre: "<b>6-1. </b>"
 
 ### 베이스 프로젝트 클론
 ```
-git clone 
-https://github.com/yjw113080/aws-cdk-multi-region-sample-app
+git clone https://github.com/yjw113080/aws-cdk-multi-region-sample-app
 ```
 
 * 지금까지 워크샵을 진행한 `skeleton` 폴더 외부에 클론되도록 해주십시오. 

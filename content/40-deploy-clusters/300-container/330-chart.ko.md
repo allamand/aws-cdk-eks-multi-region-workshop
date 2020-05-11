@@ -14,8 +14,8 @@ Helm Chart라는 패키징 포맷을 사용하는데, 이 포맷으로 쿠버네
 이번 페이지에서는 CDK로 어떻게 Helm Chart를 EKS 클러스터에 배포할 수 있는지 살펴봅니다.
 
 ## Helm Chart 배포하기
-`lib/container-stack.ts`을 여십시오.  
-지금까지 작성한 코드 아래에 다음 코드를 붙여넣습니다.
+**lib/container-stack.ts**을 여십시오.  
+`constructor` 내부에 다음 코드를 붙여넣습니다.
 
 ```typescript
 

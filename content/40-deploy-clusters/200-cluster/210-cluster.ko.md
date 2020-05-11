@@ -10,13 +10,19 @@ weight: 210
 `super(..)` 구문 아래 다음 코드를 복사하여 붙여주십시오.
 ```typescript
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
-        assumedBy: new iam.AccountRootPrincipal()
-        });
+      assumedBy: new iam.AccountRootPrincipal()
+      });
 
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
         defaultCapacity: 2
+    });
+
+    cluster.addCapacity('spot-group', {
+      instanceType: new ec2.InstanceType('m5.xlarge'),
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+    })
     });
 
 ```
@@ -27,6 +33,7 @@ weight: 210
     * `clusterName`: 두 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
     * `masterRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:master`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
     * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다.
+* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다.
 
 
 
@@ -39,15 +46,22 @@ import * as eks from '@aws-cdk/aws-eks';
 export class ClusterStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    const primaryRegion = 'ap-northeast-1';
 
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
-        assumedBy: new iam.AccountRootPrincipal()
-        });
+      assumedBy: new iam.AccountRootPrincipal()
+      });
 
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
         defaultCapacity: 2
+    });
+
+    cluster.addCapacity('spot-group', {
+      instanceType: new ec2.InstanceType('m5.xlarge'),
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+    })
     });
     //...
 ```
@@ -55,9 +69,9 @@ export class ClusterStack extends cdk.Stack {
 
 ## 엔트리포인트에 스택 로드하기
 그러면 우리가 완성한 이 스택이 실제로 AWS클라우드에서는 어떻게 보일까요?  
-`bin/multi-cluster-ts.ts` 파일을 열어 스택을 로드해보겠습니다.
+**bin/multi-cluster-ts.ts** 파일을 열어 스택을 로드해보겠습니다.
 아래와 같이, 스택 생성에 사용할 AWS 계정과 Region 정보가 정의되어 있습니다.  
-이 실습에서는 **도쿄 리전(ap-northeast-1)**과 **버지니아 북부 리전(us-east-1)**을 사용해서 자원을 생성할 것입니다.  
+이 실습에서는 **도쿄 리전(ap-northeast-1)** 과 **버지니아 북부 리전(us-east-1)** 을 사용해서 자원을 생성할 것입니다.  
 필요하다면 리전을 변경하여 주십시오.
 
 ```typescript
@@ -84,7 +98,8 @@ cdk diff
 {{% notice warning %}}
 만약 아래와 같이 결과가 출력되지 않는다면, [이 단계](/content/30-cdk/200-watch.ko.md)를 참고하여 `npm run watch`가 백그라운드에서 수행 중인지 확인하십시오.
 {{% /notice %}}
-v
+
+
 아래와 같은 결과가 출력될 것입니다.
 ```
 Stack ClusterStack-ap-southeast-2

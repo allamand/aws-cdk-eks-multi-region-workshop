@@ -4,11 +4,11 @@ weight: 200
 pre: "<b>5-2. </b>"
 ---
 
-4-3 단계까지, 한 리전에 EKS 클러스터를 배포하고 이 위에 쿠버네티스 자원을 배포했습니다.  
+[4-3 단계까지](/ko/40-deploy-clusters/300-container/_index.ko.md), 한 리전에 EKS 클러스터를 배포하고 이 위에 쿠버네티스 자원을 배포했습니다.  
 그렇다면 이와 동일한 구성을 두 번째 리전에 배포하려면 어떻게 해야 할까요?
 
 ## 배포할 두 번째 리전 지정
-`bin/multi-cluster-ts.ts` 파일을 열어 두 번째 스택을 만들어보겠습니다.
+**bin/multi-cluster-ts.ts** 파일을 열어 두 번째 스택을 만들어보겠습니다.
 지금은 아래와 같이 엔트리포인트에 스택이 로드된 상태일 겁니다.
 ```typescript
 const app = new cdk.App();
@@ -53,17 +53,19 @@ cdk deploy "*" --require-approval never
 아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
-ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
+ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region us-east-1 --role-arn <<YOUR_ROLE_ARN>>
 ```
 
 정상적으로 수행되면 아래와 같은 결과가 출력될 것입니다.
 
 ```
-Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /Users/jiwony/.kube/config
+Updated context arn:aws:eks:us-east-1:<<ACCOUNT_ID>>:cluster/demogo in /Users/jiwony/.kube/config
 ```
 
 
-아래 명령어를 통해 두 개 리전의 EKS 클러스터에 접근할 수 있음을 확인합니다.
+아래 명령어를 통해 두 개 리전의 EKS 클러스터에 접근할 수 있음을 확인합니다.  
+CLUSTER 이름에서 우리가 앞서 생성한 도쿄 리전의 클러스터, 방금 생성한 버지니아 클러스터 두 가지가 정상적으로 등록되었음을 알 수 있습니다.
+
 ```
 kubectl config get-contexts
 

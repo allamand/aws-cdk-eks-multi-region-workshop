@@ -4,7 +4,7 @@ weight: 320
 ---
 
 ## EKS 클러스터 주입 받기
-앞서 ClusterStack에서 정의한 Interface를 이용하여, 이 `ContainerStack` 클래스가 생성되는 시점에 이미 생성된 EKS 클러스터를 전달 받을 수 있도록 다음과 같이 `lib/container-stack.ts`를 수정합니다.
+앞서 ClusterStack에서 정의한 Interface를 이용하여, 이 `ContainerStack` 클래스가 생성되는 시점에 이미 생성된 EKS 클러스터를 전달 받을 수 있도록 다음과 같이 **lib/container-stack.ts**를 수정합니다.
 
 ```typescript
 import { EksProps } from './cluster-stack';
@@ -68,7 +68,7 @@ export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
 ```
 
 ## Manifest 를 이용한 자원 생성
-`lib/container-stack.ts`을 여십시오.  
+**lib/container-stack.ts**을 여십시오.  
 아래 코드를 `super(scope, id, props)` 구문 아래에 붙여넣습니다.
 
 ```typescript
@@ -114,7 +114,7 @@ export class ContainerStack extends cdk.Stack {
 
 
 ## 엔트리포인트에 스택 로드하기
-`bin/multi-cluster-ts.ts` 파일을 열어 스택을 로드합시다.
+**bin/multi-cluster-ts.ts** 파일을 열어 스택을 로드합시다.
 아까 생성한 CluterStack 아래에 아래 코드를 붙여넣습니다.
 
 ```typescript
@@ -151,10 +151,13 @@ There were no differences
 
 ## 배포하기
 아래 명령어로 컨테이너를 배포해봅시다.
+
 ```
 cdk deploy ClusterStack-ap-northeast-1
 ```
-
+{{% notice info %}}
+혹시 다른 리전에 스택을 생성하셨다면 `ClusterStack` 뒤에 정확한 리전 이름이 오도록 해주세요.
+{{% /notice %}}
 `ClusterStack`을 생성했을 때처럼 터미널에 자원 생성 진행상황이 출력될 것입니다.  
 스택 실행이 완료되면 다음 명령어를 이용해 생성된 자원을 확인하십시오.
 

@@ -13,9 +13,8 @@ git clone https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton
 
 ### IDE에서 열기
 선호하시는 IDE에서 위 프로젝트 폴더를 열어 주십시오.
-> VSCode를 이용하시는 경우, 프로젝트 디렉토리에서 `code .`를 입력하면 IDE를 열 수 있습니다.
 
-![](images/20-deploy-clusters/ide.png)
+![](/images/20-deploy-clusters/ide.png)
 
 ### 디렉토리 구조 살펴보기
 주요한 디렉토리 구조는 다음과 같습니다.
