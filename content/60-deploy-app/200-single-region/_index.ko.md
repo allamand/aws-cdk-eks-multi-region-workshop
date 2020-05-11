@@ -13,6 +13,90 @@ pre: "<b>6-2. </b>"
 
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.
 
+### CI/CD Pipeline에서 사용할 IAM Role 내보내기
+`lib/cluster-stack.ts`을 열어 아래 코드를 순서대로 추가합니다.
+
+1. `constructor` 위
+```typescript
+  public readonly firstRegionRole: iam.Role;
+```
+
+2. `constructor` 내부
+```typescript
+if (cdk.Stack.of(this).region==primaryRegion) 
+    this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+
+```
+
+3. `class` 외부, 최하단
+```typescript
+export interface CicdProps extends cdk.StackProps {
+  cluster: eks.Cluster,
+  firstRegionRole: iam.Role
+}
+
+```
+
+완성된 `lib/cluster-stack.ts`는 아래와 같을 것입니다.
+```typescript
+import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as eks from '@aws-cdk/aws-eks';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { PhysicalName } from '@aws-cdk/core';
+
+export class ClusterStack extends cdk.Stack {
+  public readonly cluster: eks.Cluster;
+  public readonly firstRegionRole: iam.Role;
+  public readonly secondRegionRole: iam.Role;
+
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const clusterAdmin = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal()
+      });
+
+    const primaryRegion = 'ap-northeast-1';
+
+    const cluster = new eks.Cluster(this, 'demogo-cluster', {
+      clusterName: `demogo`,
+      mastersRole: clusterAdmin,
+      defaultCapacity: 2,
+      defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
+                                new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
+    });
+
+    this.cluster = cluster;
+
+    if (cdk.Stack.of(this).region==primaryRegion)
+      this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+    
+    
+  }
+}
+
+function createDeployRole(scope: cdk.Construct, id: string, cluster: eks.Cluster): iam.Role {
+  const role = new iam.Role(scope, id, {
+    roleName: PhysicalName.GENERATE_IF_NEEDED,
+    assumedBy: new iam.AccountRootPrincipal()
+  });
+  cluster.awsAuth.addMastersRole(role);
+
+  return role;
+}
+
+export interface EksProps extends cdk.StackProps {
+  cluster: eks.Cluster
+}
+
+export interface CicdProps extends cdk.StackProps {
+  cluster: eks.Cluster,
+  firstRegionRole: iam.Role
+}
+```
+
+
 ### CicdStack 스택 뼈대 만들기
 `lib` 디렉토리 아래에 `cicd-stack.ts` 파일이 아래와 같이 생성되어 있을 것입니다.
 
@@ -23,12 +107,11 @@ import ecr = require('@aws-cdk/aws-ecr');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
 import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
-import { CicdProps } from './cluster-stack';
 
 
 export class CicdStack extends cdk.Stack {
 
-    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
+    constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
         super(scope, id, props);
 
     }
@@ -150,7 +233,9 @@ new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
 아래 코드를 `bin/multi-cluster-ts.ts` 파일에 붙여넣습니다.
 
 ```typescript
-new CicdStack(app, `CicdForPrimaryStack`, {env: primaryRegion, cluster: primaryCluster.cluster});
+new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
+                                    firstRegionRole: primaryCluster.firstRegionRole});
+
 
 ```
 
