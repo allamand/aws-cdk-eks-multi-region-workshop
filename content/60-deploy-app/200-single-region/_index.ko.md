@@ -13,8 +13,11 @@ pre: "<b>6-2. </b>"
 
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.
 
-### CI/CD Pipeline에서 사용할 IAM Role 내보내기
+### 1. CI/CD Pipeline에서 사용할 IAM Role 내보내기
+EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild는,  
+그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다. 이 Role을 생성해봅시다.
 `lib/cluster-stack.ts`을 열어 아래 코드를 순서대로 추가합니다.
+
 
 1. `constructor` 위
 ```typescript
@@ -36,6 +39,11 @@ export interface CicdProps extends cdk.StackProps {
 }
 
 ```
+
+* skeleton 상태에서 클래스 외부에 정의된 함수가 무엇인지 궁금하셨죠? `cicd-stack`에서 배포를 수행하는 CodeBuild가 assume할 IAM 롤을 생성하되, 실행되는 스택의 리전값을 읽어 그 리전 영역의 클러스터에만 접근할 수 있는 정책을 할당하는 함수였습니다.
+* 이 롤이 EKS 클러스터의 master 그룹에 들어가도록 권한을 부여합니다. 프로덕션에서는 최소한의 권한을 갖는 그룹에 별도 할당되도록 해주십시오.
+
+
 
 완성된 `lib/cluster-stack.ts`는 아래와 같을 것입니다.
 ```typescript
@@ -97,7 +105,7 @@ export interface CicdProps extends cdk.StackProps {
 ```
 
 
-### CicdStack 스택 뼈대 만들기
+### 2. CicdStack 스택 뼈대 만들기
 `lib` 디렉토리 아래에 `cicd-stack.ts` 파일이 아래와 같이 생성되어 있을 것입니다.
 
 ```typescript
@@ -118,7 +126,51 @@ export class CicdStack extends cdk.Stack {
 }
 ```
 
-### 1. CodeCommit 생성하기
+1. 1번에서 생성한 props를 주입받도록 수정하겠습니다.
+
+* 코드 최상단에 export한 props import
+    ```typescript
+    import { CicdProps } from './cluster-stack';
+    ```
+
+* `constructor` 부분에서 주입 받는 `props`를 `CicdProps`로 변경합니다.
+    ```typescript
+        constructor(scope: cdk.Construct, id: string, props: CicdProps) {
+    ```
+
+2. primaryRegion과 secondaryRegion 을 지정합니다.
+    ```typescript
+    const primaryRegion = 'ap-northeast-1';
+    const secondaryRegion = 'us-east-1';
+    ```
+
+
+지금까지 완성된 코드는 아래와 같을 겁니다.
+```typescript
+import * as cdk from '@aws-cdk/core';
+import codecommit = require('@aws-cdk/aws-codecommit');
+import ecr = require('@aws-cdk/aws-ecr');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
+import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
+import { CicdProps } from './cluster-stack';
+
+
+export class CicdStack extends cdk.Stack {
+
+    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
+
+        super(scope, id, props);
+
+        const primaryRegion = 'ap-northeast-1';
+        const secondaryRegion = 'us-east-1';
+    }
+}
+
+
+```
+
+### 3. CodeCommit 생성하기
 여러분들이 프로덕션 어플리케이션을 실제로 운영할 때에는 프라이빗하게 소스를 관리해야 할 것입니다.  
 이 때 AWS CodeCommit 서비스를 이용할 수 있습니다. AWS CodeCommit은 뛰어난 확장성의 프라이빗 Git 리포지토리를 안전하게 호스팅하는 서비스로, 마치 git을 이용하는 것처럼 여러분들은 리포지토리 호스팅 서버, 스토리지 등을 관리하실 필요 없이 프라이빗하게 리포지토리를 이용할 수 있습니다.
 
@@ -139,7 +191,7 @@ new cdk.CfnOutput(this, `codecommit-uri`, {
 * 이 레파지토리를 clone할 때 사용할 수 있는 URI를 스택 아웃풋으로 생성합니다.
 
 
-### 2. ECR Repository 생성하기
+### 4. ECR Repository 생성하기
 이 코드를 기반으로 생성된 컨테이너 이미지는 별도의 Image Registry에 저장되어야 합니다.  
 이때 Amazon ECR을 이용하실 수 있습니다. Amazon Elastic Container Registry(ECR)는 개발자가 Docker 컨테이너 이미지를 손쉽게 저장, 관리 및 배포할 수 있게 해주는 완전관리형 Docker 컨테이너 레지스트리입니다.
 
@@ -152,7 +204,7 @@ const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
 * ECR 레지스트리를 생성합니다.
 
 
-### 3. 도커 이미지를 빌드하는 CodeBuild 프로젝트 생성하기
+### 5. 도커 이미지를 빌드하는 CodeBuild 프로젝트 생성하기
 개발자가 소스를 커밋했을 때 이 내용을 기반으로 새로운 이미지를 자동으로 빌드하게 해주어야 합니다.  
 이 때 CodeBuild를 이용할 것입니다. AWS CodeBuild는 클라우드 상의 완전 관리형 빌드 서비스로, 소스 코드를 컴파일하고 단위 테스트를 실행하며 배포할 준비가 완료된 아티팩트를 생성합니다.  
 
@@ -174,7 +226,7 @@ ecrForMainRegion.grantPullPush(buildForECR.role!);
 
 
 
-### 4. EKS 클러스터에 배포하는 CodeBuild 프로젝트 생성하기
+### 6. EKS 클러스터에 배포하는 CodeBuild 프로젝트 생성하기
 현 시점에는 AWS CodeDeploy (관리형 배포 서비스)가 아직 EKS 클러스터를 지원하지 않기 때문에 CodeBuild를 이용하여 자원을 배포해보겠습니다.
 
 
@@ -227,6 +279,76 @@ new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
 * `sourceOutput`은 커밋된 코드를 아티팩트로 Pipeline에 전달해주기 위해 정의합니다.
 
 {{% notice info %}} 이 워크샵에서는 워크샵 효율을 위해 빌드 이미지를 직접 업로드하여 사용합니다. 프로덕션에서는 별도로 ECR을 통해 빌드 이미지 관리를 하시기를 권고드립니다. {{% /notice %}}
+
+
+`lib/cicd-stack.ts`의 완성된 코드는 아래와 같을 것입니다.
+```typescript
+import * as cdk from '@aws-cdk/core';
+import codecommit = require('@aws-cdk/aws-codecommit');
+import ecr = require('@aws-cdk/aws-ecr');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
+import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
+import { CicdProps } from './cluster-stack';
+
+
+export class CicdStack extends cdk.Stack {
+
+    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
+
+        super(scope, id, props);
+
+        const primaryRegion = 'ap-northeast-1';
+        const secondaryRegion = 'us-east-1';
+
+        const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
+            repositoryName: `hello-py-${cdk.Stack.of(this).region}`
+        });
+        
+        new cdk.CfnOutput(this, `codecommit-uri`, {
+            exportName: 'CodeCommitURL',
+            value: helloPyRepo.repositoryCloneUrlHttp
+        });
+        const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
+
+        const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
+        ecrForMainRegion.grantPullPush(buildForECR.role!);
+        
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+
+        const sourceOutput = new codepipeline.Artifact();
+
+        new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
+                    stages: [ {
+                            stageName: 'Source',
+                            actions: [ new pipelineAction.CodeCommitSourceAction({
+                                    actionName: 'CatchSourcefromCode',
+                                    repository: helloPyRepo,
+                                    output: sourceOutput,
+                                })]
+                        },{
+                            stageName: 'Build',
+                            actions: [ new pipelineAction.CodeBuildAction({
+                                actionName: 'BuildAndPushtoECR',
+                                input: sourceOutput,
+                                project: buildForECR
+                            })]
+                        },
+                        {
+                            stageName: 'DeployToMainEKScluster',
+                            actions: [ new pipelineAction.CodeBuildAction({
+                                actionName: 'DeployToMainEKScluster',
+                                input: sourceOutput,
+                                project: deployToMainCluster
+                            })]
+                        }
+                        
+                    ]
+                });
+        
+    }
+}
+```
 
 ### 6. 스택 로드하기
 

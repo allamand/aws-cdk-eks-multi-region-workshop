@@ -16,27 +16,105 @@ pre: "<b>6-3. </b>"
 첫 번째 리전에서 배포가 성공했지만 두 번째 리전에서 실패하는 경우에는 첫 번째 리전의 롤백 없이 두 번째 리전만 롤백 됩니다.
 
 
-### 1. 파이프라인에서 Assume할 Role 생성하기
+### 1. CI/CD Pipeline에서 사용할 IAM Role 내보내기
 ![](/images/40-deploy-app/2nd-region-pipeline.svg)
 
-우리가 두 번째 리전에 배포할 때 실질적으로 사용하게 될 CodeBuild는,  
-그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다.  
+앞 단계에서 배포를 수행한 것처럼, 두번째 리전에 배포할 때에도 그 리전 EKS 클러스터에 권한이 있는 Role을 assume 해서 실제 배포를 수행합니다.   
 이 Role을 생성해봅시다.
+`lib/cluster-stack.ts`을 열어 아래 코드를 순서대로 추가/수정합니다.
 
-`lib/cluster-stack.ts` 파일로 이동하여 `construct` 내부에 아래 코드를 붙여넣으십시오.  
+
+1. `constructor` 위
+    ```typescript
+    public readonly secondRegionRole: iam.Role;
+
+    ```
+
+2. `constructor` 내부, if 절 수정
+    ```typescript
+    if (cdk.Stack.of(this).region==primaryRegion) {
+        this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+    }
+    else {
+        this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
+    }
+    ```
+
+3. `class` 외부, 최하단 interface 수정
+    ```typescript
+    export interface CicdProps extends cdk.StackProps {
+    cluster: eks.Cluster,
+    firstRegionRole: iam.Role,
+    secondRegionRole: iam.Role
+    }
+
+    ```
+
+완성된 `lib/cluster-stack.ts`는 다음과 같을 것입니다.
 
 ```typescript
-if (cdk.Stack.of(this).region==primaryRegion) {
-  this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as eks from '@aws-cdk/aws-eks';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { PhysicalName } from '@aws-cdk/core';
+
+export class ClusterStack extends cdk.Stack {
+  public readonly cluster: eks.Cluster;
+  public readonly firstRegionRole: iam.Role;
+  public readonly secondRegionRole: iam.Role;
+
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const clusterAdmin = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal()
+      });
+
+    const primaryRegion = 'ap-northeast-1';
+
+    const cluster = new eks.Cluster(this, 'demogo-cluster', {
+      clusterName: `demogo`,
+      mastersRole: clusterAdmin,
+      defaultCapacity: 2,
+      defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
+                                new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
+    });
+
+    this.cluster = cluster;
+
+    if (cdk.Stack.of(this).region==primaryRegion) {
+      this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+    }
+    else {
+      this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
+    }
+    
+  }
 }
-else {
-  this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
+
+function createDeployRole(scope: cdk.Construct, id: string, cluster: eks.Cluster): iam.Role {
+  const role = new iam.Role(scope, id, {
+    roleName: PhysicalName.GENERATE_IF_NEEDED,
+    assumedBy: new iam.AccountRootPrincipal()
+  });
+  cluster.awsAuth.addMastersRole(role);
+
+  return role;
 }
+
+export interface EksProps extends cdk.StackProps {
+  cluster: eks.Cluster
+}
+
+export interface CicdProps extends cdk.StackProps {
+  cluster: eks.Cluster,
+  firstRegionRole: iam.Role,
+  secondRegionRole: iam.Role
+}
+
 
 ```
-
-* skeleton 상태에서 클래스 외부에 정의된 함수가 무엇인지 궁금하셨죠? `cicd-stack`에서 배포를 수행하는 CodeBuild가 assume할 IAM 롤을 생성하되, 실행되는 스택의 리전값을 읽어 그 리전 영역의 클러스터에만 접근할 수 있는 정책을 할당하는 함수였습니다.
-* 이 롤이 EKS 클러스터의 master 그룹에 들어가도록 권한을 부여합니다. 프로덕션에서는 최소한의 권한을 갖는 그룹에 별도 할당되도록 해주십시오.
 
 
 
@@ -75,54 +153,86 @@ const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegi
  
 완성된 코드는 아래와 같을 것입니다.
 ```typescript
-...
-const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
-const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+import * as cdk from '@aws-cdk/core';
+import codecommit = require('@aws-cdk/aws-codecommit');
+import ecr = require('@aws-cdk/aws-ecr');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import pipelineAction = require('@aws-cdk/aws-codepipeline-actions');
+import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
+import { CicdProps } from './cluster-stack';
 
 
-const sourceOutput = new codepipeline.Artifact();
-new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
-    stages: [ {
-            stageName: 'Source',
-            actions: [ new pipelineAction.CodeCommitSourceAction({
-                    actionName: 'CatchSourcefromCode',
-                    repository: helloPyRepo,
-                    output: sourceOutput,
-                })]
-        },{
-            stageName: 'Build',
-            actions: [ new pipelineAction.CodeBuildAction({
-                actionName: 'BuildAndPushtoECR',
-                input: sourceOutput,
-                project: buildForECR
-            })]
-        },
-        {
-            stageName: 'DeployToMainEKScluster',
-            actions: [ new pipelineAction.CodeBuildAction({
-                actionName: 'DeployToMainEKScluster',
-                input: sourceOutput,
-                project: deployToMainCluster
-            })]
-        },
-        {
-            stageName: 'ApproveToDeployTo2ndRegion',
-            actions: [ new pipelineAction.ManualApprovalAction({
-                    actionName: 'ApproveToDeployTo2ndRegion'
-            })]
-        },
-        {
-            stageName: 'DeployTo2ndRegionCluster',
-            actions: [ new pipelineAction.CodeBuildAction({
-                actionName: 'DeployTo2ndRegionCluster',
-                input: sourceOutput,
-                project: deployTo2ndCluster
-            })]
-        }
+export class CicdStack extends cdk.Stack {
+
+    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
+
+        super(scope, id, props);
+
+        const primaryRegion = 'ap-northeast-1';
+        const secondaryRegion = 'us-east-1';
+
+        const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
+            repositoryName: `hello-py-${cdk.Stack.of(this).region}`
+        });
         
-    ]
-});
+        new cdk.CfnOutput(this, `codecommit-uri`, {
+            exportName: 'CodeCommitURL',
+            value: helloPyRepo.repositoryCloneUrlHttp
+        });
+        const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
+
+        const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
+        ecrForMainRegion.grantPullPush(buildForECR.role!);
         
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+
+        const sourceOutput = new codepipeline.Artifact();
+
+        new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
+            stages: [ {
+                    stageName: 'Source',
+                    actions: [ new pipelineAction.CodeCommitSourceAction({
+                            actionName: 'CatchSourcefromCode',
+                            repository: helloPyRepo,
+                            output: sourceOutput,
+                        })]
+                },{
+                    stageName: 'Build',
+                    actions: [ new pipelineAction.CodeBuildAction({
+                        actionName: 'BuildAndPushtoECR',
+                        input: sourceOutput,
+                        project: buildForECR
+                    })]
+                },
+                {
+                    stageName: 'DeployToMainEKScluster',
+                    actions: [ new pipelineAction.CodeBuildAction({
+                        actionName: 'DeployToMainEKScluster',
+                        input: sourceOutput,
+                        project: deployToMainCluster
+                    })]
+                },{
+                    stageName: 'ApproveToDeployTo2ndRegion',
+                    actions: [ new pipelineAction.ManualApprovalAction({
+                            actionName: 'ApproveToDeployTo2ndRegion'
+                    })]
+                },
+                {
+                    stageName: 'DeployTo2ndRegionCluster',
+                    actions: [ new pipelineAction.CodeBuildAction({
+                        actionName: 'DeployTo2ndRegionCluster',
+                        input: sourceOutput,
+                        project: deployTo2ndCluster
+                    })]
+                }
+                
+                
+            ]
+        });
+        
+    }
+}
 ```
 
 ### 4. CI/CD 파이프라인 배포하기
@@ -140,7 +250,7 @@ new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
 
 Outputs:
 CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
-CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = arn:aws:iam::865200059792:role/CicdForPrimaryStack-deploytoeksapnortheast1Role189-VIG05L6PETHL
+CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = arn:aws:iam::<<ACCOUNT_ID>>:role/CicdForPrimaryStack-deploytoeksapnortheast1Role189-VIG05L6PETHL
 ```
 
 
