@@ -49,6 +49,6 @@ aws configure
 ```
 AWS Access Key ID [None]: <key ID 입력>
 AWS Secret Access Key [None]: <access key 입력>
-Default region name [None]: <region 선택(서울: `ap-northeast-2`, 도쿄: `ap-northeast-1`, 싱가포르: `ap-southeast-1`...)>
+Default region name [None]: <region 선택>
 Default output format [None]: <입력하지 않아도 됨.>
 ```

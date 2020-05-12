@@ -14,4 +14,4 @@ pre: "<b>3. </b>"
 또한 CDK Toolkit를 사용해서 샘플 앱을 배포하는 AWS CloudFormation 템플릿을 만드는 방법,  
 계정에 CDK 어플리케이션을 배포하는 방법을 살펴봅니다.
 
-
+※ **3. CDK 맛보기** 는 [cdkworkshop](https://cdkworkshop.com/)의 일부를 그대로 차용했음을 밝힙니다.

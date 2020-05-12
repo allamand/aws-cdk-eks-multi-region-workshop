@@ -28,7 +28,7 @@ Then:
 ```
 
 {{% notice info %}} 
-여기에서 Access Denied 에러가 발생하는 경우, AWS CLI가 [제대로 설정](/15-prerequisites/200-account.html)되지 않았거나, 사용 중인 [AWS profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)이 `cloudformation:CreateChangeSet` 작업을 수행할 권한이 없는 경우입니다. {{% /notice %}}
+여기에서 Access Denied 에러가 발생하는 경우, AWS CLI가 [제대로 설정](/ko/15-prerequisites/200-account.html)되지 않았거나, 사용 중인 [AWS profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)이 `cloudformation:CreateChangeSet` 작업을 수행할 권한이 없는 경우입니다. {{% /notice %}}
 
 위 명령어가 성공적으로 수행되고 나면 CDK 앱을 배포해봅시다.
 
