@@ -16,7 +16,7 @@ pre: "<b>6-3. </b>"
 첫 번째 리전에서 배포가 성공했지만 두 번째 리전에서 실패하는 경우에는 첫 번째 리전의 롤백 없이 두 번째 리전만 롤백 됩니다.
 
 
-### 1. CI/CD Pipeline에서 사용할 IAM Role 내보내기
+### CI/CD Pipeline에서 사용할 IAM Role 내보내기
 ![](/images/40-deploy-app/2nd-region-pipeline.svg)
 
 앞 단계에서 배포를 수행한 것처럼, 두번째 리전에 배포할 때에도 그 리전 EKS 클러스터에 권한이 있는 Role을 assume 해서 실제 배포를 수행합니다.   
@@ -36,6 +36,7 @@ pre: "<b>6-3. </b>"
             this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
         }
         else {
+            // 스택이 두 번째 리전값을 가지고 있으면, 새로운 롤을 생성하되 그 리전 클러스터에만 접근할 수 있는 권한을 부여합니다.
             this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
         }
     ```
@@ -45,7 +46,7 @@ pre: "<b>6-3. </b>"
     export interface CicdProps extends cdk.StackProps {
     cluster: eks.Cluster,
     firstRegionRole: iam.Role,
-    secondRegionRole: iam.Role
+    secondRegionRole: iam.Role // < 두 번째 리전 클러스터에 접근권한이 있는 Role을 추가로 export 합니다.
     }
 
     ```
@@ -121,7 +122,7 @@ export interface CicdProps extends cdk.StackProps {
 
 
 
-### 2. 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
+### 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
 
 **lib/cicd-stack.ts** 파일로 이동합니다.  
 지금까지 작성된 코드에 아래 코드를 붙여넣습니다. 단, CodePipeline 정의 부분보다 위에 정의해야 합니다. 
@@ -133,7 +134,7 @@ export interface CicdProps extends cdk.StackProps {
 
 
 
-### 3. CodePipeline 수정
+### CodePipeline 수정
 선언된 CodePipeline construct에 아래 스테이지를 추가합니다.
 ```typescript
             ,{
@@ -237,7 +238,7 @@ export class CicdStack extends cdk.Stack {
     }
 }
 ```
-### 4. 엔트리포인트 수정하기
+### 엔트리포인트 수정하기
 두 번째 리전의 배포를 수행할 Role을, 스택 생성시 주입 받을 수 있도록 아래와 같이 **bin/multi-cluster-ts.ts** 파일을 수정합니다.
 
 ```typescript
@@ -248,7 +249,7 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 
 * `secondRegionRole: secondaryCluster.secondRegionRole`을 추가했습니다.
 
-### 5. CI/CD 파이프라인 배포하기
+### CI/CD 파이프라인 배포하기
 `cdk diff` 명령어로 생성될 자원을 확인한 뒤 `cdk deploy "*" --require-approval never` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
 
 {{% notice warning %}}
@@ -272,14 +273,14 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
 ```
 
 
-### 6. 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
+### 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
 
 ![](/images/40-deploy-app/release-change.png)
 
-CodePipeline 콘솔에서 새롭게 배포된 두 단계를 확인할 수 있습니다.  
+[CodePipeline 콘솔](https://console.aws.amazon.com/codesuite/codepipeline/?#)에서 새롭게 배포된 두 단계를 확인할 수 있습니다.  
 위 스크린샷의 `변경 사항 릴리스`를 클릭하여 현재 시점 최신 코드를 반영하도록 합니다.  
 
-### 7. 릴리즈 승인하기
+### 릴리즈 승인하기
 3단계로 첫 번째 리전의 EKS 클러스터에 정상적으로 어플리케이션이 배포된 뒤에, 아래 스크린샷과 같이 승인을 대기 중인 상태가 됨을 확인할 수 있습니다.  
 **<검토>** 버튼을 누른 뒤, **<승인>** 버튼을 누릅니다.
 

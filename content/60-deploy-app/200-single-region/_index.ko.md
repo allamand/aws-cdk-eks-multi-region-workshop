@@ -13,7 +13,7 @@ pre: "<b>6-2. </b>"
 
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.
 
-### 1. CI/CD Pipeline에서 사용할 IAM Role 내보내기
+### CI/CD Pipeline에서 사용할 IAM Role 내보내기
 EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild는,  
 그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다. 이 Role을 생성해봅시다.
 **lib/cluster-stack.ts**을 열어 아래 코드를 순서대로 추가합니다.
@@ -108,7 +108,7 @@ export interface CicdProps extends cdk.StackProps {
 ```
 
 
-### 2. CicdStack 스택 뼈대 만들기
+### CicdStack 스택 뼈대 만들기
 `lib` 디렉토리 아래에 `cicd-stack.ts` 파일이 아래와 같이 생성되어 있을 것입니다.
 
 ```typescript
@@ -171,7 +171,7 @@ export class CicdStack extends cdk.Stack {
 
 ```
 
-### 3. CodeCommit 생성하기
+### CodeCommit 생성하기
 여러분들이 프로덕션 어플리케이션을 실제로 운영할 때에는 프라이빗하게 소스를 관리해야 할 것입니다.  
 이 때 AWS CodeCommit 서비스를 이용할 수 있습니다. AWS CodeCommit은 뛰어난 확장성의 프라이빗 Git 리포지토리를 안전하게 호스팅하는 서비스로, 마치 git을 이용하는 것처럼 여러분들은 리포지토리 호스팅 서버, 스토리지 등을 관리하실 필요 없이 프라이빗하게 리포지토리를 이용할 수 있습니다.
 
@@ -192,7 +192,7 @@ export class CicdStack extends cdk.Stack {
 * 이 레파지토리를 clone할 때 사용할 수 있는 URI를 스택 아웃풋으로 생성합니다.
 
 
-### 4. ECR Repository 생성하기
+### ECR Repository 생성하기
 이 코드를 기반으로 생성된 컨테이너 이미지는 별도의 Image Registry에 저장되어야 합니다.  
 이때 Amazon ECR을 이용하실 수 있습니다. Amazon Elastic Container Registry(ECR)는 개발자가 Docker 컨테이너 이미지를 손쉽게 저장, 관리 및 배포할 수 있게 해주는 완전관리형 Docker 컨테이너 레지스트리입니다.
 
@@ -204,7 +204,7 @@ export class CicdStack extends cdk.Stack {
 * ECR 레지스트리를 생성합니다.
 
 
-### 5. 도커 이미지를 빌드하는 CodeBuild 프로젝트 생성하기
+### 도커 이미지를 빌드하는 CodeBuild 프로젝트 생성하기
 개발자가 소스를 커밋했을 때 이 내용을 기반으로 새로운 이미지를 자동으로 빌드하게 해주어야 합니다.  
 이 때 CodeBuild를 이용할 것입니다. AWS CodeBuild는 클라우드 상의 완전 관리형 빌드 서비스로, 소스 코드를 컴파일하고 단위 테스트를 실행하며 배포할 준비가 완료된 아티팩트를 생성합니다.  
 
@@ -225,7 +225,7 @@ buildspec 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 
 
 
 
-### 6. EKS 클러스터에 배포하는 CodeBuild 프로젝트 생성하기
+### EKS 클러스터에 배포하는 CodeBuild 프로젝트 생성하기
 현 시점에는 AWS CodeDeploy (관리형 배포 서비스)가 아직 EKS 클러스터를 지원하지 않기 때문에 CodeBuild를 이용하여 자원을 배포해보겠습니다.
 
 
@@ -237,7 +237,7 @@ buildspec 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 
 
 * /utils 폴더에 이 워크샵에서 사용할 빌드 스펙을 미리 정의해두었습니다. 자세한 빌드 스펙이 궁금하신 분은 /utils/buildspec.ts 파일을 참조해주십시오. 
 
-### 5. 한 리전의 EKS 클러스터에 애플리케이션을 배포하는 파이프라인 정의하기
+### 한 리전의 EKS 클러스터에 애플리케이션을 배포하는 파이프라인 정의하기
 그럼 지금까지 생성한 자원들을 엮어서 파이프라인을 만들어 보겠습니다.
 
 아래 코드를 이어서 붙여넣으십시오.
@@ -351,7 +351,7 @@ export class CicdStack extends cdk.Stack {
 }
 ```
 
-### 6. 스택 로드하기
+### 스택 로드하기
 
 아래 코드를 **bin/multi-cluster-ts.ts** 파일에 붙여넣습니다.
 
@@ -363,7 +363,7 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 ```
 
 
-### 7. CI/CD 파이프라인 배포하기
+### CI/CD 파이프라인 배포하기
 `cdk diff` 명령어를 통해 생성될 자원을 확인한 뒤, `cdk deploy "*"` 명령어를 통해 CI/CD 파이프라인을 배포합니다.  
 이때 `CicdStack`과 별개로, 이 스택의 자원에 권한 부여를 위해 `ClusterStack`에서도 변경이 발생합니다.
 
@@ -372,7 +372,7 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 ![](/images/40-deploy-app/result-pipeline-single-region.png)
 
 
-### 8. 배포 테스트하기
+### 배포 테스트하기
 그러면 생성된 파이프라인을 이용해서 애플리케이션을 배포해볼까요?  
 아까 [클론한 샘플 어플리케이션](https://github.com/yjw113080/aws-cdk-multi-region-sample-app) IDE를 열어주십시오.  
 
