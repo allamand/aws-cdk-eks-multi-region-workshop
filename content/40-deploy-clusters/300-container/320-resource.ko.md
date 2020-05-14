@@ -84,6 +84,9 @@ export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
 * `./yaml-${cdk.Stack.of(this).region}/`: 스택이 실행되는 리전값을 확인하여, 그 리전에만 특수하게 배포해야 하는 자원 manifest를 담은 폴더입니다.
 * 이 두 폴더의 yaml 파일을 읽어서 json으로 변형한 뒤 CDK를 통해 자원을 생성합니다. 이를 통해 운영자가 직접 `kubectl` 명령어를 통해 자원을 컨트롤 하는 것이 아니라, 코드를 통해 배포 관리를 할 수 있게 됩니다.
 
+{{% notice warning %}}
+도쿄 리전 (ap-northeast-1), 버지니아 북부 리전 (us-east-1)이 아닌 다른 리전에서 워크샵을 수행하시는 경우, yaml 파일이 있는 폴더명을 변경해주십시오.  
+{{% /notice %}}
 
 
 완성된 코드는 아래와 같을 것입니다.

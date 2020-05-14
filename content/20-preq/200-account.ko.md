@@ -52,3 +52,6 @@ AWS Secret Access Key [None]: <access key 입력>
 Default region name [None]: <region 선택>
 Default output format [None]: <입력하지 않아도 됨.>
 ```
+
+예시:
+![](/images/10-preq/aws-cli.png)

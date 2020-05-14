@@ -16,12 +16,13 @@ weight: 210
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
+        version: '1.14',
         defaultCapacity: 2
     });
 
     cluster.addCapacity('spot-group', {
       instanceType: new ec2.InstanceType('m5.xlarge'),
-      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
 
 ```
@@ -32,7 +33,12 @@ weight: 210
     * `clusterName`: 두 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
     * `masterRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:master`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
     * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다.
-* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다.
+* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다. 
+
+{{% notice info %}} 
+참고: EC2 스팟 인스턴스는 더 이상 bidding 이 아니라, [market price 로 구매](https://aws.amazon.com/ko/blogs/compute/new-amazon-ec2-spot-pricing/)를 하게 됩니다.  
+그래서 IaC로 스팟 인스턴스를 생성/관리하실 때에는 가격 부분을 온디맨드 인스턴스 가격으로 지정해두시면, 알아서 해당 시점의 스팟 가격으로 구매가 이루어집니다.
+{{% /notice %}}
 
 
 
@@ -54,12 +60,13 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
+        version: '1.14',
         defaultCapacity: 2
     });
 
     cluster.addCapacity('spot-group', {
       instanceType: new ec2.InstanceType('m5.xlarge'),
-      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
     //...
 ```

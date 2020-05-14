@@ -19,12 +19,11 @@ Helm Chart라는 패키징 포맷을 사용하는데, 이 포맷으로 쿠버네
 
 ```typescript
 
-const stable = 'https://kubernetes-charts.storage.googleapis.com/';
+    const stable = 'https://kubernetes-charts.storage.googleapis.com/';
 
-cluster.addChart(`metrics-server`, {
+    cluster.addChart(`metrics-server`, {
       repository: stable,
-      chart: 'metrics-server',
-      release: 'metrics-server'
+      chart: 'metrics-server'
     });
 
 ```

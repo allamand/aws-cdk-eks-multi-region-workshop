@@ -27,7 +27,6 @@ export interface EksProps extends cdk.StackProps {
 
 ```
       this.cluster = cluster;
-
 ```
 
 완성된 코드는 아래와 같을 것입니다.
@@ -44,14 +43,15 @@ export class ClusterStack extends cdk.Stack {
       const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
+        version: '1.14',
         defaultCapacity: 2
       });
 
       cluster.addCapacity('spot-group', {
         instanceType: new ec2.InstanceType('m5.xlarge'),
-        spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+        spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
       });
-      
+
       this.cluster = cluster;
 
 

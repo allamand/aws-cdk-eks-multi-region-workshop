@@ -32,12 +32,12 @@ pre: "<b>6-3. </b>"
 
 2. `constructor` 내부, if 절 수정
     ```typescript
-    if (cdk.Stack.of(this).region==primaryRegion) {
-        this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
-    }
-    else {
-        this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
-    }
+        if (cdk.Stack.of(this).region==primaryRegion) {
+            this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+        }
+        else {
+            this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
+        }
     ```
 
 3. `class` 외부, 최하단 interface 수정
@@ -81,7 +81,7 @@ export class ClusterStack extends cdk.Stack {
 
     cluster.addCapacity('spot-group', {
     instanceType: new ec2.InstanceType('m5.xlarge'),
-    spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+    spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
     
     this.cluster = cluster;
@@ -127,7 +127,7 @@ export interface CicdProps extends cdk.StackProps {
 지금까지 작성된 코드에 아래 코드를 붙여넣습니다. 단, CodePipeline 정의 부분보다 위에 정의해야 합니다. 
 
 ```typescript
-const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
 ```
 * `/utils/buildspec.ts`에 정의된 빌드 스펙을 가지고 CodeBuild 프로젝트를 생성했습니다. 자세한 내용이 궁금하시면 해당 파일을 열어 확인하십시오.
 
@@ -136,20 +136,20 @@ const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegi
 ### 3. CodePipeline 수정
 선언된 CodePipeline construct에 아래 스테이지를 추가합니다.
 ```typescript
-,{
-    stageName: 'ApproveToDeployTo2ndRegion',
-    actions: [ new pipelineAction.ManualApprovalAction({
-            actionName: 'ApproveToDeployTo2ndRegion'
-    })]
-},
-{
-    stageName: 'DeployTo2ndRegionCluster',
-    actions: [ new pipelineAction.CodeBuildAction({
-        actionName: 'DeployTo2ndRegionCluster',
-        input: sourceOutput,
-        project: deployTo2ndCluster
-    })]
-}
+            ,{
+                stageName: 'ApproveToDeployTo2ndRegion',
+                actions: [ new pipelineAction.ManualApprovalAction({
+                        actionName: 'ApproveToDeployTo2ndRegion'
+                })]
+            },
+            {
+                stageName: 'DeployTo2ndRegionCluster',
+                actions: [ new pipelineAction.CodeBuildAction({
+                    actionName: 'DeployTo2ndRegionCluster',
+                    input: sourceOutput,
+                    project: deployTo2ndCluster
+                })]
+            }
 ```
 
 * 이 워크샵에서는 승인할 때에 참고할 수 있는 별도의 정보를 포함하지 않았습니다. 프로덕션에서 이용하실 때에는 실제 승인자가 필요로 하는 정보를 추가하도록 구성하십시오. 

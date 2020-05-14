@@ -11,8 +11,13 @@ cdk bootstrap 은 CDK가 특정 환경(계정, 리전)에 자원 배포를 수�
 
 다음 단계 진행 전에 아래 명령어를 반드시 수행하십시오.  
 
+
 1. `cdk bootstrap aws://<<ACCOUNT_ID>>/ap-northeast-1`
 2. `cdk bootstrap aws://<<ACCOUNT_ID>>/us-east-1`
+
+{{% notice info %}} 
+ssh 세션을 맺어 다른 서버에서 작업하시는 경우, 세션이 만료되지 않도록 한 차례 갱신한 뒤 수행하실 것을 권고드립니다. 
+{{% /notice %}}
 
 {{% notice info %}}
 자신의 어카운트 ID는 `aws sts get-caller-identity` 명령어를 실행하면 알 수 있습니다.

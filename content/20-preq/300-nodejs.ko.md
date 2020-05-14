@@ -5,7 +5,8 @@ pre: "<b>2-3. </b>"
 
 ---
 
-AWS CDK는 Node.js (>= 10.3.0)를 이용합니다.
+AWS CDK는 내부적으로 Node.js (>= 10.3.0)를 이용하도록 설계되어 있습니다.  
+CDK의 정상 동작을 위해 Node.js를 설치합니다.
 
 * Node.js 를 설치하기 위해서는 [node.js](https://nodejs.org) 사이트를 방문하십시오.
 

@@ -6,7 +6,7 @@ pre: "<b>5-3. </b>"
 
 그런데, 이런 경우가 있을 수 있죠.  
 A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테이너를 두고.  
-혹은 클러스터 자체 설정을 달리하고 싶을 수 있습니다. 예를 들어 A 리전 워크노드로는 R5.xlarge 인스턴스를 쓰는데, B 리전은 M5.xlarge를 써야 할 때.  
+혹은 클러스터 자체 설정을 달리하고 싶을 수 있습니다. 예를 들어 A 리전 워크노드로는 R5.xlarge 인스턴스를 쓰는데, B 리전은 M5.2xlarge를 써야 할 때.  
 이렇게 리전에 따라 다른 설정을 주고 싶다면 어떻게 해야 할까요?  
 다음 예시를 통해 살펴봅시다.
 
@@ -20,6 +20,7 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
+        version: '1.14',
         defaultCapacity: 2
     });
 
@@ -30,7 +31,7 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 
 ```typescript
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.large')
+                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
 ```
 
 완성된 코드는 다음과 같을 것입니다.
@@ -40,9 +41,10 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
       const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
+        version: '1.14',
         defaultCapacity: 2,
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.xlarge')
+                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
       });
 ```
 
@@ -56,7 +58,7 @@ Resources
 [~] AWS::AutoScaling::LaunchConfiguration demogo-cluster/DefaultCapacity/LaunchConfig demogoclusterDefaultCapacityLaunchConfig93D71520 replace
  └─ [~] InstanceType (requires replacement)
      ├─ [-] m5.large
-     └─ [+] m5.xlarge
+     └─ [+] m5.2xlarge
 
 Stack ContainerStack-ap-northeast-1
 There were no differences

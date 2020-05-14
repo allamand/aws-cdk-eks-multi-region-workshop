@@ -26,9 +26,9 @@ EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild�
 
 2. `constructor` 내부
 ```typescript
-if (cdk.Stack.of(this).region==primaryRegion) 
-    this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
-
+    if (cdk.Stack.of(this).region==primaryRegion) {
+      this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
+    }
 ```
 
 3. `class` 외부, 최하단
@@ -75,7 +75,7 @@ export class ClusterStack extends cdk.Stack {
 
     cluster.addCapacity('spot-group', {
     instanceType: new ec2.InstanceType('m5.xlarge'),
-    spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.0699' : '0.0805'
+    spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
     
     this.cluster = cluster;
@@ -178,14 +178,14 @@ export class CicdStack extends cdk.Stack {
 아래 코드를 위에서 생성한 클래스 `construct` 선언부 안에 붙여넣습니다.
 
 ```typescript
-const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
-    repositoryName: `hello-py-${cdk.Stack.of(this).region}`
-});
-
-new cdk.CfnOutput(this, `codecommit-uri`, {
-    exportName: 'CodeCommitURL',
-    value: helloPyRepo.repositoryCloneUrlHttp
-});
+        const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
+            repositoryName: `hello-py-${cdk.Stack.of(this).region}`
+        });
+        
+        new cdk.CfnOutput(this, `codecommit-uri`, {
+            exportName: 'CodeCommitURL',
+            value: helloPyRepo.repositoryCloneUrlHttp
+        });
 ```
 
 * CodeCommit 레파지토리를 생성하고
@@ -199,8 +199,7 @@ new cdk.CfnOutput(this, `codecommit-uri`, {
 아래 코드를 CodeCommit 정의한 라인 아래에 붙여넣으십시오.
 
 ```typescript
-const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
-
+        const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
 ```
 * ECR 레지스트리를 생성합니다.
 
@@ -217,9 +216,8 @@ buildspec 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 
 
 **2. ECR Repository 생성하기** 까지 작성한 뒷 부분에, 아래 코드를 붙여 넣으십시오.
 ```typescript
-const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
-ecrForMainRegion.grantPullPush(buildForECR.role!);
-
+        const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
+        ecrForMainRegion.grantPullPush(buildForECR.role!);
 ```
 
 * /utils 폴더에 이 워크샵에서 사용할 빌드 스펙을 미리 정의해두었습니다. 자세한 빌드 스펙이 궁금하신 분은 /utils/buildspec.ts 파일을 참조해주십시오. 
@@ -234,8 +232,7 @@ ecrForMainRegion.grantPullPush(buildForECR.role!);
 아래 코드를 위에 작성한 코드 뒤에 붙여넣으십시오.
 
 ```typescript
-const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
-
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
 ```
 
 * /utils 폴더에 이 워크샵에서 사용할 빌드 스펙을 미리 정의해두었습니다. 자세한 빌드 스펙이 궁금하신 분은 /utils/buildspec.ts 파일을 참조해주십시오. 
@@ -246,9 +243,9 @@ const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegio
 아래 코드를 이어서 붙여넣으십시오.
 
 ```typescript
-const sourceOutput = new codepipeline.Artifact();
+        const sourceOutput = new codepipeline.Artifact();
 
-new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
+        new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
             stages: [ {
                     stageName: 'Source',
                     actions: [ new pipelineAction.CodeCommitSourceAction({
