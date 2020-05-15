@@ -126,7 +126,7 @@ export class CicdStack extends cdk.Stack {
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
-        const secondaryRegion = 'us-east-1';
+        const secondaryRegion = 'us-west-2';
 
     }
 }
@@ -164,7 +164,7 @@ export class CicdStack extends cdk.Stack {
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
-        const secondaryRegion = 'us-east-1';
+        const secondaryRegion = 'us-west-2';
     }
 }
 
@@ -300,7 +300,7 @@ export class CicdStack extends cdk.Stack {
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
-        const secondaryRegion = 'us-east-1';
+        const secondaryRegion = 'us-west-2';
 
         const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
             repositoryName: `hello-py-${cdk.Stack.of(this).region}`
@@ -386,7 +386,7 @@ CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazon
 git remote add codecommit <<1번에서 카피한 codecommit URI>>
 ```
 
-3. [IAM User](https://console.aws.amazon.com/iam/home?region=us-east-1) 콘솔에서, 현재 터미널이 사용 중인 User의 HTTPS Git credentials for AWS CodeCommit 를 생성하십시오. 도움이 필요하신 분들은 [이 링크](https://aws.amazon.com/ko/blogs/korea/introducing-git-credentials-a-simple-way-to-connect-to-aws-codecommit-repositories-using-a-static-user-name-and-password/)를 참조하십시오.
+3. [IAM User](https://console.aws.amazon.com/iam/home?region=us-west-2) 콘솔에서, 현재 터미널이 사용 중인 User의 HTTPS Git credentials for AWS CodeCommit 를 생성하십시오. 도움이 필요하신 분들은 [이 링크](https://aws.amazon.com/ko/blogs/korea/introducing-git-credentials-a-simple-way-to-connect-to-aws-codecommit-repositories-using-a-static-user-name-and-password/)를 참조하십시오.
 
 ![](/images/40-deploy-app/iam-git-credential.png)
 

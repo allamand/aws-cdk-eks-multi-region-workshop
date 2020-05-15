@@ -43,7 +43,7 @@ git clone https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton
 │   └── 00_ap_nginx.yaml
 ├── yaml-common
 │   └── 00_namespaces.yaml
-└── yaml-us-east-1
+└── yaml-us-west-2
     └── 00_us_nginx.yaml
 ```
 * `/bin/multi-cluster-ts`: 이 CDK 앱의 **엔트리포인트**입니다. 즉, CDK 앱이 실행될 때 가장 먼저 보는 지점입니다. 어떤 스택을 실행할 것인지가 등록되는 지점으로, 우리가 생성하는 스택을 실제로 배포하려면 여기에 추가해주어야 합니다. 향후 엔트리포인트 라는 단어가 워크샵에 등장하면, 이 파일을 뜻하는 것이라고 생각하시면 됩니다.

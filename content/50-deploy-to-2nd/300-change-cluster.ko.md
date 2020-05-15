@@ -53,7 +53,7 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 `cdk diff` 명령어를 활용해 변경될 내용을 조회해보면 다음과 같을 것입니다.  
 
 ```
-Stack ClusterStack-us-east-1
+Stack ClusterStack-us-west-2
 Resources
 [~] AWS::AutoScaling::LaunchConfiguration demogo-cluster/DefaultCapacity/LaunchConfig demogoclusterDefaultCapacityLaunchConfig93D71520 replace
  └─ [~] InstanceType (requires replacement)
@@ -62,7 +62,7 @@ Resources
 
 Stack ContainerStack-ap-northeast-1
 There were no differences
-Stack ContainerStack-us-east-1
+Stack ContainerStack-us-west-2
 There were no differences
 Stack ClusterStack-ap-northeast-1
 Resources

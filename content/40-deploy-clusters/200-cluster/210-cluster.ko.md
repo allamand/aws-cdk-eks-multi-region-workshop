@@ -76,13 +76,13 @@ export class ClusterStack extends cdk.Stack {
 그러면 우리가 완성한 이 스택이 실제로 AWS클라우드에서는 어떻게 보일까요?  
 **bin/multi-cluster-ts.ts** 파일을 열어 스택을 로드해보겠습니다.
 아래와 같이, 스택 생성에 사용할 AWS 계정과 Region 정보가 정의되어 있습니다.  
-이 실습에서는 **도쿄 리전(ap-northeast-1)** 과 **버지니아 북부 리전(us-east-1)** 을 사용해서 자원을 생성할 것입니다.  
+이 실습에서는 **도쿄 리전(ap-northeast-1)** 과 **오레곤 리전(us-west-2)** 을 사용해서 자원을 생성할 것입니다.  
 필요하다면 리전을 변경하여 주십시오.
 
 ```typescript
 const account = app.node.tryGetContext('account') || process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
 const primaryRegion = {account: account, region: 'ap-northeast-1'};
-const secondaryRegion = {account: account, region: 'us-east-1'};
+const secondaryRegion = {account: account, region: 'us-west-2'};
 ```
 
 
@@ -221,7 +221,7 @@ Do you wish to deploy these changes (y/n)?
 아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
-ClusterStack-us-east-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
+ClusterStack-us-west-2.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
 ```
 
 정상적으로 수행되면 아래와 같은 결과가 출력될 것입니다.

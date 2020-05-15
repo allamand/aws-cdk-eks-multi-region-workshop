@@ -46,14 +46,14 @@ cdk diff
 
 그러면 아래와 같이 두 리전에 대해, 새롭게 추가된 yaml 분만이 변경분으로 반영될 것임을 알 수 있습니다.
 ```
-Stack ClusterStack-us-east-1
+Stack ClusterStack-us-west-2
 Resources
 [+] Custom::AWSCDK-EKS-KubernetesResource demogo-cluster/manifest-01_resource-quota0/Resource demogoclustermanifest01resourcequota0097ABDB2
 [+] Custom::AWSCDK-EKS-KubernetesResource demogo-cluster/manifest-01_resource-quota1/Resource demogoclustermanifest01resourcequota13FACB412
 
 Stack ContainerStack-ap-northeast-1
 There were no differences
-Stack ContainerStack-us-east-1
+Stack ContainerStack-us-west-2
 There were no differences
 Stack ClusterStack-ap-northeast-1
 Resources

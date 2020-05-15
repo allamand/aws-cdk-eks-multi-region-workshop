@@ -8,7 +8,7 @@ pre: "<b>7. </b>"
 
 
 1. ELB 콘솔에서 애플리케이션 생성 시에 배포된 ELB를 삭제합니다.
-[ap-northeast-1 리전](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LoadBalancers:), [us-east-1 리전](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LoadBalancers:sort=loadBalancerName) 모두 삭제합니다.
+[ap-northeast-1 리전](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LoadBalancers:), [us-west-2 리전](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LoadBalancers:sort=loadBalancerName) 모두 삭제합니다.
 
 ![](/images/70-cleanup/elb-delete.png)
 

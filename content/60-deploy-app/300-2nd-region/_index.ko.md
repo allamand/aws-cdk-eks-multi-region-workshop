@@ -173,7 +173,7 @@ export class CicdStack extends cdk.Stack {
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
-        const secondaryRegion = 'us-east-1';
+        const secondaryRegion = 'us-west-2';
 
         const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
             repositoryName: `hello-py-${cdk.Stack.of(this).region}`
@@ -292,7 +292,7 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
 ### 배포된 자원 확인하기
 1. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
 {{% notice warning %}}
-`kubectl config current-context` 명령어를 통해 us-east-1 리전의 클러스터에서 작업 중임을 확인하십시오.
+`kubectl config current-context` 명령어를 통해 us-west-2 리전의 클러스터에서 작업 중임을 확인하십시오.
 {{% /notice %}}
 
     ```
@@ -322,5 +322,5 @@ ELB 생성에 2-3분 정도의 시간이 소요될 수 있으니 참고바랍니
     curl <LoadBalancer Ingress>
 
     # 결과값
-    Hello World from us-east-1
+    Hello World from us-west-2
     ```
