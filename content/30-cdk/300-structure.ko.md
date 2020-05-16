@@ -24,7 +24,6 @@ IDE가 열리면 다음과 같은 구조를 볼 수 있습니다:
 * `tsconfig.json` 해당 프로젝트의 [typescript
   설정 파일](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
 * `.gitignore`, `.npmignore` 는 git과 npm 이 버전 관리를 할 때 / 패키지 매니저로 모듈을 퍼블리시 할 때 어떤 파일을 포함하고 제외할지 정의합니다.
-  from source control and when publishing this module to the package manager.
 * `node_modules` npm 이 관리하는 폴더로, 코드에서 필요로 하는 의존성 패키지들이 저장됩니다.
 
 ## 엔트리포인트

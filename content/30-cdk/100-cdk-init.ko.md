@@ -29,17 +29,15 @@ Executing npm install...
 npm notice created a lockfile as package-lock.json. You should commit this file.
 npm WARN tst@0.1.0 No repository field.
 npm WARN tst@0.1.0 No license field.
-```
 
-# CDK Typescript 프로젝트 살펴보기
+# Welcome to your CDK TypeScript project!
 
-이 프로젝트의 내용물을 한 번 살펴보십시오. (`CdkWorkshopStack`)라는 스택 인스턴스를 띄우고 있는 CDK 앱을 확인할 수 있습니다.  
-그 스택에는 Amazon SNS 토픽을 구독하는 Amazon SQS 큐 생성 코드가 들어있습니다.
+You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`CdkWorkshopStack`)
+which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.
 
-`cdk.json` 파일은 앱을 실행할 수 있는 CDK Toolkit 명령어를 보여줍니다.
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-
-## 유용한 명령어
+## Useful commands
 
  * `npm run build`   compile typescript to js
  * `npm run watch`   watch for changes and compile

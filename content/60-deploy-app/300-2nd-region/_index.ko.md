@@ -68,32 +68,34 @@ export class ClusterStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const primaryRegion = 'ap-northeast-1';
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal()
       });
 
-    const primaryRegion = 'ap-northeast-1';
-
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
     clusterName: `demogo`,
     mastersRole: clusterAdmin,
-    defaultCapacity: 2
+    defaultCapacity: 2,
+    defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
+                                new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
     });
 
     cluster.addCapacity('spot-group', {
     instanceType: new ec2.InstanceType('m5.xlarge'),
     spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
-    
+
     this.cluster = cluster;
 
     if (cdk.Stack.of(this).region==primaryRegion) {
       this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
-    }
-    else {
+  }
+  else {
+      // 스택이 두 번째 리전값을 가지고 있으면, 새로운 롤을 생성하되 그 리전 클러스터에만 접근할 수 있는 권한을 부여합니다.
       this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
-    }
-    
+  }
+
   }
 }
 
@@ -106,7 +108,6 @@ function createDeployRole(scope: cdk.Construct, id: string, cluster: eks.Cluster
 
   return role;
 }
-
 export interface EksProps extends cdk.StackProps {
   cluster: eks.Cluster
 }
@@ -116,10 +117,7 @@ export interface CicdProps extends cdk.StackProps {
   firstRegionRole: iam.Role,
   secondRegionRole: iam.Role
 }
-
-
 ```
-
 
 
 ### 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기

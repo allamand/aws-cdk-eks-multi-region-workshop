@@ -10,7 +10,7 @@ weight: 320
 import { EksProps } from './cluster-stack';
 ...
 export class ContainerStack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props: EksProps) {
+    constructor(scope: cdk.Construct, id: string, props: EksProps ) { // props 부분 변경!!
         ...
 ```
 1. ClusterStack에서 생성한 Props를 import 했습니다.
@@ -29,12 +29,9 @@ export class ContainerStack extends cdk.Stack {
   여기에는 nginx 를 세 개(replicas) 띄우는 yaml이 정의되어 있습니다.
 
 
-프로그래밍 언어를 그대로 이용할 수 있다는 CDK의 장점을 살려서, 우리는 실행 환경의 리전을 확인한 뒤 필요한 폴더의 내용만 읽어서 자원을 배포하도록 할 것입니다.
+프로그래밍 언어를 그대로 이용할 수 있다는 CDK의 장점을 살려서, 우리는 실행 환경의 리전을 확인한 뒤 필요한 폴더의 내용만 읽어서 자원을 배포하도록 할 것입니다. 그런데 현재 (2020년 5월) 시점으로는 CDK를 이용해 쿠버네티스 오브젝트를 생성하기 위해서는, Manifest를 json 형태로 바꾸어주어야 합니다. 이를 처리해줄 유틸 함수를 먼저 살펴봅시다.
 
-그런데 현재(2020년 4월) 시점으로는 CDK를 이용해 쿠버네티스 오브젝트를 생성하기 위해서는, Manifest를 json 형태로 바꾸어주어야 합니다. 이를 처리해줄 유틸 함수를 먼저 살펴봅시다.
-
-1) 프로덕션에서 이런 방식으로 컨테이너를 배포하시는 경우, region이나 clustername 등을 CDK 차원에서 변수 처리하도록 수정해주셔야 합니다.  
-예: `data.split('{{region_name}}').join(region)`
+* 프로덕션에서 이런 방식으로 컨테이너를 배포하시는 경우, region이나 clustername 등을 CDK 차원에서 변수 처리하도록 수정해주셔야 합니다. (예: `data.split('{{region_name}}').join(region)`)
 
 
 ## readFile util 확인하기
@@ -145,7 +142,7 @@ There were no differences
 ```
 {{% notice info %}}
 콘솔에 출력되는 결과를 잘 보면, ContainerStack이 아니라 ClusterStack에서 컨테이너 생성이 진행되는 것을 볼 수 있습니다.
-왜 그럴까요? 더 자세히 알고 싶으신 분들은 [여기](/ko/80-appendix/how-cfn-addResource/)를 눌러주십시오.
+왜 그럴까요? 더 자세히 알고 싶으신 분들은 [여기](/ko/80-appendix/how-cfn-addresource/)를 눌러주십시오.
 {{% /notice %}}
 
 

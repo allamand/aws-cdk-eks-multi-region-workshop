@@ -31,29 +31,37 @@ export interface EksProps extends cdk.StackProps {
 
 완성된 코드는 아래와 같을 것입니다.
 ```typescript
+import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as eks from '@aws-cdk/aws-eks';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { PhysicalName } from '@aws-cdk/core';
+
 export class ClusterStack extends cdk.Stack {
   public readonly cluster: eks.Cluster;
 
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-      const clusterAdmin = new iam.Role(this, 'AdminRole', {
-        assumedBy: new iam.AccountRootPrincipal()
+
+    const primaryRegion = 'ap-northeast-1';
+    const clusterAdmin = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal()
       });
 
-      const cluster = new eks.Cluster(this, 'demogo-cluster', {
+    const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
         version: '1.14',
         defaultCapacity: 2
-      });
+    });
 
-      cluster.addCapacity('spot-group', {
-        instanceType: new ec2.InstanceType('m5.xlarge'),
-        spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
-      });
+    cluster.addCapacity('spot-group', {
+      instanceType: new ec2.InstanceType('m5.xlarge'),
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
+    });
 
-      this.cluster = cluster;
 
+    this.cluster = cluster;
 
   }
 }
@@ -67,11 +75,11 @@ function createDeployRole(scope: cdk.Construct, id: string, cluster: eks.Cluster
 
   return role;
 }
-
 export interface EksProps extends cdk.StackProps {
   cluster: eks.Cluster
 }
-```
 
+
+```
 이제 이 모듈에서 `EksProps`를 export 하여 외부에서도 이용할 수 있게 되었습니다.  
 이를 활용해서 컨테이너 스택을 작성해보겠습니다.

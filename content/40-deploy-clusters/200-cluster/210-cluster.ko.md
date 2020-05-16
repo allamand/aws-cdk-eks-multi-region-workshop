@@ -7,7 +7,7 @@ weight: 210
 ## EKS 클러스터 생성하기
 
 다음과 같이 import된 패키지를 인스턴스화하여 클러스터를 정의합니다.
-`super(..)` 구문 아래 다음 코드를 복사하여 붙여주십시오.
+`const primaryRegion = 'ap-northeast-1';` 선언 아래 다음 코드를 복사하여 붙여주십시오.
 ```typescript
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal()
@@ -25,6 +25,7 @@ weight: 210
       spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
 
+
 ```
 
 
@@ -32,8 +33,8 @@ weight: 210
 * `cluster`가 우리가 생성할 EKS 클러스터입니다. [이 가이드](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html)에 따라 여러가지 클러스터 값 설정을 할 수 있는데요, 이 워크샵에서 우리는 다음과 같은 설정을 할 것입니다.
     * `clusterName`: 두 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
     * `masterRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:master`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
-    * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다.
-* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다. 
+    * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다. 
+* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다. (2020년 5월 기준, Managed Nodegroup에서 스팟 인스턴스를 지원하지 않아 ASG로 작업합니다.)
 
 {{% notice info %}} 
 참고: EC2 스팟 인스턴스는 더 이상 bidding 이 아니라, [market price 로 구매](https://aws.amazon.com/ko/blogs/compute/new-amazon-ec2-spot-pricing/)를 하게 됩니다.  
@@ -52,7 +53,6 @@ export class ClusterStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const primaryRegion = 'ap-northeast-1';
-
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal()
       });
@@ -68,6 +68,7 @@ export class ClusterStack extends cdk.Stack {
       instanceType: new ec2.InstanceType('m5.xlarge'),
       spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
+
     //...
 ```
 
@@ -221,7 +222,7 @@ Do you wish to deploy these changes (y/n)?
 아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
-ClusterStack-us-west-2.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<YOUR_ROLE_ARN>>
+ClusterStack-ap-northeast-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<ROLE_ARN>>
 ```
 
 정상적으로 수행되면 아래와 같은 결과가 출력될 것입니다.

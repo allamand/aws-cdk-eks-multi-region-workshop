@@ -70,7 +70,9 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
     clusterName: `demogo`,
     mastersRole: clusterAdmin,
-    defaultCapacity: 2
+    defaultCapacity: 2,
+    defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
+                                new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
     });
 
     cluster.addCapacity('spot-group', {
@@ -82,8 +84,6 @@ export class ClusterStack extends cdk.Stack {
 
     if (cdk.Stack.of(this).region==primaryRegion)
       this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
-    
-    
   }
 }
 
@@ -106,7 +106,6 @@ export interface CicdProps extends cdk.StackProps {
   firstRegionRole: iam.Role
 }
 ```
-
 
 ### CicdStack 스택 뼈대 만들기
 `lib` 디렉토리 아래에 `cicd-stack.ts` 파일이 아래와 같이 생성되어 있을 것입니다.

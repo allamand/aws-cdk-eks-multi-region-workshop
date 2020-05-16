@@ -17,6 +17,10 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
 
 ```typescript
 
+    const clusterAdmin = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal()
+      });
+
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
@@ -24,10 +28,16 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
         defaultCapacity: 2
     });
 
+    cluster.addCapacity('spot-group', {
+      instanceType: new ec2.InstanceType('m5.xlarge'),
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
+    });
+
+
 ```
 
-이 부분을 아래와 같이, 스택이 실행되는 리전 값을 참조하여 다른 인스턴스 타입으로 배포되도록 해보죠.  
-`eks.Cluster` 생성 부분에 다음 코드를 붙여넣습니다.
+이 부분을 아래와 같이, 스택이 실행되는 리전 값을 참조하여 다른 인스턴스 타입으로 배포되도록 해보죠.
+eks.Cluster 생성 부분에 다음 코드를 붙여넣습니다.
 
 ```typescript
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
@@ -44,7 +54,7 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
         version: '1.14',
         defaultCapacity: 2,
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
+                                 new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
       });
 ```
 
@@ -69,7 +79,7 @@ Resources
 [~] AWS::AutoScaling::LaunchConfiguration demogo-cluster/DefaultCapacity/LaunchConfig demogoclusterDefaultCapacityLaunchConfig93D71520 replace
  └─ [~] InstanceType (requires replacement)
      ├─ [-] m5.large
-     └─ [+] r5.xlarge
+     └─ [+] r5.2xlarge
 ```
 
 ## 자원 생성 확인하기
