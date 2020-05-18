@@ -23,7 +23,8 @@ Helm Chart라는 패키징 포맷을 사용하는데, 이 포맷으로 쿠버네
 
     cluster.addChart(`metrics-server`, {
       repository: stable,
-      chart: 'metrics-server'
+      chart: 'metrics-server',
+      release: 'metrics-server'
     });
 
 ```

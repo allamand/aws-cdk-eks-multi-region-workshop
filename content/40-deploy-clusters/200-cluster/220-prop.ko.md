@@ -23,7 +23,7 @@ export interface EksProps extends cdk.StackProps {
 ```
 
 그리고 Props로 export될 클러스터를 지정해줍니다.  
-`const cluster = ...` 선언 다음에 아래 코드를 붙여넣어주세요.
+class 선언 부분의 최하단에 아래 코드를 붙여넣어주세요.
 
 ```
       this.cluster = cluster;

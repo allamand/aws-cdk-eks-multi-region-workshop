@@ -32,7 +32,7 @@ weight: 210
 * `clusterAdmin`은 여러분의 클러스터에 `kubectl` 등의 명령어를 수행할 때 assume 할 IAM Role 입니다.
 * `cluster`가 우리가 생성할 EKS 클러스터입니다. [이 가이드](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html)에 따라 여러가지 클러스터 값 설정을 할 수 있는데요, 이 워크샵에서 우리는 다음과 같은 설정을 할 것입니다.
     * `clusterName`: 두 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
-    * `masterRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:master`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
+    * `mastersRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:masters`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
     * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다. 
 * `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다. (2020년 5월 기준, Managed Nodegroup에서 스팟 인스턴스를 지원하지 않아 ASG로 작업합니다.)
 
@@ -91,6 +91,28 @@ const secondaryRegion = {account: account, region: 'us-west-2'};
 ```typescript
 const primaryCluster = new ClusterStack(app, `ClusterStack-${primaryRegion.region}`, {env: primaryRegion })
 ```
+
+
+
+## cdk bootstrap
+
+이 워크샵은 도쿄 리전(ap-northeast-1)과 오레곤 리전(us-west-2)에 자원을 배포할 것입니다.  
+이 두 리전에 대해 `cdk bootstrap` 작업을 수행해주어야, 우리가 워크샵을 통해 작성하는 CDK 코드를 이용해 AWS 자원을 만들 수 있습니다.
+
+cdk bootstrap 은 CDK가 특정 환경(계정, 리전)에 자원 배포를 수행하기 위해 필요한 설정을 하도록 도와주는 AWS CDK cli 입니다. cdk bootstrap 을 수행하면 CDK toolkit을 위한 스택이 AWS 환경에 배포됨을 확인할 수 있습니다. 이를 통해 CloudFormation 템플릿과 기타 asset을 저장하는 S3 bucket이 생성됩니다.
+
+```
+ACCOUNT_ID=$(aws sts get-caller-identity|jq -r ".Account")
+cdk bootstrap aws://$ACCOUNT_ID/ap-northeast-1
+cdk bootstrap aws://$ACCOUNT_ID/us-west-2
+```
+
+{{% notice info %}} 
+ssh 세션을 맺어 다른 서버에서 작업하시는 경우, 세션이 만료되지 않도록 한 차례 갱신한 뒤 수행하실 것을 권고드립니다. 
+{{% /notice %}}
+
+
+
 
 ## 생성할 자원 확인하기
 이제 다음 명령어를 사용해 어떤 자원들이 생성될 지 확인해보겠습니다.
@@ -218,7 +240,9 @@ Do you wish to deploy these changes (y/n)?
 
 
 ## kubeconfig 업데이트하기
-자원 생성이 완료되고 나면, 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
+![](/images/20-deploy-clusters/stack-output.png)
+
+자원 생성이 완료되고 나면, 위 스크린샷처럼 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
 아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```

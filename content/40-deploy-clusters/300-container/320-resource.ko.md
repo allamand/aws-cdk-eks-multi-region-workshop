@@ -6,6 +6,18 @@ weight: 320
 ## EKS 클러스터 주입 받기
 앞서 ClusterStack에서 정의한 Interface를 이용하여, 이 `ContainerStack` 클래스가 생성되는 시점에 이미 생성된 EKS 클러스터를 전달 받을 수 있도록 다음과 같이 **lib/container-stack.ts**를 수정합니다.
 
+1. import 추가
+  ```typescript
+  import { EksProps } from './cluster-stack'; 
+  ```
+
+2. 주입 받는 props를 EksProps로 변경
+  ```typescript
+  export class ContainerStack extends cdk.Stack {
+      constructor(scope: cdk.Construct, id: string, props: EksProps ) 
+  ```
+
+완성된 코드는 아래와 같을 것입니다.
 ```typescript
 import { EksProps } from './cluster-stack';
 ...
@@ -13,8 +25,7 @@ export class ContainerStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: EksProps ) { // props 부분 변경!!
         ...
 ```
-1. ClusterStack에서 생성한 Props를 import 했습니다.
-2. 그리고 constructor가 주입 받는 props를 EksProps로 변경했습니다.
+
 
 
 
@@ -31,7 +42,6 @@ export class ContainerStack extends cdk.Stack {
 
 프로그래밍 언어를 그대로 이용할 수 있다는 CDK의 장점을 살려서, 우리는 실행 환경의 리전을 확인한 뒤 필요한 폴더의 내용만 읽어서 자원을 배포하도록 할 것입니다. 그런데 현재 (2020년 5월) 시점으로는 CDK를 이용해 쿠버네티스 오브젝트를 생성하기 위해서는, Manifest를 json 형태로 바꾸어주어야 합니다. 이를 처리해줄 유틸 함수를 먼저 살펴봅시다.
 
-* 프로덕션에서 이런 방식으로 컨테이너를 배포하시는 경우, region이나 clustername 등을 CDK 차원에서 변수 처리하도록 수정해주셔야 합니다. (예: `data.split('{{region_name}}').join(region)`)
 
 
 ## readFile util 확인하기
@@ -106,7 +116,7 @@ export class ContainerStack extends cdk.Stack {
   }
 }
 ```
-이때, `cluster` 부분을 주의 깊게 봐주세요. [앞서 export 한 클러스터](/ko/40-deploy-clusters/200-cluster/220-prop.ko.md)를 전달 받아서 이용하겠다는 의미입니다.
+
 
 
 

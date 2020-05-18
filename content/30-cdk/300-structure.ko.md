@@ -74,4 +74,4 @@ export class CdkWorkshopStack extends cdk.Stack {
 
 - SQS Queue (`new sqs.Queue`)
 - SNS Topic (`new sns.Topic`)
-- SNS 토픽 (`topic.addSubscription`)에서 발생하는 모든 메시지를 수신하도록 큐 설정
+- SNS 토픽에서 발생하는 모든 메시지를 수신하도록 큐 설정 (`topic.addSubscription`)

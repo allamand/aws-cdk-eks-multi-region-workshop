@@ -46,8 +46,6 @@ eks.Cluster 생성 부분에 다음 코드를 붙여넣습니다.
 
 완성된 코드는 다음과 같을 것입니다.
 ```typescript
-      const primaryRegion = 'ap-northeast-1';
-
       const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,

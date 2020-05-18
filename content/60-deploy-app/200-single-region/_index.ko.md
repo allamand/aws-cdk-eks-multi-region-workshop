@@ -61,11 +61,11 @@ export class ClusterStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const primaryRegion = 'ap-northeast-1';
+
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal()
       });
-
-    const primaryRegion = 'ap-northeast-1';
 
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
     clusterName: `demogo`,
@@ -225,7 +225,7 @@ buildspec 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 
 
 
 ### EKS 클러스터에 배포하는 CodeBuild 프로젝트 생성하기
-현 시점에는 AWS CodeDeploy (관리형 배포 서비스)가 아직 EKS 클러스터를 지원하지 않기 때문에 CodeBuild를 이용하여 자원을 배포해보겠습니다.
+CodeBuild를 이용하여 자원을 배포해보겠습니다.
 
 
 아래 코드를 위에 작성한 코드 뒤에 붙여넣으십시오.
@@ -366,7 +366,7 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 `cdk diff` 명령어를 통해 생성될 자원을 확인한 뒤, `cdk deploy "*"` 명령어를 통해 CI/CD 파이프라인을 배포합니다.  
 이때 `CicdStack`과 별개로, 이 스택의 자원에 권한 부여를 위해 `ClusterStack`에서도 변경이 발생합니다.
 
-터미널에 완료가 뜨고 나서 콘솔에 들어가면, 현재 codecommit에 master 브랜치가 없어서 실패 상태로 되어 있는 파이프라인이 생성되어 있음을 확인할 수 있습니다.
+터미널에 완료가 뜨고 나서 [CodePipeline 콘솔](http://console.aws.amazon.com/codesuite/codepipeline/home)에 들어가면, 현재 codecommit에 master 브랜치가 없어서 실패 상태로 되어 있는 파이프라인이 생성되어 있음을 확인할 수 있습니다.
 
 ![](/images/40-deploy-app/result-pipeline-single-region.png)
 

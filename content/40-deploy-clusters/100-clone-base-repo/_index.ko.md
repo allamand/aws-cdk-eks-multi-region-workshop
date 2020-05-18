@@ -24,7 +24,7 @@ git clone https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton
 ├── cdk.json
 ├── jest.config.js
 ├── lib
-│   ├── cicd-for-primary-region-stack.ts
+│   ├── cicd-stack.ts
 │   ├── cluster-stack.ts
 │   └── container-stack.ts
 ├── package-lock.json
@@ -46,7 +46,7 @@ git clone https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton
     └── 00_us_nginx.yaml
 ```
 * `/bin/multi-cluster-ts`: 이 CDK 앱의 **엔트리포인트**입니다. 즉, CDK 앱이 실행될 때 가장 먼저 보는 지점입니다. 어떤 스택을 실행할 것인지가 등록되는 지점으로, 우리가 생성하는 스택을 실제로 배포하려면 여기에 추가해주어야 합니다. 향후 엔트리포인트 라는 단어가 워크샵에 등장하면, 이 파일을 뜻하는 것이라고 생각하시면 됩니다.
-* `/lib`: 이 CDK 앱에서 우리가 작성할 Stack 파일이 위치합니다. `cluster-stack`, `container-stack`을 실습 1에서, `cicd-for-primary-region-stack`을 실습 2에서 작성합니다.
+* `/lib`: 이 CDK 앱에서 우리가 작성할 Stack 파일이 위치합니다. `cluster-stack`, `container-stack`을 실습 1과 실습 2에서, `cicd-stack`을 실습 3에서 작성합니다.
 * `/utils`: 스택 작성에 필요한 몇 가지 도구들입니다. Codebuild에서 필요한 빌드 베이스 이미지와 빌드 스펙, 컨테이너 생성을 위한 json converter가 있습니다.
 * `/yaml-*`: 환경 별로 배포할 k8s manifest들이 위치합니다. 
 
@@ -58,9 +58,12 @@ git clone https://github.com/yjw113080/aws-cdk-eks-multi-region-skeleton
 npm i
 ```
 
-## 터미널 창에서 `npm run watch` 확인
-앞서 설명한 것처럼 typescript 에서는 javascript로 트랜스컴파일 과정을 거쳐야 합니다.  
-변경분을 자동으로 컴파일하기 위해 `npm run watch`를 실행하는 터미널이 백그라운드에 켜져있는지 확인합니다.
+## 터미널 창에서 `npm run watch` 수행
+앞서 설명한 것처럼 typescript 에서는 javascript로 트랜스파일 과정을 거쳐야 합니다.  
+이 프로젝트 디렉토리에서도 변경분을 자동으로 컴파일하기 위해 [여기](/ko/30-cdk/200-watch/)를 참고하여 `npm run watch`가 백그라운드에서 실행하십시오.
+
+
+
 아래 스크린샷은 VScode IDE에서 터미널을 실행하는 예시입니다.
 
 ![](/images/20-single-region/npm-run-watch.png)

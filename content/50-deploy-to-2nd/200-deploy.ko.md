@@ -82,7 +82,7 @@ CURRENT   NAME                                                     CLUSTER      
 
 ## 클러스터 내 자원 확인
 현재 등록된 컨텍스트에서 `kubectl get pod` 명령어를 통해 현재 배포된 pod를 확인합니다.  
-`us-west-2` 리전이기 때문에, [도쿄 리전에 배포한 결과](/ko/40-deploy-clusters/300-container/320-resource/#배포하기)와 다르게 `yaml-us-west-2/00_us_nginx.yaml` 파일의 내용처럼 nginx Pod가 5개 배포된 것을 볼 수 있습니다.  
+`us-west-2` 리전이기 때문에, [도쿄 리전에 배포한 결과](/ko/40-deploy-clusters/300-container/320-resource/#배포하기)와 다르게 `yaml-us-west-2/00_us_nginx.yaml` **파일의 내용처럼 nginx Pod가 5개 배포**된 것을 볼 수 있습니다.  
 
 ```
 NAME                                READY   STATUS    RESTARTS   AGE
