@@ -1,7 +1,8 @@
 ---
 title: Prerequisites
-chapter: true
-weight: 15
+# chapter: true
+weight: 20
+pre: "<b>2. </b>"
 ---
 
 # Prerequisites for the Workshop

@@ -1,5 +1,5 @@
 ---
-title: Create a new CDK Project
+title: Intro to CDK
 chapter: true
 weight: 20
 pre: "<b>3. </b>"
