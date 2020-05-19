@@ -52,25 +52,18 @@ nodejs fs 모듈과 [js-yaml](https://www.npmjs.com/package/js-yaml) 을 이용�
 
 ```typescript
 export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
-    fs.readdir(dir, 'utf8', (err, files) => {
-      if (files!=undefined) {
-        files.forEach((file) => {
-        if (file.split('.').pop()=='yaml') {
-          fs.readFile(dir+file, 'utf8', (err, data) => {
-            if (data!=undefined) {
-              let i = 0;
-              yaml.loadAll(data).forEach((item) => {
-                cluster.addResource(file.substr(0,file.length-5)+i, item);
-                i++;
-              })
-            }
-          })
-        }
-      })} else {
-        console.log(`${dir} is empty`);
+  fs.readdirSync(dir, "utf8").forEach(file => {
+    if (file!=undefined && file.split('.').pop()=='yaml') {
+      let data = fs.readFileSync(dir+file, 'utf8');
+      if (data != undefined) {
+        let i=0;
+        yaml.loadAll(data).forEach((item) => {
+          cluster.addResource(file.substr(0,file.length-5)+i, item);
+          i++;
+        })
       }
-        
-      })
+    }
+  })
 }
 ```
 
