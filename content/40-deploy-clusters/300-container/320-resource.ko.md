@@ -34,7 +34,7 @@ export class ContainerStack extends cdk.Stack {
 ## K8S Manifest 확인하기
 그럼 생성할 컨테이너들을 살펴볼까요?
 * `yaml-xxx` 폴더에 보면 데모로 사용할 간단한 yaml 파일이 들어 있습니다. 
-* `yaml-common` 폴더에는 어느 리전에든 공통적으로 생성될 yaml 파일이 위치합니다.1)  
+* `yaml-common` 폴더에는 어느 리전에든 공통적으로 생성될 yaml 파일이 위치합니다. 
   여기에는 namespace를 하나 정의하는 간단한 yaml 파일이 있습니다.
 * `yaml-{{region}}` 폴더에는 특정 리전에만 생성되어야 하는 yaml 파일이 들어있습니다.
   여기에는 nginx 를 세 개(replicas) 띄우는 yaml이 정의되어 있습니다.
@@ -159,8 +159,7 @@ There were no differences
 cdk deploy ClusterStack-ap-northeast-1
 ```
 {{% notice info %}}
-* 혹시 다른 리전에 스택을 생성하셨다면 `ClusterStack` 뒤에 정확한 리전 이름이 오도록 해주세요.
-* 왜 `ContainerStack`이 아니라 `ClusterStack`을 실행시킬까요? 궁금하신 분은 [여기](/ko/80-appendix/how-cfn-addresource/)를 확인해주세요.
+혹시 다른 리전에 스택을 생성하셨다면 `ClusterStack` 뒤에 정확한 리전 이름이 오도록 해주세요.
 {{% /notice %}}
 
 `ClusterStack`을 생성했을 때처럼 터미널에 자원 생성 진행상황이 출력될 것입니다.  

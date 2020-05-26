@@ -9,7 +9,7 @@ This workshop is designed for Developers who begins their cloud journey with lim
 * who start to learn IaC
 * who plan to use EKS
 * who wants to deploy the best practice that AWS proposes with minimum effort
-* who wants to expand the current EKS workloads into another region
+* who wants to expand the EKS workloads into another region
 
 This workshop assumes you already know the following:
 * Basic concepts of containers and Kubernetes in general (docker build, docker push, Kubernetes pod, service, context...)

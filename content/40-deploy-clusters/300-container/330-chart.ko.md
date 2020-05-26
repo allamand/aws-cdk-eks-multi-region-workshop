@@ -34,7 +34,7 @@ Helm Chart는 CloudFormation 자원으로 배포됩니다. 그렇기 때문에 C
 
 Helm Chart를 지정하실 때 참고하실 만한 몇 가지 팁을 드립니다.
 * `repository`는 URL을 완전하게 작성해주셔야 합니다. 일반적으로 `helm install stable/xx`라고 명령어를 칠 때, `stable`이라는 레포지토리를 등록하는 작업을 사전에 거치시게 됩니다. 그런데 CDK에서는 그 작업 없이 URL을 주는 형태라고 이해하시면 됩니다.
-* 릴리즈 이름을 지정하지 않으면 노드 ID의 마지막 53 글자로 임의 지정됩니다. 되도록 사람이 이해할 수 있는 `release` 값을 주시기를 권장합니다.
+* 릴리즈 이름을 지정하지 않으면 노드 ID의 마지막 53 글자로 임의 지정됩니다. 이를 원하지 않으시면 `release` 값을 주시기를 권장합니다.
 * 이 외에 Chart 배포에 필요한 [설정값 상세](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.HelmChart.html)는 여기에서 확인하실 수 있습니다.
 
 
