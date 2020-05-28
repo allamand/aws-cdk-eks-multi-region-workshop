@@ -282,8 +282,6 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
 3단계로 첫 번째 리전의 EKS 클러스터에 정상적으로 어플리케이션이 배포된 뒤에, 아래 스크린샷과 같이 승인을 대기 중인 상태가 됨을 확인할 수 있습니다.  
 **<검토>** 버튼을 누른 뒤, **<승인>** 버튼을 누릅니다.
 
-* 이 워크샵에서는 Approval 을 위한 별도의 인풋을 넣지 않았으나, 프로덕션 환경에서는 필요에 따라 이 부분에 인풋을 집어넣을 수 있습니다.
-
 ![](/images/40-deploy-app/approval-pipeline.png)
 
 
@@ -307,7 +305,7 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
     ```
 
 2. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.  
-ELB 생성에 2-3분 정도의 시간이 소요될 수 있으니 참고바랍니다.
+ELB 생성에 2분 정도의 시간이 소요될 수 있으니 참고바랍니다.
 
     ```
     kubectl describe service hello-py | grep Ingress

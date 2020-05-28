@@ -1,36 +1,37 @@
 ---
-title: 멀티 리전 운영 전략과 Active-Active 아키텍처
+title: Multi-region operation strategy and Active-Active architecture
 weight: 100
 pre: "<b>5-1. </b>"
 ---
 
-본격적으로 들어가기 전에, 이 워크샵이 상정하는 멀티 리전 전략이 어떤 것인지 살펴봅시다.
 
-주 리전 이외에 다른 리전을 이용하는 데에는 여러가지 전략이 있을 수 있습니다.  
-주 리전과 동일하게 모든 자원을 배포하고 실제 서비스도 하는 Active-Active 구성부터,
-주요 서비스 정도만 살려 놓기도 하고, 데이터만 복제하고 유사시에만 자원을 배포하거나 백업만 옮겨 놓는 방법도 있죠.
+Before we get into it, let's take a look at what the multi-regional strategy this workshop assumes.
 
-## 왜 Active-Active 멀티 리전 아키텍처가 필요할까요?
+There may be several strategies to utilize another region other than the main region.
+The Active-Active configuration distributes all resources and performs actual services in the same way as the main region.
+There is also a way to preserve only the main services, and a few kind of replicated data, and deploy other resources only in case of emergency. Or you can just have backups in the secondary region.
 
-그렇다면 이 중에서도 두 개 리전에 동일한 수준의 자원을 배포해두는 Active-Active 구성은 어떤 이유에서 필요할까요?
+## Why do you need an active-active multi-region architecture?
 
-1. 지리적으로 떨어진 고객들에게 최적의 서비스를 제공하기 위함입니다.
-2. 국가에 따라 데이터 주권 정책을 준수하기 위함입니다.
-3. 문제가 생기는 경우 바로 부 리전에서 서비스를 제공하고자 하는 DR 목적도 있을 수 있습니다.
 
-## Active-Active 아키텍처에서 고려해야 하는 점
+So why do you need an Active-Active configuration that deploys the same level of resources in two regions?
 
-이 때 아키텍처 적으로 고려해야 하는 점들은 다섯 가지 주요 분야로 나뉠 수 있습니다.  
-무엇을 주요한 목적으로 두느냐에 따라 실제 아키텍처에서 고려해야 하는 점들이 달라질 것입니다.
+1. To provide optimal service to geographically distant customers.
+2. To comply with data sovereignty policies in different countries.
+3. To achieve very tight RPO and RTO when a disaster happens.
+
+## Points to consider in the Active-Active architecture
+
+The architectural considerations can be divided into five main areas.
+Depending on what you aim for, as describe in previous paragraph, your actual architecture would have different weight in the following areas.
 
 ![](/images/10-intro/5pillars.png)
 
-## 이 워크샵의 전제
+## The premise of this workshop
 
-이 워크샵은 **CDK를 이용한 관리**에 초점을 맞추었습니다. 따라서 Route 53 등등 주요한 아키텍처 요소들이 있으나,  
-EKS 클러스터와 IaC를 통한 Operational Excellence 프랙티스를 보여주는 데에 꼭 필요한 부분 만을 워크샵에 담았습니다.
-위 다섯 가지 고려사항 중 다른 부분에 대해 더 궁금하신 분들은 아래 링크에서 더 많은 정보를 찾으실 수 있을 것입니다.
+This workshop focused on **how we would manage things with CDK**. Therefore, there are major architectural elements such as Route 53, which definitely needs to be considered but not covered in this workshop. The workshop contains only the essential parts of showing the Operational Excellence practices with EKS clusters in perspective of IaC.
+If you are curious about the other parts of the above five considerations, you can find more information at the link below.
 
 
-## 참고
+## Reference
 * [AWS re:Invent 2019: [REPEAT 2] Architecture patterns for multi-region active-active (ARC213-R2)](https://youtu.be/3K9AzSrCmiQ)

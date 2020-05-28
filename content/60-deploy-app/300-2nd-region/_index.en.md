@@ -1,57 +1,54 @@
 ---
-title: 두 개 리전에 배포 테스트
+title: Deploy to two regions
 weight: 300
 pre: "<b>6-3. </b>"
 ---
 
-첫 번째 리전에서 정상 동작하는 것을 확인했으니, 이제 두 번째 리전에도 배포를 해볼까요?
+Now that we have verified that it works in the first region, shall we deploy it in the second region now?
 
 ![](/images/40-deploy-app/pipeline.svg)
 
-위와 같이 1) 첫 번째 리전에 정상 동작 여부 확인한 뒤 2) 수동 승인 과정을 거쳐 3) 두 번째 리전에 배포하도록 단계를 추가해보겠습니다.
-이 파이프라인에서는 별도의 복제 과정 없이, 첫 번째 리전에서의 소스와 컨테이너 이미지를 가지고 두 번째 리전에 배포가 이루어지게 됩니다.  
-리전 간 복제 등, DR 요소를 갖추고자 하신다면 [이 링크](/ko/80-appendix/related-bps/ecr-replication/)를 참고하십시오.
 
-한 가지 더 유의해야 할 점은, 첫 번째 리전에서 문제가 없을 때까지 검증한 뒤에 두 번째 리전에 배포된다는 시나리오입니다.  
-첫 번째 리전에서 배포가 성공했지만 두 번째 리전에서 실패하는 경우에는 첫 번째 리전의 롤백 없이 두 번째 리전만 롤백 됩니다.
+As above, let's add the steps to 1) approve the deployment by administrator, and 2) deploy it to the second region.
+In this pipeline, deployment is done in the second region, with source and container images from the first region without replicating any resources.
+If you have DR requirements, such as cross-region replication, please refer to [this link](/en/80-appendix/related-bps/ecr-replication/).
 
+One more thing to keep in mind is this scenario assumes that the deployment is verified in the first region before it goes to the second region. If deployment succeeds in the first region but fails in the second region, only the second region is rolled back without the first region being rolled back.
 
-### CI/CD Pipeline에서 사용할 IAM Role 내보내기
+### Export IAM role for CI/CD Pipeline
 ![](/images/40-deploy-app/2nd-region-pipeline.svg)
 
-앞 단계에서 배포를 수행한 것처럼, 두번째 리전에 배포할 때에도 그 리전 EKS 클러스터에 권한이 있는 Role을 assume 해서 실제 배포를 수행합니다.   
-앞에서 생성한 `for-1st-region`을 사용하지 않는 이유는, 각 롤이 해당 리전의 클러스터에만 권한을 갖도록 하기 위함입니다. 그럼 두 번째 리전의 EKS 클러스터에 kubectl 명령을 보낼 수 있는 Role을 생성해봅시다.
-**lib/cluster-stack.ts**을 열어 아래 코드를 순서대로 추가/수정합니다.
+As in the previous step in single region deployment, the actual deployment is performed by assuming a privileged role in the region's EKS cluster.
+The reason for not using the `for-1st-region` created earlier is to ensure that each role has permission only for clusters in the region. So let's create a Role that can run kubectl commands to the EKS cluster in the second region.
+Open **lib/cluster-stack.ts** and add / modify the code below in order.
 
-
-1. `constructor` 위
+1. Above `constructor`
     ```typescript
     public readonly secondRegionRole: iam.Role;
 
     ```
 
-2. `constructor` 내부, if 절 수정
+2. Inside `constructor`, the `if` part
     ```typescript
         if (cdk.Stack.of(this).region==primaryRegion) {
             this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
         }
         else {
-            // 스택이 두 번째 리전값을 가지고 있으면, 새로운 롤을 생성하되 그 리전 클러스터에만 접근할 수 있는 권한을 부여합니다.
             this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
         }
     ```
 
-3. `class` 외부, 최하단 interface 수정
+3. Outside of `class`, interface named `CicdProps`
     ```typescript
     export interface CicdProps extends cdk.StackProps {
     cluster: eks.Cluster,
     firstRegionRole: iam.Role,
-    secondRegionRole: iam.Role // < 두 번째 리전 클러스터에 접근권한이 있는 Role을 추가로 export 합니다.
+    secondRegionRole: iam.Role // ADDED!
     }
 
     ```
 
-완성된 **lib/cluster-stack.ts**는 다음과 같을 것입니다.
+The completed **lib/cluster-stack.ts** should look like this:
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
@@ -92,7 +89,7 @@ export class ClusterStack extends cdk.Stack {
       this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
   }
   else {
-      // 스택이 두 번째 리전값을 가지고 있으면, 새로운 롤을 생성하되 그 리전 클러스터에만 접근할 수 있는 권한을 부여합니다.
+
       this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
   }
 
@@ -120,20 +117,21 @@ export interface CicdProps extends cdk.StackProps {
 ```
 
 
-### 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
+### Create a CodeBuild project to deploy to the second region
 
-**lib/cicd-stack.ts** 파일로 이동합니다.  
-지금까지 작성된 코드에 아래 코드를 붙여넣습니다. 단, CodePipeline 정의 부분보다 위에 정의해야 합니다. 
+Go to the **lib/cicd-stack.ts** file.
+Paste the code below. Please make sure it is defined above the CodePipeline definition.
 
 ```typescript
         const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
 ```
-* `/utils/buildspec.ts`에 정의된 빌드 스펙을 가지고 CodeBuild 프로젝트를 생성했습니다. 자세한 내용이 궁금하시면 해당 파일을 열어 확인하십시오.
+* In the /utils folder, we have pre-defined build specifications for this workshop. If you are curious about the detailed build specifications, please refer to the **/utils/buildspec.ts** file.
 
 
 
-### CodePipeline 수정
-선언된 CodePipeline construct에 아래 스테이지를 추가합니다.
+
+### Modify CodePipeline
+Add the following stages to the declared CodePipeline construct.
 ```typescript
             ,{
                 stageName: 'ApproveToDeployTo2ndRegion',
@@ -151,9 +149,9 @@ export interface CicdProps extends cdk.StackProps {
             }
 ```
 
-* 이 워크샵에서는 승인할 때에 참고할 수 있는 별도의 정보를 포함하지 않았습니다. 프로덕션에서 이용하실 때에는 실제 승인자가 필요로 하는 정보를 추가하도록 구성하십시오. 
- 
-완성된 코드는 아래와 같을 것입니다.
+* This workshop does not include any additional information that can be consulted for approval. When using it in production, configure it to add the information required by the actual approver.
+ 
+The completed code should look like this.
 ```typescript
 import * as cdk from '@aws-cdk/core';
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -236,8 +234,8 @@ export class CicdStack extends cdk.Stack {
     }
 }
 ```
-### 엔트리포인트 수정하기
-두 번째 리전의 배포를 수행할 Role을, 스택 생성시 주입 받을 수 있도록 아래와 같이 **bin/multi-cluster-ts.ts** 파일을 수정합니다.
+### Modify the entry point
+Modify the **bin/multi-cluster-ts.ts** file as shown below so that the role to perform deployment of the second region can be injected.
 
 ```typescript
 new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
@@ -245,16 +243,19 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
                                     secondRegionRole: secondaryCluster.secondRegionRole});
 ```
 
-* `secondRegionRole: secondaryCluster.secondRegionRole`을 추가했습니다.
+* `secondRegionRole: secondaryCluster.secondRegionRole` is added.
 
-### CI/CD 파이프라인 배포하기
-`cdk diff` 명령어로 생성될 자원을 확인한 뒤 `cdk deploy "*" --require-approval never` 명령어를 통해 CI/CD 파이프라인을 배포합니다.
+### Deploy CI/CD Pipeline
+
+After checking the resources to be created with the `cdk diff` command, deploy the CI / CD pipeline using ` cdk deploy "*" --require-approval never` command.
+
 
 {{% notice warning %}}
-위 명령어는 워크샵 단계 간소화를 위해 IAM 등 보안 관련 자원 수정에 대한 동의를 생략하도록 했음을 유의하십시오.
+
+Please note that the above command omits the consent to modify security-related resources such as IAM, in order to simplify the workshop phase.
 {{% /notice %}}
 
-터미널에서 진행상황을 확인할 수 있습니다.
+You can check the progress in the terminal.
 
 ```
   ...
@@ -271,33 +272,34 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
 ```
 
 
-### 변경 사항 릴리즈를 통해 수정된 파이프라인 다시 트리거하기
+### Trigger the modified pipeline again
 
 ![](/images/40-deploy-app/release-change.png)
+  
+You can see the two newly deployed stages in the [CodePipeline Console](https://console.aws.amazon.com/codesuite/codepipeline/?#).
+Click 'Release Changes' in the screenshot above to reflect the latest code to the second region.
 
-[CodePipeline 콘솔](https://console.aws.amazon.com/codesuite/codepipeline/?#)에서 새롭게 배포된 두 단계를 확인할 수 있습니다.  
-위 스크린샷의 `변경 사항 릴리스`를 클릭하여 현재 시점 최신 코드를 반영하도록 합니다.  
+### Approve the release
 
-### 릴리즈 승인하기
-3단계로 첫 번째 리전의 EKS 클러스터에 정상적으로 어플리케이션이 배포된 뒤에, 아래 스크린샷과 같이 승인을 대기 중인 상태가 됨을 확인할 수 있습니다.  
-**<검토>** 버튼을 누른 뒤, **<승인>** 버튼을 누릅니다.
+After the application is successfully deployed to the EKS cluster in the first region by the third stage of the pipeline, you can see that it is in the status of waiting for approval as shown in the screenshot below.
+Press the **<Review>** button, then press the **<Apply>** button.
 
-* 이 워크샵에서는 Approval 을 위한 별도의 인풋을 넣지 않았으나, 프로덕션 환경에서는 필요에 따라 이 부분에 인풋을 집어넣을 수 있습니다.
-
+  
 ![](/images/40-deploy-app/approval-pipeline.png)
 
 
-### 배포된 자원 확인하기
-1. `kubectl` 명령어를 통해 배포된 컨테이너를 확인해봅시다.
+### Check the deployed resources
+1. Let's check the deployed container by the `kubectl` command.
+
 {{% notice warning %}}
-`kubectl config current-context` 명령어를 통해 us-west-2 리전의 클러스터에서 작업 중임을 확인하십시오.
+Verify that you are working on a cluster in the us-west-2 region via the `kubectl config current-context` command.
 {{% /notice %}}
 
     ```
     NAME                                READY   STATUS    RESTARTS   AGE
-    hello-py-576f77b98b-kj7bf           0/1     Pending   0          85s  << 어플리케이션 Pod
-    hello-py-576f77b98b-lkqwb           0/1     Pending   0          85s  << 어플리케이션 Pod
-    hello-py-576f77b98b-wln9l           0/1     Pending   0          85s  << 어플리케이션 Pod
+    hello-py-576f77b98b-kj7bf           0/1     Pending   0          85s  << Application Pod
+    hello-py-576f77b98b-lkqwb           0/1     Pending   0          85s  << Application Pod
+    hello-py-576f77b98b-wln9l           0/1     Pending   0          85s  << Application Pod
     metrics-server-6b6bbf4668-vqhjl     1/1     Running   0          3h58m
     nginx-deployment-5754944d6c-5jdkg   1/1     Running   0          3h58m
     nginx-deployment-5754944d6c-hns6v   1/1     Running   0          3h58m
@@ -306,19 +308,19 @@ CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB
     nginx-deployment-5754944d6c-xlxxh   1/1     Running   0          3h58m
     ```
 
-2. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.  
-ELB 생성에 2-3분 정도의 시간이 소요될 수 있으니 참고바랍니다.
+2. Check if the response comes back from `EXTERNAL-IP` of the created service object.
+Please note that ELB generation may take about 2 minutes.
 
     ```
     kubectl describe service hello-py | grep Ingress
 
-    # 결과값
+    # Result
     LoadBalancer Ingress:     aed0099fad25846a3a469d6abd64926d-847916387.ap-northeast-1.elb.amazonaws.com
     ```
 
     ```
     curl <LoadBalancer Ingress>
 
-    # 결과값
+    # Result
     Hello World from us-west-2
     ```

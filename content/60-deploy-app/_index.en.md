@@ -1,25 +1,26 @@
 ---
-title: 실습 3, 두 리전에 어플리케이션 배포하기
+title: Lab 3, Deploy apps into 2 regions
 weight: 60
 pre: "<b>6. </b>"
 ---
 
-이제 두 리전에 EKS클러스터가 모두 생성되었습니다.  
-그럼 **개발자 입장에서 새로운 코드를 개발했는데 이 코드를 두 리전 모두에 배포하고 싶으면** 어떻게 해야 할까요?  
-이 작업을 가능하게 해주는, 두 리전에 걸친 파이프라인을 만들어보겠습니다. <br/><br/>
+EKS clusters are now created in both regions.
+So, if you've developed new code from a developer's point of view and want to distribute it in both regions, what do you do?
+Let's create a pipeline that spans two regions that makes this possible. <br/><br/>
 
-### 실습 진행 단계 
+### Lab Overview
 ![](/images/40-deploy-app/intro2.svg)
 {{% children showhidden="false" %}}
 
 
-파이프라인의 구성 내용을 살펴보면 아래와 같습니다.
+The structure of the pipeline is as follows.
 ![](/images/40-deploy-app/pipeline.svg)
-1. 개발자가 코드를 CodeCommit에 체크인합니다.
-2. CodeBuild를 이용해 체크인된 코드를 빌드하고, 성공하면 ECR에 이미지를 푸시합니다.
-3. 이 작업이 성공하면 EKS 클러스터에 해당 이미지를 반영하는 컨테이너 자원을 생성합니다.
-4. 이 클러스터에서 정상적으로 동작함이 확인되면 승인 과정을 거칩니다.
-5. 승인이 완료되면 두 번째 클러스터에 컨테이너가 마찬가지로 배포됩니다.
+
+1. The developer checks the code into CodeCommit.
+2. Build the checked-in code using CodeBuild and, if successful, push the image to ECR.
+3. If this is successful, create a container resource that reflects the image in the EKS cluster.
+4. When it is confirmed that it is operating normally in this cluster, it goes through the approval process.
+5. Once approval is complete, the containers are deployed to the second cluster as well.
 
 ---
 <p align="center">

@@ -7,7 +7,7 @@ pre: "<b>6-1. </b>"
 아래 명령어를 수행하여 EKS 클러스터에 배포할 어플리케이션 코드를 내려받습니다.
 
 
-### 베이스 프로젝트 클론
+### 샘플 어플리케이션 클론
 ```
 git clone https://github.com/yjw113080/aws-cdk-multi-region-sample-app
 ```

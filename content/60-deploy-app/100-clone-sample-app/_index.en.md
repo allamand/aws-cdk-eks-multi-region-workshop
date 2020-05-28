@@ -1,31 +1,34 @@
 ---
-title: 샘플 앱 클론하기
+title: Clone the sample app
 weight: 100
 pre: "<b>6-1. </b>"
 ---
 
-아래 명령어를 수행하여 EKS 클러스터에 배포할 어플리케이션 코드를 내려받습니다.
+
+Clone the application code which would be deployed in EKS clusters.
 
 
-### 베이스 프로젝트 클론
+### Clone the sample application
 ```
 git clone https://github.com/yjw113080/aws-cdk-multi-region-sample-app
 ```
 
-* 지금까지 워크샵을 진행한 `skeleton` 폴더 외부에 클론되도록 해주십시오. 
+* Please make sure that it is cloned outside the 'skeleton' folder where you have conducted the workshop so far.
 
 
-### IDE에서 열기
-선호하시는 IDE에서 위 프로젝트 폴더를 열어 주십시오.
+### Open in IDE
+Open the above project folder in your favorite IDE.
 
 
-### 어플리케이션 내용 확인
-IDE를 열면 아래와 같이 세 가지 파일이 들어 있음을 확인할 수 있습니다.
-1. app.py: 실제 로직 부분. 
-2. Dockerfile: 이 파이썬 코드를 컨테이너 이미지로 빌드하기 위한 Dockerfile
-3. app-deployment.yaml: 쿠버네티스 클러스터에 배포할 내용을 정의하는 명세.
+### Check application contents
 
-app.py 파일을 열어 보면, 아래와 같이 컨테이너가 실행되고 있는 환경의 리전 정보를 보여주는 간단한 파이썬 어플리케이션을 볼 수 있습니다.
+
+When you open the IDE, you can see that it contains three files.
+1. app.py: the actual logic part.
+2. Dockerfile: Dockerfile to build this Python code into a container image
+3. app-deployment.yaml: Specification that defines what to deploy to the Kubernetes cluster.
+
+If you open the app.py file, you can see a simple Python application showing the region information of the environment where the container is running.
 
 ```python
 @app.route('/')

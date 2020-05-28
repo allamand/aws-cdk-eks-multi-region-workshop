@@ -427,7 +427,7 @@ nginx-deployment-5754944d6c-wkkkn   1/1     Running   0          24m
 ```
 
 8. 생성된 서비스 객체의 `EXTERNAL-IP`를 통해서도 정상 응답이 오는지 확인합니다.  
-ELB 생성에 2-3분 정도의 시간이 소요될 수 있으니 참고바랍니다.
+ELB 생성에 2분 정도의 시간이 소요될 수 있으니 참고바랍니다.
 ```
 kubectl describe service hello-py | grep Ingress
 

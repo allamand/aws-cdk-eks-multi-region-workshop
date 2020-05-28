@@ -1,17 +1,17 @@
 ---
-title: K8S Manifest 수정하기
+title: Modify K8S Manifest
 weight: 400
 pre: "<b>5-4. </b>"
 
 ---
 
-그럼 이렇게 EKS 클러스터를 두 개 리전에 쿠버네티스 자원과 함께 배포했는데,  
-이 위에 컨테이너 변경은 어떻게 처리될까요?
+So I deployed the EKS cluster in two regions with Kubernetes resources,
+How will container changes be handled on top of this?
 
 
-## 두 리전 모두에 새 manifest 추가하기
-`/yaml-common/00-namespaces.yaml` 파일 가장 아래에 아래 코드를 붙여넣습니다.  
-이 manifest를 통해 앞서 생성한 네임스페이스에 ResourceQuota를 부여합니다.
+## Adding a new manifest to both regions
+Paste the code below at the bottom of the `/yaml-common/00-namespaces.yaml` file.
+ResourceQuota is assigned to the namespace created earlier by this manifest.
 
 ```
 ---
@@ -38,13 +38,14 @@ spec:
 ```
 
 
-## 생성될 자원 확인하고 배포하기
-아래 명령어를 통해 생성될 자원을 확인해볼까요?
+## Check what's going to happen
+Shall we check the resources to be created with the command below?
 ```
 cdk diff
 ```
 
-그러면 아래와 같이 두 리전에 대해, 새롭게 추가된 yaml 분만이 변경분으로 반영될 것임을 알 수 있습니다.
+Then, for the two regions below, you can see that only newly added yaml minutes will be reflected as changes.
+
 ```
 Stack ClusterStack-us-west-2
 Resources
@@ -62,13 +63,15 @@ Resources
 
 ```
 
-## 배포된 컨테이너 변경분 확인하기
-다음 명령어를 이용해 자원을 생성해봅시다.
+## Deploy
+Let's create the resource using the following command.
+
 ```
 cdk deploy "*"
 ```
 
-자원 배포가 모두 완료되고 나면 다음 명령어로 새 manifest가 적용된 것을 확인할 수 있습니다.
+After the resource deployment is completed, you can see that the new manifest has been applied with the following command.
+
 ```
 kubectl describe ns management
 
