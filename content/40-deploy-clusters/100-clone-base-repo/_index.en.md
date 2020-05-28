@@ -1,5 +1,5 @@
 ---
-title: 베이스 프로젝트 클론하기
+title: Clone the base repo
 weight: 100
 pre: "<b>4-1. </b>"
 ---
