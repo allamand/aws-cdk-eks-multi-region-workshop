@@ -175,7 +175,7 @@ default           Active   21m
 kube-node-lease   Active   21m
 kube-public       Active   21m
 kube-system       Active   21m
-management        Active   7m47s << 우리가 생성한 네임스페이스
+management        Active   7m47s << Namespace we created
 ```
 
 2. Pods

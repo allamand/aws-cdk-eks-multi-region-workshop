@@ -4,7 +4,6 @@ weight: 300
 pre: "<b>4-3. </b>"
 ---
 
-CDK의 두 가지 Construct를 활용해서 주요한 컨테이너 자원을 인프라와 함께 관리할 수 있습니다.
 
 Managing Kubernetes resources has never been easy. To successfully manage a Kubernetes cluster, there are a number of Kubernetes objects to manage!
 

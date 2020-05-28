@@ -14,9 +14,6 @@ Create a CodePipeline with the following flow.
 Go to the IDE and follow the steps below to create a class that creates a CI / CD pipeline.
 
 ### Export IAM Role for CI/CD Pipeline
-EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild는,  
-그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다. 이 Role을 생성해봅시다.
-**lib/cluster-stack.ts**을 열어 아래 코드를 순서대로 추가합니다.
 CodeBuild, which performs actual application deployment on the EKS cluster, assumes a role to run `kubectl` commands to the EKS cluster and performs application deployment. Let's create this Role.
 Open **lib/cluster-stack.ts** and add the below codes in order.
 
