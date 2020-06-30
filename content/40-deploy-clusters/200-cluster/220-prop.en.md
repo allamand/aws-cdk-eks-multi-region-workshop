@@ -5,9 +5,9 @@ weight: 220
 
 ## Create an interface for another stack
 Now we need to create containers in our cluster.
-To make the maintenance jobs easier, let's create a separate stack for this. In this case, the other stack needs to refer the cluter we created in `cluster-stack.ts`.
+To make the maintenance jobs easier, let's create a separate stack for this. In this case, the other stack needs to refer the cluster we created in `cluster-stack.ts`.
 
-Let's continue working on the `cluster-stack.ts` that we created earlier so that we can export the cluster to others.
+Let's continue working on the `cluster-stack.ts` that we created earlier so that we can export the cluster to other stacks.
 
 Paste the code below at the bottom of the file.
 

@@ -39,13 +39,13 @@ Then shall we look at the containers to be created?
 * The `yaml-{{region}}` folder contains yaml files that should be created only in a specific region.
   This defines a yaml with two nginx replicas in Tokyo and five in Oregon.
 
-Taking the best advantage of the CDK is to use the programming language as it is. We will check the region of the execution environment and then read only the contents of the required folder. As of now (May 2020), in order to create Kubernetes objects using the CDK, json is the only format supported. Let's first look at a utility function to handle transforming yaml manifest to json format.
+To take the best advantage of the CDK you have to use a programming language as it is. We will check the region of the execution environment and then read only the content of the required folder. As of now (May 2020), in order to create Kubernetes objects using the CDK, json is the only format supported. Let’s first take a look at an utility function that handles yaml manifests into json format transformation.
 
 
 ## Check out readFile util
 
 Go to `utils/read-file.ts`.
-It reads yaml file using nodejs fs module and [js-yaml] (https://www.npmjs.com/package/js-yaml) to convert to json format. After it successfully converts the content to json, it registers it as a resource in the injected EKS cluster.
+It reads yaml file using nodejs fs module and [js-yaml](https://www.npmjs.com/package/js-yaml) to convert to json format. After successfully converting the content into json, the function registers it as a resource in the injected EKS cluster.
 
 Please note that this code basically does not handle any error to simplify the workshop.
 
@@ -115,8 +115,7 @@ export class ContainerStack extends cdk.Stack {
 
 ## Loading the stack on the entry point
 
-Open the **bin/multi-cluster-ts.ts** file and load the stack.
-Paste the code below under the CluterStack you just created.
+Open the bin/multi-cluster-ts.ts file and load the stack. Paste the code below under the ClusterStack you just created
 
 ```typescript
 new ContainerStack(app, `ContainerStack-${primaryRegion.region}`, {env: primaryRegion, cluster: primaryCluster.cluster });
@@ -182,7 +181,7 @@ management        Active   7m47s << Namespace we created
 ```
 kubectl get pod
 ```
-You can see that two pods with nginx in their name have been created.
+You can see that two pods with nginx have been created.
 ```
 NAME                                READY   STATUS    RESTARTS   AGE
 nginx-deployment-5754944d6c-cnxzn   1/1     Running   0          7m51s

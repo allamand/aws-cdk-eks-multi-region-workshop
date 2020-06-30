@@ -5,10 +5,8 @@ pre: "<b>5-3. </b>"
 ---
 
 
-However, there may be cases like this.
-Same pod to both regions, but different numbers of them because one region has less traffic than the other.
-Or, you may want to configure the cluster itself differently. For example, the A region worknode uses an R5.xlarge instance, while the B region needs to use M5.2xlarge.
-What if you want to set different settings for each region like this?
+For some situations when you have, for example, same pods on both regions but different number of replicas due to traffic demand, or you want different types of EC2 instances depending of the region you are running, you need to handle the cluster configuration separately.
+
 Let's look at this example.
 
 ## Change to a different instance type by the region
@@ -36,7 +34,7 @@ Let's look at the excerpt of our cluster definition in **lib/cluster-stack.ts**.
 
 ```
 
-Let's re-write this part little bit to have another instance type by referring to the region value of the stack.
+Let’s re-write this part a little bit to have another instance type by referring to the region value of the stack. Paste the following code in the eks.Cluster creation section.
 Paste the following code in the eks.Cluster creation section.
 
 ```typescript

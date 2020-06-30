@@ -5,8 +5,7 @@ pre: "<b>5-4. </b>"
 
 ---
 
-So I deployed the EKS cluster in two regions with Kubernetes resources,
-How will container changes be handled on top of this?
+At the moment we deployed the two EKS clusters in two different regions, both running Kubernetes resources. The next step is how do we handle changes at the container level.
 
 
 ## Adding a new manifest to both regions
@@ -44,7 +43,7 @@ Shall we check the resources to be created with the command below?
 cdk diff
 ```
 
-Then, for the two regions below, you can see that only newly added yaml minutes will be reflected as changes.
+Then, for the two regions below, you can see that only newly added yaml is reflected.
 
 ```
 Stack ClusterStack-us-west-2

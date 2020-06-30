@@ -245,7 +245,7 @@ ClusterStack-ap-northeast-1.demogoclusterConfigCommand6DB6D889 = aws eks update-
 정상적으로 수행되면 아래와 같은 결과가 출력될 것입니다.
 
 ```
-Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /Users/jiwony/.kube/config
+Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /<<YOUR_HOME_DIRECTORY>>/.kube/config
 ```
 
 이를 통해 우리가 방금 생성한 EKS 클러스터에 `kubectl`을 이용하여 자원을 조회/생성/수정/삭제할 수 있습니다.

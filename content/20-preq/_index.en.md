@@ -14,9 +14,8 @@ To perform this workshop, you'll need the following:
 You can skip any of these steps if you have these tools already installed on
 your machine.
 
-Click on the arrow to the right to continue to the first step.
 
-Note: CDK supports Typescript (Javascript), Java, Python, C#, however this workshop would cover every step in Typescript.
+Note: CDK supports Typescript (Javascript), Java, Python, C#, however this workshop will cover every step in Typescript.
 
 ## See Also
 

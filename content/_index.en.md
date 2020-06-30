@@ -10,7 +10,7 @@ Let's imagine you are a DevOps Engineer of emerging company A.
 It's already overwhelming to manage one EKS cluster right, but your company rocked the market and finally expand to another continent!
 What should you do to manage all these in two regions?
 
-This workshops would guide you though to provision and configure Infrastructrue related to EKS cluter, some of Kubernetes resources and the actual application with CDK.  
+This workshop will guide you through how to provision and configure infrastructure related to an EKS cluster, some of Kubernetes resources and the actual application with CDK.  
 It also definitely cover how to go global! If you plan to use EKS with CDK in one region, you are good to stop after completing the first lab.
 
 

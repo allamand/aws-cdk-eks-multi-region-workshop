@@ -9,8 +9,8 @@ weight: 330
 
 Helm is a tool to help you manage Kubernetes applications.
 It uses a packaging format called Helm Chart, which allows you to define / install / upgrade / delete Kubernetes applications.
-For example, when a deployment, a service for a web service that you service must be defined, and there is a required role, bundle it all and manage it like a package.
-In addition to creating your own software, you can easily download and use software created by others using Helm. Typical examples are metrics-server and prometheus.
+For example, when a deployment must be defined and there is a required role, Helm bundles it and manages it like a package.
+In addition to creating your own software, you can easily download and use software created by others using Helm. Typical examples are metrics-server and Prometheus.
 
 In this chapter, we will look at how you can deploy Helm Chart to EKS cluster with CDK.
 
@@ -37,7 +37,7 @@ Helm Chart is distributed as a CloudFormation resource. Therefore, when it is de
 A few things to keep in mind when specifying your Helm Chart.
 * `repository` must be a full URL. In general, not in CDK, before you issue the command `helm install stable/xx`, you register the repository called `stable` in advance. Similar to this, you should give the context of repository by giving the full path.
 * If you don't specify a release name, it is randomized to use the last 53 characters of the node ID. If you do not want this, give the value of 'release' as human understandable.
-* In addition, you can check [details] (https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.HelmChart.html) required for chart distribution.
+* In addition, you can check [details](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.HelmChart.html) required for chart distribution.
 
 ## Identifying resources to be created
 Let's check the resources to be created with the command below.

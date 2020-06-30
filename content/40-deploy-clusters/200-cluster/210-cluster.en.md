@@ -6,7 +6,7 @@ weight: 210
 
 ## Create EKS cluster
 
-Define a EKS cluster by instantiating the imported package. Please copy and paste the code in the following code block right after the line you defined `const primaryRegion = 'ap-northeast-1';`.
+Define an EKS cluster by instantiating the imported package. Please copy and paste the code in the following code block right after the line you defined `const primaryRegion = 'ap-northeast-1';`.
 
 ```typescript
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
@@ -30,11 +30,11 @@ Define a EKS cluster by instantiating the imported package. Please copy and past
 
 
 * `clusterAdmin` is the IAM role you would assume when executing `kubectl` against your EKS cluster.
-* `cluster` is the EKS cluster we would create! You can configure several options with [this guide](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html). In this workshop, we would define the following options:
-    * `clusterName`: To make the last lab easier, it statically defined to have a cluster name. This name should be unique in one region. If you do not set this value, CDK automatically assign a unique name.
+* `cluster` is the EKS cluster we will create! You can configure several options with [this guide](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html). In this workshop, we will define the following options:
+    * `clusterName`: To make the last lab easier, it statically defined to have a cluster name. This name should be unique in one region. If you do not set this value, CDK automatically assigns a unique name.
     * `masterRole`: IAM Principal which would join `systems:masters`, the Kubernetes RBAC group having full control over the cluster. We set this value to include `clusterAdmin` to the RBAC group.
-    * `defaultCapacity`: It defines how many worker nodes this cluster have by default. If you do not give any type, CDK would make the instances in Managed Nodegroup.
-* `cluster.addCapacity`: added a separate AutoScalingGroup to utilize EC2 Spot instances in addition to the default capacity. (Spot instances are not available in Managed Nodegroup at the point of this workshop is written, May 2020)
+    * `defaultCapacity`: It defines how many worker nodes this cluster have by default. If you do not give any type, CDK will make the instances in Managed Nodegroup.
+* `cluster.addCapacity`: added a separate AutoScalingGroup to use EC2 Spot instances in addition to the default capacity. Spot instances are not available in Managed Nodegroup at the point of this workshop is written (May, 2020)
 
 
 {{% notice info %}} 
@@ -85,7 +85,7 @@ const secondaryRegion = {account: account, region: 'us-west-2'};
 ```
 
 
-Load the stack by copying and pasting the following line:
+Load the stack by copying and pasting after the last line the following code:
 ```typescript
 const primaryCluster = new ClusterStack(app, `ClusterStack-${primaryRegion.region}`, {env: primaryRegion })
 ```
@@ -200,15 +200,10 @@ Resources
 
 ```
 
-여러분은 지금 코드를 대략 20줄 정도 밖에 입력하지 않았는데, 어떻게 이렇게 많은 자원이 생성된 것일까요?  
-그 이유는 CDK가 AWS가 권고하는 **베스트 프랙티스를 기본값**으로 갖고 있기 때문에 그렇습니다.  
-CDK를 사용하면 CloudFormation이나 Terraform 을 이용하는 것처럼 자원 하나하나를 정의할 수도 있지만,  
-**지금처럼 꼭 필요한 부분만 정의하고 나머지 부분은 AWS에게 맡기실 수도** 있습니다.
-
 You have only entered about 20 lines of code now, but how do you create so many resources?
 This is because the CDK sets the default values with **best practice** recommended by AWS.
 Using CDK, you can define resources one by one like you do with CloudFormation or Terraform, or
-**You can define only the parts you really need and leave the rest to AWSå**.
+**You can define only the parts you really need and leave the rest to AWS**.
 
 ## Create Resources
 ```
@@ -237,7 +232,7 @@ When creation is completed, you can see the CloudFormation stack created in [AWS
 
 
 {{% notice info %}} 
-We only defined one stack, but why so many stacks in the console?! If you get curiou, please find the reason out [here](/ko/80-appendix/how-cfn-addresource/). {{% /notice %}}
+We only defined one stack, but why so many stacks in the console?! If you get curious, please find the reason out [here](/en/80-appendix/how-cfn-addresource/). {{% /notice %}}
 
 
 
@@ -255,7 +250,7 @@ ClusterStack-ap-northeast-1.demogoclusterConfigCommand6DB6D889 = aws eks update-
 If executed successfully, the following result will be displayed.
 
 ```
-Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /Users/jiwony/.kube/config
+Updated context arn:aws:eks:ap-northeast-1:<<ACCOUNT_ID>>:cluster/demogo in /<<YOUR_HOME_DIRECTORY>>/.kube/config
 ```
 
 

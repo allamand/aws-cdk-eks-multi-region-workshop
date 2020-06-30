@@ -1,5 +1,5 @@
 ---
-title: Lab 3, Deploy apps into 2 regions
+title: Lab 3, Deploy apps in both regions
 weight: 60
 pre: "<b>6. </b>"
 ---

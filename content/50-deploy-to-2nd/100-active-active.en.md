@@ -29,7 +29,7 @@ Depending on what you aim for, as describe in previous paragraph, your actual ar
 
 ## The premise of this workshop
 
-This workshop focused on **how we would manage things with CDK**. Therefore, there are major architectural elements such as Route 53, which definitely needs to be considered but not covered in this workshop. The workshop contains only the essential parts of showing the Operational Excellence practices with EKS clusters in perspective of IaC.
+This workshop focused on **how we will manage things with CDK**. Therefore, there are major architectural elements such as Route 53, which definitely needs to be considered but not covered in this workshop. The workshop contains only the essential parts of showing the Operational Excellence practices with EKS clusters in perspective of IaC.
 If you are curious about the other parts of the above five considerations, you can find more information at the link below.
 
 

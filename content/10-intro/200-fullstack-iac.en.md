@@ -23,32 +23,36 @@ It depends on the organizational priority when it comes to who would cover the d
 ## Why full-stack IaC matters?
 
 1. Model it all
-Modelling your entire infrastructure and application resources provides a single source of truth for all your resources and helps you to **standardize** infrastructure components used across your organization, enabling configuration **compliance** and **faster troubleshooting**.
 
 
-2. Automate & deploy
-It allows you to build and rebuild your infrastructure and applications, without having to perform manual actions or write custom scripts. IaC engine (CDK, Cloudformation, Terraform...) takes care of determining the right operations to perform when managing your stack, orchestrating them in the most efficient way, and rolls back changes automatically if errors are detected. It would lead to less chance of human errors.
+    Modelling your entire infrastructure and application resources provides a single source of truth for all your resources and helps you to **standardize** infrastructure components used across your organization, enabling configuration **compliance** and **faster troubleshooting**.
 
-3. It's just code
-Codifying your infrastructure allows you to treat your infrastructure as just code. You can author it with any code editor, check it into a version control system, and review the files with team members before deploying into production. Also just like you do with your code, when things go wrong, you can just roll back to previous version and make the recovery process a lot easier.
+
+1. Automate & deploy
+   
+    It allows you to build and rebuild your infrastructure and applications, without having to perform manual actions or write custom scripts. IaC engine (CDK, Cloudformation, Terraform...) takes care of determining the right operations to perform when managing your stack, orchestrating them in the most efficient way, and rolls back changes automatically if errors are detected. It would lead to less chance of human errors.
+
+2. It's just code
+
+    Codifying your infrastructure allows you to treat your infrastructure as just code. You can author it with any code editor, check it into a version control system, and review the files with team members before deploying into production. Also just like you do with your code, when things go wrong, you can just roll back to previous version and make the recovery process a lot easier.
 
 
 
 ## In this workshop
 
-We covers the three layers of Kubernetes cluster like the following.
+We cover the three layers of Kubernetes cluster like the following.
 
 1. Infrastructure
 
     * [Lab 1](/en/40-deploy-clusters/200-cluster/) covers how we define the EKS cluster and necessary IAM, network settings with minimu amount of codes.
-    * In [Lab 3](/en/60-deploy-app/200-single-region/), we would define the CI/CD infrastructure to deploy our sample application to the EKS clusters which we provisioned in Lab 1 and Lab 2.
+    * In [Lab 3](/en/60-deploy-app/200-single-region/), we will define the CI/CD infrastructure to deploy our sample application to the EKS clusters, which will be provisioned in Lab 1 and Lab 2.
 
 
 2. Platform
 
-    * We would define the resources that would be classified as platform layer in [Lab 1](/en/40-deploy-clusters/300-container/). In this lab, we would create Namespace and  [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/) in accordance with the best practice to keep the lifecycle of resources similar in your deployment unit.
+    * We will define the resources that are classified as platform layer in [Lab 1](/en/40-deploy-clusters/300-container/). In this lab, we will create a Namespace and a [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/) in accordance with the best practice to keep the lifecycle of resources similar in your deployment unit.
 
 
 3. Application
 
-    [In Lab 3](/en/60-deploy-app/100-clone-sample-app/), we would clone a sample application and deploy it into two regions. We do not actually write the application together in this workshop. However it is definitely recommended to take a look into the structure of the app.
+    [In Lab 3](/en/60-deploy-app/100-clone-sample-app/), we will clone a sample application and deploy it in two different regions. We won't actually write the application, however, it is definitely recommended to take a look into app structure.

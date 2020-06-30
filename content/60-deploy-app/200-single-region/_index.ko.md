@@ -121,7 +121,7 @@ import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
 
 export class CicdStack extends cdk.Stack {
 
-    constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
+    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
@@ -375,9 +375,9 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 그러면 생성된 파이프라인을 이용해서 애플리케이션을 배포해볼까요?  
 아까 [클론한 샘플 어플리케이션](https://github.com/yjw113080/aws-cdk-multi-region-sample-app) IDE를 열어주십시오.  
 
-1. `CicdForPrimaryStack`에서 Output으로 출력된 codecommit URI 값을 복사하십시오.
+1. `CicdStack`에서 Output으로 출력된 codecommit URI 값을 복사하십시오.
 ```
-CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
+CicdStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
 ```
 
 2. 다음 명령어를 통해 어플리케이션 프로젝트에 codecommit 레포지토리를 등록하십시오.

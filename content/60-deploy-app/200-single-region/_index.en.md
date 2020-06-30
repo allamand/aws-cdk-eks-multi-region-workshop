@@ -1,5 +1,5 @@
 ---
-title: Create pipeline for one region
+title: Create a Pipeline for one region
 weight: 200
 pre: "<b>6-2. </b>"
 
@@ -14,8 +14,7 @@ Create a CodePipeline with the following flow.
 Go to the IDE and follow the steps below to create a class that creates a CI / CD pipeline.
 
 ### Export IAM Role for CI/CD Pipeline
-CodeBuild, which performs actual application deployment on the EKS cluster, assumes a role to run `kubectl` commands to the EKS cluster and performs application deployment. Let's create this Role.
-Open **lib/cluster-stack.ts** and add the below codes in order.
+CodeBuild, which will be responsible for deploying the application to the EKS cluster, assumes a role to run kubectl commands against the EKS cluster in order to perform the actual deployment. Let’s create this Role. Open lib/cluster-stack.ts and add the below codes in order
 
 1. Above `constructor`
 ```typescript
@@ -38,8 +37,8 @@ export interface CicdProps extends cdk.StackProps {
 
 ```
 
-* Have you ever wondered what `createDeployRole` function is for in the skeleton state? It creates an IAM role to be assumed by Codebuild project which would be defined in **cicd-stack.ts**. It restricts the role to have a limited access to the specific cluster in one region by examining the region value of the stack.
-* The function authorizse this role to enter the master group of the EKS cluster. In production, be sure to assign them to groups with the least privilege.
+* Have you ever wondered what `createDeployRole` function is for in the skeleton state? It creates an IAM role to be assumed by Codebuild project which will be defined in **cicd-stack.ts**. It restricts the role to have a limited access to the specific cluster in one region by examining the region value of the stack.
+* The function authorizes this role to enter the master group of the EKS cluster. In production, be sure to assign them to groups with the least privilege.
 
 
 The completed **lib / cluster-stack.ts** should look like this:
@@ -104,9 +103,10 @@ export interface CicdProps extends cdk.StackProps {
 }
 ```
 
-### Configuring CicdStack
+### Configuring the CicdStack
 
 The `cicd-stack.ts` file under the `lib` directory should be created as shown below.
+Check the file cicd-stack.ts under the lib directory. Please, change primaryRegion and secondaryRegion accordingly.
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
@@ -119,7 +119,7 @@ import { codeToECRspec, deployToEKSspec } from '../utils/buildspecs';
 
 export class CicdStack extends cdk.Stack {
 
-    constructor(scope: cdk.Construct, id: string, props: cdk.StackProps) {
+    constructor(scope: cdk.Construct, id: string, props: CicdProps) {
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
@@ -171,7 +171,7 @@ export class CicdStack extends cdk.Stack {
 
 ### Create a CodeCommit repository
 
-You can use AWS CodeCommit service for it. AWS CodeCommit is a service that securely hosts highly scalable private Git repositories, so you can use repositories privately without having to manage repository hosting servers, storage, etc., just like using git.
+AWS CodeCommit is a service that securely hosts highly scalable private Git repositories, so you can use repositories privately without having to manage repository hosting servers, storage, etc., just like using git.
 
 Paste the code below into the class `construct` declaration.
 
@@ -190,7 +190,7 @@ Paste the code below into the class `construct` declaration.
 * Print out the repository URI as a stack output.
 
 ### Create an ECR Repository
-아래 코드를 CodeCommit 정의한 라인 아래에 붙여넣으십시오.
+
 Container images created based on this code repository must be stored in a separate Image Registry.
 You can use Amazon ECR for it. Amazon Elastic Container Registry (ECR) is a fully managed Docker container registry that enables developers to easily store, manage and deploy Docker container images.
 
@@ -204,14 +204,12 @@ Paste the code below under the line you defined for CodeCommit.
 
 ### CodeBuild for Container image build
 
-When the developer commits the source, it should automatically build a new image based on this.
-We will use CodeBuild to accomplish this. AWS CodeBuild is a fully managed build service on the cloud that compiles source code, runs unit tests, and creates artifacts that are ready to deploy.
+When the developer commits the code to the source, it should automatically build a new image that will capture the changes. We will use CodeBuild to accomplish this. AWS CodeBuild is a fully managed build service on the cloud that compiles source code, runs unit tests, and creates artifacts that are ready to deploy.
 
 With a buildspec, you can define your build job.
 
 1) In a typical application, a `buildspec.yml` file can be created and defined in the root path of the code repository.
-2) You can also specify when defining CodeBuild project.
-In this workshop, we will define the buildspecs, which are commonly used across regions, directly by CDK to centrally manage them.
+2) You can also specify when defining CodeBuild project. In this workshop, we will define the buildspec files, which are commonly used across regions directly by CDK, to centrally manage them.
 
 
 1. Paste the code below to create the ECR Repository.
@@ -219,9 +217,6 @@ In this workshop, we will define the buildspecs, which are commonly used across 
         const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
         ecrForMainRegion.grantPullPush(buildForECR.role!);
 ```
-
-* In the /utils folder, we have pre-defined build specifications for this workshop. If you are curious about the detailed build specifications, please refer to the **/utils/buildspec.ts** file.
-* Add permission to push images to ECR in the build project to be created.
 
 
 ### CodeBuild for deployment to EKS
@@ -363,7 +358,7 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
 After checking the resources by `cdk diff` command, deploy the CI / CD pipeline by `cdk deploy "*"` command.
 At this time, apart from `CicdStack`, the change also occurs in `ClusterStack` to grant permission to resources in this stack.
 
-When the creation is finished you can check the pipeline in the [CodePipeline Console](http://console.aws.amazon.com/codesuite/codepipeline/home). There is no master branch in codecommit yet, thus the pipeline would be in failed status.
+When the creation is finished you can check the pipeline in the [CodePipeline Console](http://console.aws.amazon.com/codesuite/codepipeline/home). There is no master branch in CodeCommit yet, thus the pipeline will be on a failed status.
 
 ![](/images/40-deploy-app/result-pipeline-single-region.png)
 
@@ -372,9 +367,9 @@ When the creation is finished you can check the pipeline in the [CodePipeline Co
 Then, shall we deploy the application using the created pipeline?
 Please open the [Sample Application](https://github.com/yjw113080/aws-cdk-multi-region-sample-app) IDE.
 
-1. Copy the codecommit URI value output from `CicdForPrimaryStack` to Output.
+1. Copy the CodeCommit URI value from the CloudFormation output.
 ```
-CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
+CicdStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
 ```
 
 2. Register the codecommit repository in the application project with the following command.
@@ -400,7 +395,7 @@ git push codecommit master
 ```
 
 
-5. When prompted for the ID and PW, enter the ID / PW according to the credentials created in step 3.
+5. When prompted for the ID and PW while you run the command above, enter the ID / PW according to the credentials created in step 3.
 
 6. After you push to the repository, you can see in the CodePipeline console that the pipeline is triggered as follows:
 ![](/images/40-deploy-app/result-pipeline-single-region-working.png)
@@ -409,7 +404,7 @@ git push codecommit master
 7. Let's check the deployed container by `kubectl` command.
 
 {{% notice warning %}}
-Verify that you are working on a cluster in the ap-northeast-1 region with the command `kubectl config current-context`.
+Verify that you are working on a cluster in the primary region with the command `kubectl config current-context`.
 If changes are needed, run the command `kubectl config use-context << ap-northeast-1 cluster >>`.
 You can check the context name through `kubectl config get-contexts`.
 {{% /notice %}}
@@ -425,7 +420,7 @@ nginx-deployment-5754944d6c-wkkkn   1/1     Running   0          24m
 ```
 
 1. Check if the response comes back from `EXTERNAL-IP` of the created service object.
-Please note that ELB generation may take about 2 minutes.
+Please note that it may take 2 minutes to create an ELB.
 
 ```
 kubectl describe service hello-py | grep Ingress

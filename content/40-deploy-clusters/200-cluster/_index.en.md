@@ -34,7 +34,7 @@ When the stack is instantiated, it is injected with the following: the scope, th
 
 * `scope`: This is the context in which the resources are defined. In this workshop, `cdk.App` defined in the `bin/multi-cluster-ts.ts` entry point will be the scope.
 * `id`: This is a unique identifier within the `scope`. Think of it as a Namespace within this scope, used to specify the name of the AWS CloudFormation stacks and the names of sub-resources.
-* `props`: It allows you to receive environment setting such as AWS account, region information. In addition, it can hand over information injected from other stacks and let us use them within the construct. We will use this `props` value to refer to resources between stacks.
+* `props`: It allows you to receive environment settings such as AWS account, region information. In addition, it can hand over information injected from other stacks and let us use them within the construct. We will use this `props` value to refer to resources between stacks.
 
 
 The `super (scope, id, props)` syntax has been set to use whatever is injected when this class is instantiated.

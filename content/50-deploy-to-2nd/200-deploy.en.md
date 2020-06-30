@@ -5,8 +5,7 @@ pre: "<b>5-2. </b>"
 ---
 
 
-By the last step in [4-3 stage](/en/40-deploy-clusters/300-container/), An EKS cluster was deployed in one region and Kubernetes resources were deployed as well on top of it.
-So how do you deploy this same configuration to the second region?
+So far, an EKS cluster and all the Kubernetes resources running within it were deployed only in one region. So how do you deploy this same configuration to the second region?
 
 ## Specify the second region to deploy
 Let's open the **bin/multi-cluster-ts.ts** file and create a second stack.
@@ -72,7 +71,7 @@ Updated context arn:aws:eks:us-west-2:<<ACCOUNT_ID>>:cluster/demogo in /Users/ji
 
 
 The command below confirms that you can access the EKS cluster in both regions.
-From the CLUSTER name, you can see that both the cluster in the Tokyo region we created earlier and the Oregon cluster we just created were successfully registered.
+From the CLUSTER name, you can see that both the clusters in your primary region and secondary region were successfully registered.
 
 ```
 kubectl config get-contexts
@@ -88,7 +87,7 @@ CURRENT   NAME                                                     CLUSTER      
 
 
 Check the currently deployed pod through the `kubectl get pod` command in the current context.
-Because it is in the `us-west-2` region, it is different from `yaml-us-west-2/00_us_nginx.yaml` **You can see that 5 nginx pods are distributed** as the contents of the file.
+Because it is in the secondary region, it is different from the resut of primary region. **You can see that 5 nginx pods are distributed** as the contents of the yaml file.
 
 ```
 NAME                                READY   STATUS    RESTARTS   AGE

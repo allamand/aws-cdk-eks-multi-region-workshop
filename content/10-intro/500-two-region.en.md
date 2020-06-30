@@ -6,4 +6,4 @@ pre: "<b>1-4. </b>"
 
 ![](/images/20-deploy-clusters/intro2.svg)
 
-In this second lab, you would provision exact same cluster that you provisioned in previou lab into different region. After you provision it, you will navigate how to manage different settings for each region. This will let you have a picture how to manage the whole infrastructure and containers in different regions with CDK.
+In this second lab, you will provision the exact same cluster that you provisioned previously but on a different region. Then you will navigate on how to manage different settings for each region. This will give you a picture on managing the whole infrastructure and containers in different regions using CDK.
