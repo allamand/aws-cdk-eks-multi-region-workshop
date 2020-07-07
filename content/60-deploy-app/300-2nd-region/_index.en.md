@@ -41,11 +41,11 @@ Open **lib/cluster-stack.ts** and add / modify the code below in order.
 3. Outside of `class`, interface named `CicdProps`
     ```typescript
     export interface CicdProps extends cdk.StackProps {
-    cluster: eks.Cluster,
-    firstRegionRole: iam.Role,
-    secondRegionRole: iam.Role // ADDED!
+        firstRegionCluster: eks.Cluster,
+        secondRegionCluster: eks.Cluster,
+        firstRegionRole: iam.Role,
+        secondRegionRole: iam.Role
     }
-
     ```
 
 The completed **lib/cluster-stack.ts** should look like this:
@@ -110,7 +110,8 @@ export interface EksProps extends cdk.StackProps {
 }
 
 export interface CicdProps extends cdk.StackProps {
-  cluster: eks.Cluster,
+  firstRegionCluster: eks.Cluster,
+  secondRegionCluster: eks.Cluster,
   firstRegionRole: iam.Role,
   secondRegionRole: iam.Role
 }
@@ -123,7 +124,8 @@ Go to the **lib/cicd-stack.ts** file.
 Paste the code below. Please make sure it is defined above the CodePipeline definition.
 
 ```typescript
-        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, props.secondRegionCluster, ecrForMainRegion, props.secondRegionRole);
+
 ```
 * In the /utils folder, we have pre-defined build specifications for this workshop. If you are curious about the detailed build specifications, please refer to the **/utils/buildspec.ts** file.
 
@@ -184,8 +186,8 @@ export class CicdStack extends cdk.Stack {
         const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
         ecrForMainRegion.grantPullPush(buildForECR.role!);
         
-        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
-        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.firstRegionCluster, ecrForMainRegion, props.firstRegionRole);
+        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, props.secondRegionCluster, ecrForMainRegion, props.secondRegionRole);
 
         const sourceOutput = new codepipeline.Artifact();
 
@@ -238,12 +240,15 @@ export class CicdStack extends cdk.Stack {
 Modify the **bin/multi-cluster-ts.ts** file as shown below so that the role to perform deployment of the second region can be injected.
 
 ```typescript
-new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
-                                    firstRegionRole: primaryCluster.firstRegionRole,
-                                    secondRegionRole: secondaryCluster.secondRegionRole});
+new CicdStack(app, `CicdStack`, {env: primaryRegion, 
+    firstRegionCluster: primaryCluster.cluster,
+    secondRegionCluster: secondaryCluster.cluster,
+    firstRegionRole: primaryCluster.firstRegionRole,
+    secondRegionRole: secondaryCluster.secondRegionRole});
+
 ```
 
-* `secondRegionRole: secondaryCluster.secondRegionRole` is added.
+* `secondRegionCluster: secondaryCluster.cluster`, `secondRegionRole: secondaryCluster.secondRegionRole` are added.
 
 ### Deploy CI/CD Pipeline
 
@@ -261,14 +266,14 @@ You can check the progress in the terminal.
   ...
   8/19 | 오후 10:28:52 | UPDATE_IN_PROGRESS   | AWS::CodePipeline::Pipeline | multi-region-eks-dep (repotoecrhellopy560FED9C)
   9/19 | 오후 10:28:53 | UPDATE_COMPLETE      | AWS::CodePipeline::Pipeline | multi-region-eks-dep (repotoecrhellopy560FED9C)
-  9/19 | 오후 10:29:00 | UPDATE_COMPLETE_CLEA | AWS::CloudFormation::Stack  | CicdForPrimaryStack
- 10/19 | 오후 10:29:01 | UPDATE_COMPLETE      | AWS::CloudFormation::Stack  | CicdForPrimaryStack
+  9/19 | 오후 10:29:00 | UPDATE_COMPLETE_CLEA | AWS::CloudFormation::Stack  | CicdStack
+ 10/19 | 오후 10:29:01 | UPDATE_COMPLETE      | AWS::CloudFormation::Stack  | CicdStack
 
- ✅  CicdForPrimaryStack
+ ✅  CicdStack
 
 Outputs:
-CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
-CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = arn:aws:iam::<<ACCOUNT_ID>>:role/CicdForPrimaryStack-deploytoeksapnortheast1Role189-VIG05L6PETHL
+CicdStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
+CicdStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = arn:aws:iam::<<ACCOUNT_ID>>:role/CicdStack-deploytoeksapnortheast1Role189-VIG05L6PETHL
 ```
 
 

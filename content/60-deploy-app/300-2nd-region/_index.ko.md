@@ -44,9 +44,10 @@ pre: "<b>6-3. </b>"
 3. `class` 외부, 최하단 interface 수정
     ```typescript
     export interface CicdProps extends cdk.StackProps {
-    cluster: eks.Cluster,
+    firstRegionCluster: eks.Cluster,
+    secondRegionCluster: eks.Cluster,
     firstRegionRole: iam.Role,
-    secondRegionRole: iam.Role // < 두 번째 리전 클러스터에 접근권한이 있는 Role을 추가로 export 합니다.
+    secondRegionRole: iam.Role
     }
 
     ```
@@ -69,33 +70,34 @@ export class ClusterStack extends cdk.Stack {
     super(scope, id, props);
 
     const primaryRegion = 'ap-northeast-1';
+
     const clusterAdmin = new iam.Role(this, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal()
-      });
+    });
 
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
-    clusterName: `demogo`,
-    mastersRole: clusterAdmin,
-    defaultCapacity: 2,
-    defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
+      clusterName: PhysicalName.GENERATE_IF_NEEDED,
+      version: '1.16',
+      mastersRole: clusterAdmin,
+      defaultCapacity: 2,
+      defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
+                                  new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
     });
 
     cluster.addCapacity('spot-group', {
-    instanceType: new ec2.InstanceType('m5.xlarge'),
-    spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
+      instanceType: new ec2.InstanceType('m5.xlarge'),
+      spotPrice: cdk.Stack.of(this).region==primaryRegion ? '0.248' : '0.192'
     });
-
+    
     this.cluster = cluster;
 
     if (cdk.Stack.of(this).region==primaryRegion) {
       this.firstRegionRole = createDeployRole(this, `for-1st-region`, cluster);
-  }
-  else {
-      // 스택이 두 번째 리전값을 가지고 있으면, 새로운 롤을 생성하되 그 리전 클러스터에만 접근할 수 있는 권한을 부여합니다.
+    }
+    else {
       this.secondRegionRole = createDeployRole(this, `for-2nd-region`, cluster);
-  }
-
+    }
+    
   }
 }
 
@@ -108,17 +110,18 @@ function createDeployRole(scope: cdk.Construct, id: string, cluster: eks.Cluster
 
   return role;
 }
+
 export interface EksProps extends cdk.StackProps {
   cluster: eks.Cluster
 }
 
 export interface CicdProps extends cdk.StackProps {
-  cluster: eks.Cluster,
+  firstRegionCluster: eks.Cluster,
+  secondRegionCluster: eks.Cluster,
   firstRegionRole: iam.Role,
   secondRegionRole: iam.Role
 }
 ```
-
 
 ### 두 번째 리전에 배포하는 CodeBuild 프로젝트 생성하기
 
@@ -126,7 +129,8 @@ export interface CicdProps extends cdk.StackProps {
 지금까지 작성된 코드에 아래 코드를 붙여넣습니다. 단, CodePipeline 정의 부분보다 위에 정의해야 합니다. 
 
 ```typescript
-        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, props.secondRegionCluster, ecrForMainRegion, props.secondRegionRole);
+
 ```
 * `/utils/buildspec.ts`에 정의된 빌드 스펙을 가지고 CodeBuild 프로젝트를 생성했습니다. 자세한 내용이 궁금하시면 해당 파일을 열어 확인하십시오.
 
@@ -167,7 +171,6 @@ import { CicdProps } from './cluster-stack';
 export class CicdStack extends cdk.Stack {
 
     constructor(scope: cdk.Construct, id: string, props: CicdProps) {
-
         super(scope, id, props);
 
         const primaryRegion = 'ap-northeast-1';
@@ -181,16 +184,17 @@ export class CicdStack extends cdk.Stack {
             exportName: 'CodeCommitURL',
             value: helloPyRepo.repositoryCloneUrlHttp
         });
+
         const ecrForMainRegion = new ecr.Repository(this, `ecr-for-hello-py`);
 
         const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
         ecrForMainRegion.grantPullPush(buildForECR.role!);
         
-        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
-        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, ecrForMainRegion, props.secondRegionRole);
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.firstRegionCluster, ecrForMainRegion, props.firstRegionRole);
+        const deployTo2ndCluster = deployToEKSspec(this, secondaryRegion, props.secondRegionCluster, ecrForMainRegion, props.secondRegionRole);
+
 
         const sourceOutput = new codepipeline.Artifact();
-
         new codepipeline.Pipeline(this, 'multi-region-eks-dep', {
             stages: [ {
                     stageName: 'Source',
@@ -214,7 +218,8 @@ export class CicdStack extends cdk.Stack {
                         input: sourceOutput,
                         project: deployToMainCluster
                     })]
-                },{
+                },
+                {
                     stageName: 'ApproveToDeployTo2ndRegion',
                     actions: [ new pipelineAction.ManualApprovalAction({
                             actionName: 'ApproveToDeployTo2ndRegion'
@@ -229,20 +234,21 @@ export class CicdStack extends cdk.Stack {
                     })]
                 }
                 
-                
             ]
         });
-        
     }
 }
 ```
+
 ### 엔트리포인트 수정하기
 두 번째 리전의 배포를 수행할 Role을, 스택 생성시 주입 받을 수 있도록 아래와 같이 **bin/multi-cluster-ts.ts** 파일을 수정합니다.
 
 ```typescript
-new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
-                                    firstRegionRole: primaryCluster.firstRegionRole,
-                                    secondRegionRole: secondaryCluster.secondRegionRole});
+new CicdStack(app, `CicdStack`, {env: primaryRegion, 
+    firstRegionCluster: primaryCluster.cluster,
+    secondRegionCluster: secondaryCluster.cluster,
+    firstRegionRole: primaryCluster.firstRegionRole,
+    secondRegionRole: secondaryCluster.secondRegionRole});
 ```
 
 * `secondRegionRole: secondaryCluster.secondRegionRole`을 추가했습니다.
@@ -260,14 +266,14 @@ new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.clu
   ...
   8/19 | 오후 10:28:52 | UPDATE_IN_PROGRESS   | AWS::CodePipeline::Pipeline | multi-region-eks-dep (repotoecrhellopy560FED9C)
   9/19 | 오후 10:28:53 | UPDATE_COMPLETE      | AWS::CodePipeline::Pipeline | multi-region-eks-dep (repotoecrhellopy560FED9C)
-  9/19 | 오후 10:29:00 | UPDATE_COMPLETE_CLEA | AWS::CloudFormation::Stack  | CicdForPrimaryStack
- 10/19 | 오후 10:29:01 | UPDATE_COMPLETE      | AWS::CloudFormation::Stack  | CicdForPrimaryStack
+  9/19 | 오후 10:29:00 | UPDATE_COMPLETE_CLEA | AWS::CloudFormation::Stack  | CicdStack
+ 10/19 | 오후 10:29:01 | UPDATE_COMPLETE      | AWS::CloudFormation::Stack  | CicdStack
 
- ✅  CicdForPrimaryStack
+ ✅  CicdStack
 
 Outputs:
-CicdForPrimaryStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
-CicdForPrimaryStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = arn:aws:iam::<<ACCOUNT_ID>>:role/CicdForPrimaryStack-deploytoeksapnortheast1Role189-VIG05L6PETHL
+CicdStack.codecommituri = https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/hello-py-ap-northeast-1
+CicdStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = arn:aws:iam::<<ACCOUNT_ID>>:role/CicdStack-deploytoeksapnortheast1Role189-VIG05L6PETHL
 ```
 
 

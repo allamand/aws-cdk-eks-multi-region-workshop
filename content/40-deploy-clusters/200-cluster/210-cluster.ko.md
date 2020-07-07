@@ -16,7 +16,7 @@ weight: 210
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.14',
+        version: '1.16',
         defaultCapacity: 2
     });
 
@@ -60,7 +60,7 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.14',
+        version: '1.16',
         defaultCapacity: 2
     });
 
@@ -92,6 +92,23 @@ const secondaryRegion = {account: account, region: 'us-west-2'};
 const primaryCluster = new ClusterStack(app, `ClusterStack-${primaryRegion.region}`, {env: primaryRegion })
 ```
 
+완성된 코드는 아래와 같을 것입니다.
+
+```typescript
+import * as cdk from '@aws-cdk/core';
+import { ClusterStack } from '../lib/cluster-stack';
+import { ContainerStack } from '../lib/container-stack';
+import { CicdStack } from '../lib/cicd-stack';
+
+const app = new cdk.App();
+
+const account = app.node.tryGetContext('account') || process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
+const primaryRegion = {account: account, region: 'ap-northeast-1'};
+const secondaryRegion = {account: account, region: 'us-west-2'};
+
+const primaryCluster = new ClusterStack(app, `ClusterStack-${primaryRegion.region}`, {env: primaryRegion })
+
+```
 
 
 ## cdk bootstrap
@@ -150,51 +167,7 @@ Resources
 [+] AWS::EC2::SubnetRouteTableAssociation demogo-cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation demogoclusterDefaultVpcPublicSubnet1RouteTableAssociationF6BCC682 
 [+] AWS::EC2::Route demogo-cluster/DefaultVpc/PublicSubnet1/DefaultRoute demogoclusterDefaultVpcPublicSubnet1DefaultRoute0A0FDBF1 
 [+] AWS::EC2::EIP demogo-cluster/DefaultVpc/PublicSubnet1/EIP demogoclusterDefaultVpcPublicSubnet1EIP42D57092 
-[+] AWS::EC2::NatGateway demogo-cluster/DefaultVpc/PublicSubnet1/NATGateway demogoclusterDefaultVpcPublicSubnet1NATGateway8B5F277B 
-[+] AWS::EC2::Subnet demogo-cluster/DefaultVpc/PublicSubnet2/Subnet demogoclusterDefaultVpcPublicSubnet2Subnet39C69507 
-[+] AWS::EC2::RouteTable demogo-cluster/DefaultVpc/PublicSubnet2/RouteTable demogoclusterDefaultVpcPublicSubnet2RouteTable20C348DA 
-[+] AWS::EC2::SubnetRouteTableAssociation demogo-cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation demogoclusterDefaultVpcPublicSubnet2RouteTableAssociation8151DA4B 
-[+] AWS::EC2::Route demogo-cluster/DefaultVpc/PublicSubnet2/DefaultRoute demogoclusterDefaultVpcPublicSubnet2DefaultRoute3A2BEF72 
-[+] AWS::EC2::EIP demogo-cluster/DefaultVpc/PublicSubnet2/EIP demogoclusterDefaultVpcPublicSubnet2EIPDD1FE783 
-[+] AWS::EC2::NatGateway demogo-cluster/DefaultVpc/PublicSubnet2/NATGateway demogoclusterDefaultVpcPublicSubnet2NATGateway9872618E 
-[+] AWS::EC2::Subnet demogo-cluster/DefaultVpc/PublicSubnet3/Subnet demogoclusterDefaultVpcPublicSubnet3Subnet7AC2FC28 
-[+] AWS::EC2::RouteTable demogo-cluster/DefaultVpc/PublicSubnet3/RouteTable demogoclusterDefaultVpcPublicSubnet3RouteTableB5078316 
-[+] AWS::EC2::SubnetRouteTableAssociation demogo-cluster/DefaultVpc/PublicSubnet3/RouteTableAssociation demogoclusterDefaultVpcPublicSubnet3RouteTableAssociationDFEE60CD 
-[+] AWS::EC2::Route demogo-cluster/DefaultVpc/PublicSubnet3/DefaultRoute demogoclusterDefaultVpcPublicSubnet3DefaultRoute2D744EC6 
-[+] AWS::EC2::EIP demogo-cluster/DefaultVpc/PublicSubnet3/EIP demogoclusterDefaultVpcPublicSubnet3EIPACAD503B 
-[+] AWS::EC2::NatGateway demogo-cluster/DefaultVpc/PublicSubnet3/NATGateway demogoclusterDefaultVpcPublicSubnet3NATGateway8A6E1058 
-[+] AWS::EC2::Subnet demogo-cluster/DefaultVpc/PrivateSubnet1/Subnet demogoclusterDefaultVpcPrivateSubnet1Subnet9EBC7F0F 
-[+] AWS::EC2::RouteTable demogo-cluster/DefaultVpc/PrivateSubnet1/RouteTable demogoclusterDefaultVpcPrivateSubnet1RouteTableF109BA8D 
-[+] AWS::EC2::SubnetRouteTableAssociation demogo-cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation demogoclusterDefaultVpcPrivateSubnet1RouteTableAssociation098CAA3A 
-[+] AWS::EC2::Route demogo-cluster/DefaultVpc/PrivateSubnet1/DefaultRoute demogoclusterDefaultVpcPrivateSubnet1DefaultRoute3000F93D 
-[+] AWS::EC2::Subnet demogo-cluster/DefaultVpc/PrivateSubnet2/Subnet demogoclusterDefaultVpcPrivateSubnet2Subnet71BE4D47 
-[+] AWS::EC2::RouteTable demogo-cluster/DefaultVpc/PrivateSubnet2/RouteTable demogoclusterDefaultVpcPrivateSubnet2RouteTable0695DE49 
-[+] AWS::EC2::SubnetRouteTableAssociation demogo-cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation demogoclusterDefaultVpcPrivateSubnet2RouteTableAssociationDA611F45 
-[+] AWS::EC2::Route demogo-cluster/DefaultVpc/PrivateSubnet2/DefaultRoute demogoclusterDefaultVpcPrivateSubnet2DefaultRouteB3F63E45 
-[+] AWS::EC2::Subnet demogo-cluster/DefaultVpc/PrivateSubnet3/Subnet demogoclusterDefaultVpcPrivateSubnet3Subnet7C658410 
-[+] AWS::EC2::RouteTable demogo-cluster/DefaultVpc/PrivateSubnet3/RouteTable demogoclusterDefaultVpcPrivateSubnet3RouteTableF5EFFC72 
-[+] AWS::EC2::SubnetRouteTableAssociation demogo-cluster/DefaultVpc/PrivateSubnet3/RouteTableAssociation demogoclusterDefaultVpcPrivateSubnet3RouteTableAssociation45D2D250 
-[+] AWS::EC2::Route demogo-cluster/DefaultVpc/PrivateSubnet3/DefaultRoute demogoclusterDefaultVpcPrivateSubnet3DefaultRoute029BFE42 
-[+] AWS::EC2::InternetGateway demogo-cluster/DefaultVpc/IGW demogoclusterDefaultVpcIGWE387E56C 
-[+] AWS::EC2::VPCGatewayAttachment demogo-cluster/DefaultVpc/VPCGW demogoclusterDefaultVpcVPCGW187F7878 
-[+] AWS::IAM::Role demogo-cluster/Role demogoclusterRole530AF8F4 
-[+] AWS::EC2::SecurityGroup demogo-cluster/ControlPlaneSecurityGroup demogoclusterControlPlaneSecurityGroup2C10657D 
-[+] AWS::EC2::SecurityGroupIngress demogo-cluster/ControlPlaneSecurityGroup/from ClusterStackapsoutheast2demogoclusterDefaultCapacityInstanceSecurityGroupE5C0D5D8:443 demogoclusterControlPlaneSecurityGroupfromClusterStackapsoutheast2demogoclusterDefaultCapacityInstanceSecurityGroupE5C0D5D84433834DEB2 
-[+] AWS::IAM::Role demogo-cluster/Resource/CreationRole demogoclusterCreationRoleB8F24255 
-[+] AWS::IAM::Policy demogo-cluster/Resource/CreationRole/DefaultPolicy demogoclusterCreationRoleDefaultPolicy711D53D3 
-[+] Custom::AWSCDK-EKS-Cluster demogo-cluster/Resource/Resource demogoclusterA89898EB 
-[+] Custom::AWSCDK-EKS-KubernetesResource demogo-cluster/AwsAuth/manifest/Resource demogoclusterAwsAuthmanifestFF93B93C 
-[+] AWS::EC2::SecurityGroup demogo-cluster/DefaultCapacity/InstanceSecurityGroup demogoclusterDefaultCapacityInstanceSecurityGroupC4B9CC76 
-[+] AWS::EC2::SecurityGroupIngress demogo-cluster/DefaultCapacity/InstanceSecurityGroup/from ClusterStackapsoutheast2demogoclusterDefaultCapacityInstanceSecurityGroupE5C0D5D8:ALL TRAFFIC demogoclusterDefaultCapacityInstanceSecurityGroupfromClusterStackapsoutheast2demogoclusterDefaultCapacityInstanceSecurityGroupE5C0D5D8ALLTRAFFICAB31DDDD 
-[+] AWS::EC2::SecurityGroupIngress demogo-cluster/DefaultCapacity/InstanceSecurityGroup/from ClusterStackapsoutheast2demogoclusterControlPlaneSecurityGroupF5A0BAA2:443 demogoclusterDefaultCapacityInstanceSecurityGroupfromClusterStackapsoutheast2demogoclusterControlPlaneSecurityGroupF5A0BAA24434161DB3B 
-[+] AWS::EC2::SecurityGroupIngress demogo-cluster/DefaultCapacity/InstanceSecurityGroup/from ClusterStackapsoutheast2demogoclusterControlPlaneSecurityGroupF5A0BAA2:1025-65535 demogoclusterDefaultCapacityInstanceSecurityGroupfromClusterStackapsoutheast2demogoclusterControlPlaneSecurityGroupF5A0BAA21025655350E76CDB2 
-[+] AWS::IAM::Role demogo-cluster/DefaultCapacity/InstanceRole demogoclusterDefaultCapacityInstanceRoleD81B758A 
-[+] AWS::IAM::InstanceProfile demogo-cluster/DefaultCapacity/InstanceProfile demogoclusterDefaultCapacityInstanceProfile71466EC2 
-[+] AWS::AutoScaling::LaunchConfiguration demogo-cluster/DefaultCapacity/LaunchConfig demogoclusterDefaultCapacityLaunchConfig93D71520 
-[+] AWS::AutoScaling::AutoScalingGroup demogo-cluster/DefaultCapacity/ASG demogoclusterDefaultCapacityASGCD1D544F 
-[+] AWS::CloudFormation::Stack @aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454 
-[+] AWS::CloudFormation::Stack @aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
-
+[+] AWS::EC2::NatGateway demogo-cluster/DefaultVpc/PublicSubnet1/NATGateway 
 ```
 
 여러분은 지금 코드를 대략 20줄 정도 밖에 입력하지 않았는데, 어떻게 이렇게 많은 자원이 생성된 것일까요?  

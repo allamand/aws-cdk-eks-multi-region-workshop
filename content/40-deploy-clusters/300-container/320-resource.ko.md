@@ -124,7 +124,29 @@ export class ContainerStack extends cdk.Stack {
 new ContainerStack(app, `ContainerStack-${primaryRegion.region}`, {env: primaryRegion, cluster: primaryCluster.cluster });
 
 ```
+
+완성된 코드는 아래와 같을 것입니다.
+```typescript
+import 'source-map-support/register';
+import * as cdk from '@aws-cdk/core';
+import { ClusterStack } from '../lib/cluster-stack';
+import { ContainerStack } from '../lib/container-stack';
+import { CicdStack } from '../lib/cicd-stack';
+
+
+const app = new cdk.App();
+
+const account = app.node.tryGetContext('account') || process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
+const primaryRegion = {account: account, region: 'ap-northeast-1'};
+const secondaryRegion = {account: account, region: 'us-west-2'};
+
+const primaryCluster = new ClusterStack(app, `ClusterStack-${primaryRegion.region}`, {env: primaryRegion })
+new ContainerStack(app, `ContainerStack-${primaryRegion.region}`, {env: primaryRegion, cluster: primaryCluster.cluster });
+```
+
+
 최초로 ClusterStack을 생성했을 때와는 다르게, 환경 설정(계정, 리전) 값 외에 위에서 생성한 `cluster`를 넘겨받는 것을 알 수 있습니다.
+
 
 
 ## 생성될 자원 확인하기

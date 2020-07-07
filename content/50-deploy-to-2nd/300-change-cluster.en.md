@@ -22,7 +22,7 @@ Let's look at the excerpt of our cluster definition in **lib/cluster-stack.ts**.
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.14',
+        version: '1.16',
         defaultCapacity: 2
     });
 
@@ -47,7 +47,7 @@ The completed code should look like this.
       const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.14',
+        version: '1.16',
         defaultCapacity: 2,
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
                                  new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')

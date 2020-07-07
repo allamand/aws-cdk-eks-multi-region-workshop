@@ -34,7 +34,7 @@ EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild�
 3. `class` 외부, 최하단
 ```typescript
 export interface CicdProps extends cdk.StackProps {
-  cluster: eks.Cluster,
+  firstRegionCluster: eks.Cluster,
   firstRegionRole: iam.Role
 }
 
@@ -70,7 +70,8 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        defaultCapacity: 2,
+        version: '1.16',
+        defaultCapacity: 2
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
                                     new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
     });
@@ -102,7 +103,7 @@ export interface EksProps extends cdk.StackProps {
 }
 
 export interface CicdProps extends cdk.StackProps {
-  cluster: eks.Cluster,
+  firstRegionCluster: eks.Cluster,
   firstRegionRole: iam.Role
 }
 ```
@@ -231,7 +232,8 @@ CodeBuild를 이용하여 자원을 배포해보겠습니다.
 아래 코드를 위에 작성한 코드 뒤에 붙여넣으십시오.
 
 ```typescript
-        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.firstRegionCluster, ecrForMainRegion, props.firstRegionRole);
+
 ```
 
 * /utils 폴더에 이 워크샵에서 사용할 빌드 스펙을 미리 정의해두었습니다. 자세한 빌드 스펙이 궁금하신 분은 /utils/buildspec.ts 파일을 참조해주십시오. 
@@ -314,7 +316,7 @@ export class CicdStack extends cdk.Stack {
         const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
         ecrForMainRegion.grantPullPush(buildForECR.role!);
         
-        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.firstRegionCluster, ecrForMainRegion, props.firstRegionRole);
 
         const sourceOutput = new codepipeline.Artifact();
 
@@ -355,9 +357,9 @@ export class CicdStack extends cdk.Stack {
 아래 코드를 **bin/multi-cluster-ts.ts** 파일에 붙여넣습니다.
 
 ```typescript
-new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
-                                    firstRegionRole: primaryCluster.firstRegionRole});
-
+new CicdStack(app, `CicdStack`, {env: primaryRegion, 
+    firstRegionCluster: primaryCluster.cluster,
+    firstRegionRole: primaryCluster.firstRegionRole});
 
 ```
 

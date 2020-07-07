@@ -31,10 +31,9 @@ CodeBuild, which will be responsible for deploying the application to the EKS cl
 1. outside of `class`, end of the file
 ```typescript
 export interface CicdProps extends cdk.StackProps {
-  cluster: eks.Cluster,
+  firstRegionCluster: eks.Cluster,
   firstRegionRole: iam.Role
 }
-
 ```
 
 * Have you ever wondered what `createDeployRole` function is for in the skeleton state? It creates an IAM role to be assumed by Codebuild project which will be defined in **cicd-stack.ts**. It restricts the role to have a limited access to the specific cluster in one region by examining the region value of the stack.
@@ -66,7 +65,8 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        defaultCapacity: 2,
+        version: '1.16',
+        defaultCapacity: 2
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
                                     new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
     });
@@ -98,7 +98,7 @@ export interface EksProps extends cdk.StackProps {
 }
 
 export interface CicdProps extends cdk.StackProps {
-  cluster: eks.Cluster,
+  firstRegionCluster: eks.Cluster,
   firstRegionRole: iam.Role
 }
 ```
@@ -224,7 +224,8 @@ Let's deploy resources using CodeBuild.
 Paste the code below right after the code you wrote.
 
 ```typescript
-        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.firstRegionCluster, ecrForMainRegion, props.firstRegionRole);
+
 ```
 
 * In the /utils folder, we have pre-defined build specifications for this workshop. If you are curious about the detailed build specifications, please refer to the **/utils/buildspec.ts** file.
@@ -305,7 +306,7 @@ export class CicdStack extends cdk.Stack {
         const buildForECR = codeToECRspec(this, ecrForMainRegion.repositoryUri);
         ecrForMainRegion.grantPullPush(buildForECR.role!);
         
-        const deployToMainCluster = deployToEKSspec(this, primaryRegion, ecrForMainRegion, props.firstRegionRole);
+        const deployToMainCluster = deployToEKSspec(this, primaryRegion, props.firstRegionCluster, ecrForMainRegion, props.firstRegionRole);
 
         const sourceOutput = new codepipeline.Artifact();
 
@@ -343,7 +344,7 @@ export class CicdStack extends cdk.Stack {
 
 ### Load the stack
 
-Paste the code below into the **bin / multi-cluster-ts.ts** file.
+Paste the code below into the **bin/multi-cluster-ts.ts** file.
 
 ```typescript
 new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
@@ -420,7 +421,7 @@ nginx-deployment-5754944d6c-wkkkn   1/1     Running   0          24m
 ```
 
 1. Check if the response comes back from `EXTERNAL-IP` of the created service object.
-Please note that it may take 2 minutes to create an ELB.
+ 
 
 ```
 kubectl describe service hello-py | grep Ingress

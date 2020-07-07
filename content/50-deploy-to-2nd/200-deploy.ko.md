@@ -30,6 +30,8 @@ const secondaryCluster = new ClusterStack(app, `ClusterStack-${secondaryRegion.r
 new ContainerStack(app, `ContainerStack-${secondaryRegion.region}`, {env: secondaryRegion, cluster: secondaryCluster.cluster });
 ```
 
+
+
 ## 스택 배포하기
 아래 명령어를 이용하면 두 번째 리전에 스택이 새롭게 생성된 것을 볼 수 있습니다.  
 이 스택에 의해 어떤 자원이 배포될 것인지를 확인할 수 있습니다.

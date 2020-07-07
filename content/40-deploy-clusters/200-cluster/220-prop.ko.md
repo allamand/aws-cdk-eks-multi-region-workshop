@@ -51,7 +51,7 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.14',
+        version: '1.16',
         defaultCapacity: 2
     });
 
