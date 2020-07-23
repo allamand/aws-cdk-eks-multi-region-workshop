@@ -16,7 +16,7 @@ weight: 210
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.16',
+        version: eks.KubernetesVersion.V1_16,
         defaultCapacity: 2
     });
 
@@ -60,7 +60,7 @@ export class ClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.16',
+        version: eks.KubernetesVersion.V1_16,
         defaultCapacity: 2
     });
 

@@ -24,7 +24,7 @@ A 리전에는 1번 컨테이너를 추가로 두고, B 리전에는 2번 컨테
     const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.16',
+        version: eks.KubernetesVersion.V1_16,
         defaultCapacity: 2
     });
 
@@ -49,7 +49,7 @@ eks.Cluster 생성 부분에 다음 코드를 붙여넣습니다.
       const cluster = new eks.Cluster(this, 'demogo-cluster', {
         clusterName: `demogo`,
         mastersRole: clusterAdmin,
-        version: '1.16',
+        version: eks.KubernetesVersion.V1_16,
         defaultCapacity: 2,
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
                                  new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
