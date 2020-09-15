@@ -33,7 +33,7 @@ Define an EKS cluster by instantiating the imported package. Please copy and pas
 * `cluster` is the EKS cluster we will create! You can configure several options with [this guide](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html). In this workshop, we will define the following options:
     * `clusterName`: To make the last lab easier, it statically defined to have a cluster name. This name should be unique in one region. If you do not set this value, CDK automatically assigns a unique name.
     * `masterRole`: IAM Principal which would join `systems:masters`, the Kubernetes RBAC group having full control over the cluster. We set this value to include `clusterAdmin` to the RBAC group.
-    * `defaultCapacity`: It defines how many worker nodes this cluster have by default. If you do not give any type, CDK will make the instances in Managed Nodegroup.
+    * `defaultCapacity`: It defines how many worker nodes this cluster have by default. If you do not give any type, CDK will make the instances in [Managed Nodegroup](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html).
 * `cluster.addCapacity`: added a separate AutoScalingGroup to use EC2 Spot instances in addition to the default capacity. Spot instances are not available in Managed Nodegroup at the point of this workshop is written (May, 2020)
 
 
@@ -200,7 +200,7 @@ In the meantime, you can check the status of the resource being created through 
 ![](/images/20-single-region/creation-inprg.png)
 
 
-When creation is completed, you can see the CloudFormation stack created in [AWS Console](console.aws.amazon.com/cloudformation/) as shown below.
+When creation is completed, you can see the CloudFormation stack created in [AWS Console](https://console.aws.amazon.com/cloudformation/) as shown below.
 
 ![](/images/70-appendix/stacks.png)
 
@@ -215,7 +215,7 @@ We only defined one stack, but why so many stacks in the console?! If you get cu
 
 After the resource creation is completed, the ConfigCommand will be displayed as CloudFormation Output in the terminal as shown in the screenshot above.
 
-Copy the `aws eks ...` part after the `=` in the output below and run it from the console.
+Copy the `aws eks update-kubeconfig...` part after the `=` in the output below and run it from the console.
 
 ```
 ClusterStack-ap-northeast-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<ROLE_ARN>>

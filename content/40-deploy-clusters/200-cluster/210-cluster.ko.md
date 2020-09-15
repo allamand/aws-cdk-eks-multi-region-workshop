@@ -34,7 +34,7 @@ weight: 210
     * `clusterName`: 세 번째 랩에서 사용하기 위해 우리는 이름을 미리 지정했습니다. 이 이름은 한 리전 내에서 고유해야 합니다. 입력하지 않을 경우 CDK가 자동으로 이름을 생성합니다.
     * `mastersRole`: kubectl 조작 권한을 가질 수 있게 해주는 Kubernetes RBAC 그룹 `systems:masters`에 추가될 IAM 주체를 선언합니다. 우리는 위에서 정의한 `clusterAdmin`을 이용해서 해당 클러스터에 접근하기 위해 이 롤을 입력합니다.
     * `defaultCapacity`: 기본으로 몇 개의 워커노드가 생성될 것인지 지정합니다. 
-* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다. (2020년 5월 기준, Managed Nodegroup에서 스팟 인스턴스를 지원하지 않아 ASG로 작업합니다.)
+* `cluster.addCapacity`: 기본으로 잡아둔 워커노드에 더해 EC2 Spot 인스턴스를 활용하는 워커노드를 추가로 별도 AutoScalingGroup으로 추가했습니다. (2020년 5월 기준, [Managed Nodegroup](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)에서 스팟 인스턴스를 지원하지 않아 ASG로 작업합니다.)
 
 {{% notice info %}} 
 참고: EC2 스팟 인스턴스는 더 이상 bidding 이 아니라, [market price 로 구매](https://aws.amazon.com/ko/blogs/compute/new-amazon-ec2-spot-pricing/)를 하게 됩니다.  
@@ -196,7 +196,7 @@ Do you wish to deploy these changes (y/n)?
 ![](/images/20-single-region/creation-inprg.png)
 
 
-생성이 모두 완료 되면 아래와 같이 [콘솔](console.aws.amazon.com/cloudformation/)에서 CloudFormation 스택이 생성된 것을 확인할 수 있습니다.
+생성이 모두 완료 되면 아래와 같이 [콘솔](https://console.aws.amazon.com/cloudformation/)에서 CloudFormation 스택이 생성된 것을 확인할 수 있습니다.
 
 ![](/images/70-appendix/stacks.png)
 
@@ -209,7 +209,7 @@ Do you wish to deploy these changes (y/n)?
 ![](/images/20-deploy-clusters/stack-output.png)
 
 자원 생성이 완료되고 나면, 위 스크린샷처럼 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
-아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
+아래 출력값의 `=` 뒤의 `aws eks update-kubeconfig ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
 ClusterStack-ap-northeast-1.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region ap-northeast-1 --role-arn <<ROLE_ARN>>
