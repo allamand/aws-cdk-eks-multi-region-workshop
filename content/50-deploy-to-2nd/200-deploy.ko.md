@@ -56,7 +56,7 @@ cdk deploy "*" --require-approval never
 
 ## kubeconfig 업데이트
 자원 생성이 완료되고 나면, 콘솔에 CloudFormation Output으로 ConfigCommand가 출력될 것입니다.
-아래 출력값의 `=` 뒤의 `aws eks ...` 부분을 복사하여 콘솔에서 실행하십시오.  
+아래 출력값의 `=` 뒤의 `aws eks update-kubeconfig ...` 부분을 복사하여 콘솔에서 실행하십시오.  
 
 ```
 ClusterStack-us-west-2.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region us-west-2 --role-arn <<YOUR_ROLE_ARN>>

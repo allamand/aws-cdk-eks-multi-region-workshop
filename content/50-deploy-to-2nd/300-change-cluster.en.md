@@ -39,7 +39,7 @@ Paste the following code in the eks.Cluster creation section.
 
 ```typescript
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
+                                 new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
 ```
 
 The completed code should look like this.

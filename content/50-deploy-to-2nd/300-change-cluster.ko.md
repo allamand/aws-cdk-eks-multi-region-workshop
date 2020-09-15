@@ -41,7 +41,7 @@ eks.Cluster 생성 부분에 다음 코드를 붙여넣습니다.
 
 ```typescript
         defaultCapacityInstance: cdk.Stack.of(this).region==primaryRegion? 
-                                 new ec2.InstanceType('r5.xlarge') : new ec2.InstanceType('m5.2xlarge')
+                                 new ec2.InstanceType('r5.2xlarge') : new ec2.InstanceType('m5.2xlarge')
 ```
 
 완성된 코드는 다음과 같을 것입니다.

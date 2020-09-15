@@ -57,7 +57,7 @@ Please note that the above command omits your permission to modify security-rela
 ## Update kubeconfig
 
 After the resource creation is completed, the ConfigCommand will be displayed as CloudFormation Output in the console.
-Copy the `aws eks ...` after the `=` in the output below and run it from the console.
+Copy the `aws eks update-kubeconfig ...` after the `=` in the output below and run it from the console.
 
 ```
 ClusterStack-us-west-2.demogoclusterConfigCommand6DB6D889 = aws eks update-kubeconfig --name demogo --region us-west-2 --role-arn <<YOUR_ROLE_ARN>>
@@ -100,7 +100,7 @@ nginx-deployment-5754944d6c-q2p9c   1/1     Running   0          12m
 ```
 
 
-You can change the target cluster for `kubectl` operation with the command below.
+You can change the target cluster for `kubectl` operation with the command below, or use the [kubectx](https://github.com/ahmetb/kubectx) tool.
 
 ```
 kubectl config use-context <<cluster-name>>
