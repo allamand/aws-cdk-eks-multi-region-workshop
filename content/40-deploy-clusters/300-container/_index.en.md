@@ -12,7 +12,7 @@ It’s already crazy enough managing for one cluster, imagine have to manage all
 
 There are two ways you can manage Kubernetes resources along with your infrastructure in CDK.
 
-1. [KubernetesResource](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.KubernetesResource.html) Object, using Kubernetes manifests.
+1. [KubernetesManifest](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.KubernetesManifest.html) Object, using Kubernetes manifests.
 
 
 2. [HelmChart](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.HelmChart.html)

@@ -25,7 +25,6 @@ export class ClusterStack extends cdk.Stack {
 
   }
 }
-}
 ...
 ```
 

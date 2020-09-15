@@ -25,7 +25,7 @@ Go up again and define the readonly value as public above the `constructor`.
 ```
 
 Then, specify the cluster to be exported as props.
-Paste the code below at the bottom of the class declaration.
+Paste the code below at the bottom of the constructor in class declaration.
 
 ```
       this.cluster = cluster;

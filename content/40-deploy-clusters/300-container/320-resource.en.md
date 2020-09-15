@@ -66,7 +66,7 @@ export function readYamlFromDir(dir: string, cluster: eks.Cluster) {
 }
 ```
 
-## Create the Contaier Stack
+## Create the Container Stack
 Open **lib/container-stack.ts**. Paste the code below under the `super (scope, id, props)` syntax.
 ```typescript
     const cluster = props.cluster;
@@ -82,7 +82,7 @@ Open **lib/container-stack.ts**. Paste the code below under the `super (scope, i
 * After reading yaml files in these two folders and transforming them into json, this code then creates a resource by CDK. This allows the administrator to manage the distribution through code rather than directly controlling resources through the `kubectl` command.
   
 {{% notice warning %}}
-If you are doing a workshop in another region other than the Tokyo region (ap-northeast-1) or Oregon region (us-west-2), please change the folder name where the yaml files are located.
+If you are doing a workshop in a region other than the Tokyo region (ap-northeast-1) or Oregon region (us-west-2), please change the folder name where the yaml files are located.
 {{% /notice %}}
 
 
@@ -140,7 +140,7 @@ const primaryCluster = new ClusterStack(app, `ClusterStack-${primaryRegion.regio
 new ContainerStack(app, `ContainerStack-${primaryRegion.region}`, {env: primaryRegion, cluster: primaryCluster.cluster });
 ```
 
-Unlike when the ClusterStack was first created, you can see that it takes over the `cluster` created above in addition to the environment settings (account, region) values. This is because we decided to inject the clusters into ContainerStack!
+Unlike when the ClusterStack was first created, you can see that it takes over the `cluster` created above in addition to the environment settings (account, region) values. This is because we decided to inject the clusters into ContainerStack using our `EksProps` interface!
 
 ## Identifying resources to be created
 Let's check the resources to be created with the command below.
