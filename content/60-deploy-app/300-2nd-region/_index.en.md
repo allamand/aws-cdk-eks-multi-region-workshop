@@ -11,7 +11,7 @@ Now that we have verified that it works in the first region, shall we deploy it 
 
 As above, let's add the steps to 1) approve the deployment by administrator, and 2) deploy it to the second region.
 In this pipeline, deployment is done in the second region, with source and container images from the first region without replicating any resources.
-If you have DR requirements, such as cross-region replication, please refer to [this link](/en/80-appendix/related-bps/ecr-replication/).
+If you have disaster recovery requirements, such as cross-region replication, please refer to [this link](/en/80-appendix/related-bps/ecr-replication/).
 
 One more thing to keep in mind is this scenario assumes that the deployment is verified in the first region before it goes to the second region. If deployment succeeds in the first region but fails in the second region, only the second region is rolled back without the first region being rolled back.
 
@@ -281,7 +281,7 @@ CicdStack.ExportsOutputFnGetAttdeploytoeksapnortheast1Role18912335ArnB28E7CE7 = 
 
 ![](/images/40-deploy-app/release-change.png)
   
-You can see the two newly deployed stages in the [CodePipeline Console](https://console.aws.amazon.com/codesuite/codepipeline/?#).
+You can see the two newly deployed stages in the [CodePipeline Console](https://console.aws.amazon.com/codesuite/codepipeline/home).
 Click 'Release Changes' in the screenshot above to reflect the latest code to the second region.
 
 ### Approve the release
@@ -290,7 +290,7 @@ After the application is successfully deployed to the EKS cluster in the first r
 Press the **<Review>** button, then press the **<Apply>** button.
 
   
-![](/images/40-deploy-app/approval-pipeline.png)
+![](/images/40-deploy-app/approval-pipeline-en.png)
 
 
 ### Check the deployed resources

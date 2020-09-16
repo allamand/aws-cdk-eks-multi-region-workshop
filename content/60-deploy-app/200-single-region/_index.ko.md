@@ -13,6 +13,10 @@ pre: "<b>6-2. </b>"
 
 CDK 코드를 작성하는 IDE로 이동해서 아래와 단계에 따라 CI/CD 파이프라인을 생성하는 클래스를 생성합니다.
 
+```
+cd ../aws-cdk-eks-multi-region-skeleton
+```
+
 ### CI/CD Pipeline에서 사용할 IAM Role 내보내기
 EKS 클러스터에 실제 어플리케이션 배포를 수행하는 CodeBuild는,  
 그 리전에 있는 EKS 클러스터에 `kubectl` 명령을 보낼 수 있는 Role을 assume해서 애플리케이션 배포를 수행합니다. 이 Role을 생성해봅시다.
@@ -56,7 +60,6 @@ import { PhysicalName } from '@aws-cdk/core';
 export class ClusterStack extends cdk.Stack {
   public readonly cluster: eks.Cluster;
   public readonly firstRegionRole: iam.Role;
-  public readonly secondRegionRole: iam.Role;
 
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -173,7 +176,7 @@ export class CicdStack extends cdk.Stack {
 
 ### CodeCommit 생성하기
 여러분들이 프로덕션 어플리케이션을 실제로 운영할 때에는 프라이빗하게 소스를 관리해야 할 것입니다.  
-이 때 AWS CodeCommit 서비스를 이용할 수 있습니다. AWS CodeCommit은 뛰어난 확장성의 프라이빗 Git 리포지토리를 안전하게 호스팅하는 서비스로, 마치 git을 이용하는 것처럼 여러분들은 리포지토리 호스팅 서버, 스토리지 등을 관리하실 필요 없이 프라이빗하게 리포지토리를 이용할 수 있습니다.
+이 때 AWS CodeCommit 서비스를 이용할 수 있습니다. [AWS CodeCommit](https://aws.amazon.com/codecommit/)은 뛰어난 확장성의 프라이빗 Git 리포지토리를 안전하게 호스팅하는 서비스로, 마치 git을 이용하는 것처럼 여러분들은 리포지토리 호스팅 서버, 스토리지 등을 관리하실 필요 없이 프라이빗하게 리포지토리를 이용할 수 있습니다.
 
 아래 코드를 위에서 생성한 클래스 `construct` 선언부 안에 붙여넣습니다.
 
@@ -194,7 +197,7 @@ export class CicdStack extends cdk.Stack {
 
 ### ECR Repository 생성하기
 이 코드를 기반으로 생성된 컨테이너 이미지는 별도의 Image Registry에 저장되어야 합니다.  
-이때 Amazon ECR을 이용하실 수 있습니다. Amazon Elastic Container Registry(ECR)는 개발자가 Docker 컨테이너 이미지를 손쉽게 저장, 관리 및 배포할 수 있게 해주는 완전관리형 Docker 컨테이너 레지스트리입니다.
+이때 Amazon ECR을 이용하실 수 있습니다. [Amazon Elastic Container Registry(ECR)](https://aws.amazon.com/ecr/)는 개발자가 Docker 컨테이너 이미지를 손쉽게 저장, 관리 및 배포할 수 있게 해주는 완전관리형 Docker 컨테이너 레지스트리입니다.
 
 아래 코드를 CodeCommit 정의한 라인 아래에 붙여넣으십시오.
 
@@ -206,9 +209,9 @@ export class CicdStack extends cdk.Stack {
 
 ### 도커 이미지를 빌드하는 CodeBuild 프로젝트 생성하기
 개발자가 소스를 커밋했을 때 이 내용을 기반으로 새로운 이미지를 자동으로 빌드하게 해주어야 합니다.  
-이 때 CodeBuild를 이용할 것입니다. AWS CodeBuild는 클라우드 상의 완전 관리형 빌드 서비스로, 소스 코드를 컴파일하고 단위 테스트를 실행하며 배포할 준비가 완료된 아티팩트를 생성합니다.  
+이 때 CodeBuild를 이용할 것입니다. [AWS CodeBuild](https://aws.amazon.com/codebuild/)는 클라우드 상의 완전 관리형 빌드 서비스로, 소스 코드를 컴파일하고 단위 테스트를 실행하며 배포할 준비가 완료된 아티팩트를 생성합니다.  
 
-buildspec 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 것인지 정의할 수 있습니다.  
+[buildspec](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html) 을 정의하여 CodeBuild에서 실제로 어떤 작업을 수행할 것인지 정의할 수 있습니다.  
 1) 일반적인 어플리케이션에서는 코드 레파지토리의 루트 경로에 `buildspec.yml` 파일을 생성하여 정의할 수도 있고,  
 2) CodeBuild 프로젝트를 정의할 때 지정할 수도 있습니다.  
 이 워크샵에서는 리전 간 공통으로 사용되는 buildspec을 중앙에서 관리하기 위해 2)의 방법을 통해 CodeBuild 프로젝트에 직접 정의해줍니다.

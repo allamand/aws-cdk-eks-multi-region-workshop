@@ -29,7 +29,7 @@ When you open the IDE, you can see that it contains three files except README.
 2. Dockerfile: Dockerfile to build this Python code into a container image
 3. app-deployment.yaml: Specification that defines what to deploy to the Kubernetes cluster.
 
-If you open the app.py file, you can see a simple Python         3e4w application showing the region information of the environment where the container is running.
+If you open the app.py file, you can see a simple Python Flask application showing the region information of the environment where the container is running.
 
 ```python
 @app.route('/')

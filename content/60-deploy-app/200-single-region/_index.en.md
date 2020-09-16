@@ -11,7 +11,11 @@ Create a CodePipeline with the following flow.
 ![](/images/40-deploy-app/single-region-pipeline.svg)
 
 
-Go to the IDE and follow the steps below to create a class that creates a CI / CD pipeline.
+Go to the the `aws-cdk-eks-multi-region-skeleton` project IDE and follow the steps below to create a class that creates a CI / CD pipeline.
+
+```
+cd ../aws-cdk-eks-multi-region-skeleton
+```
 
 ### Export IAM Role for CI/CD Pipeline
 CodeBuild, which will be responsible for deploying the application to the EKS cluster, assumes a role to run kubectl commands against the EKS cluster in order to perform the actual deployment. Let’s create this Role. Open lib/cluster-stack.ts and add the below codes in order
@@ -51,7 +55,6 @@ import { PhysicalName } from '@aws-cdk/core';
 export class ClusterStack extends cdk.Stack {
   public readonly cluster: eks.Cluster;
   public readonly firstRegionRole: iam.Role;
-  public readonly secondRegionRole: iam.Role;
 
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -171,9 +174,9 @@ export class CicdStack extends cdk.Stack {
 
 ### Create a CodeCommit repository
 
-AWS CodeCommit is a service that securely hosts highly scalable private Git repositories, so you can use repositories privately without having to manage repository hosting servers, storage, etc., just like using git.
+[AWS CodeCommit](https://aws.amazon.com/codecommit/) is a service that securely hosts highly scalable private Git repositories, so you can use repositories privately without having to manage repository hosting servers, storage, etc., just like using GitHub.
 
-Paste the code below into the class `construct` declaration.
+Paste the code below into the CicdStack class inside of `constructor` declaration.
 
 ```typescript
         const helloPyRepo = new codecommit.Repository(this, 'hello-py-for-demogo', {
@@ -192,7 +195,7 @@ Paste the code below into the class `construct` declaration.
 ### Create an ECR Repository
 
 Container images created based on this code repository must be stored in a separate Image Registry.
-You can use Amazon ECR for it. Amazon Elastic Container Registry (ECR) is a fully managed Docker container registry that enables developers to easily store, manage and deploy Docker container images.
+You can use [Amazon Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) for it. ECR is a fully managed Docker container registry that enables developers to easily store, manage and deploy Docker container images.
 
 Paste the code below under the line you defined for CodeCommit.
 
@@ -204,9 +207,9 @@ Paste the code below under the line you defined for CodeCommit.
 
 ### CodeBuild for Container image build
 
-When the developer commits the code to the source, it should automatically build a new image that will capture the changes. We will use CodeBuild to accomplish this. AWS CodeBuild is a fully managed build service on the cloud that compiles source code, runs unit tests, and creates artifacts that are ready to deploy.
+When the developer commits the code to the source, it should automatically build a new image that will capture the changes. We will use CodeBuild to accomplish this. [AWS CodeBuild](https://aws.amazon.com/codebuild/) is a fully managed build service on the cloud that compiles source code, runs unit tests, and creates artifacts that are ready to deploy.
 
-With a buildspec, you can define your build job.
+With a [buildspec](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html), you can define your build job.
 
 1) In a typical application, a `buildspec.yml` file can be created and defined in the root path of the code repository.
 2) You can also specify when defining CodeBuild project. In this workshop, we will define the buildspec files, which are commonly used across regions directly by CDK, to centrally manage them.
@@ -232,7 +235,7 @@ Paste the code below right after the code you wrote.
   
 
 ### Pipeline for single-region deployment
-Then, we will create a pipeline by connecting the resources created so far. Paste the code below.
+Then, we will create an [AWS CodePipeline](https://aws.amazon.com/codepipeline/) by connecting the resources created so far. Paste the code below.
 
 ```typescript
         const sourceOutput = new codepipeline.Artifact();
@@ -347,7 +350,7 @@ export class CicdStack extends cdk.Stack {
 Paste the code below into the **bin/multi-cluster-ts.ts** file.
 
 ```typescript
-new CicdStack(app, `CicdStack`, {env: primaryRegion, cluster: primaryCluster.cluster ,
+new CicdStack(app, `CicdStack`, {env: primaryRegion, firstRegionCluster: primaryCluster.cluster ,
                                     firstRegionRole: primaryCluster.firstRegionRole});
 
 
